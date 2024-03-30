@@ -35,7 +35,7 @@
  *     array('float', 'nameInModSettingsAndSQL', 'OptionalInputBoxWidth'),
  * - A large text input box. Used for textual values spanning multiple lines.
  *     array('large_text', 'nameInModSettingsAndSQL', 'OptionalNumberOfRows'),
- * - A check box.  Either one or zero. (boolean)
+ * - A checkbox.  Either one or zero. (boolean)
  *     array('check', 'nameInModSettingsAndSQL'),
  * - A selection box.  Used for the selection of something from a list.
  *     array('select', 'nameInModSettingsAndSQL', array('valueForSQL' => $txt['displayedValue'])),
@@ -46,15 +46,24 @@
  *     array('permissions', 'manage_groups'),
  * - A BBC selection box.
  *     array('bbc', 'sig_bbc'),
+ *  - A simple message.
+ *      array('message', 'a simple message'),
+ *  - A html5 input
+ *      array(one of 'url', 'search', 'date', 'email', 'color') will act like an input with type=xyz
  *
  * For each option:
  *  - type (see above), variable name, size/possible values.
  *    OR make type '' for an empty string for a horizontal rule.
  *  - SET preinput - to put some HTML prior to the input box.
  *  - SET postinput - to put some HTML following the input box.
+ *  - SET subtext - to put text under the description text.
  *  - SET invalid - to mark the data as invalid.
+ *  - SET disabled - to disable the field from entry
+ *  - SET helptext - add a (?) icon with help text (done automatically if var is in $helptxt)
+ *
  *  - PLUS you can override label and help parameters by forcing their keys in the array, for example:
  *    array('text', 'invalid label', 3, 'label' => 'Actual Label')
+ *  - force_div_id => 'xyz' to set a field input to a specific id, great for JS targeting
  */
 
 namespace ElkArte\SettingsForm;
@@ -77,8 +86,10 @@ class SettingsForm
 	/** @var string The constant representing the database adapter class. */
 	public const DB_ADAPTER = Db::class;
 
+	/** @var DbTable  */
 	public const DBTABLE_ADAPTER = DbTable::class;
 
+	/** @var File  */
 	public const FILE_ADAPTER = File::class;
 
 	/** @var Adapter */

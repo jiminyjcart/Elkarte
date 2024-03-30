@@ -47,7 +47,7 @@ use ParseError;
  *    ));
  *
  * Run the validation
- *    $validation->validate($data);
+ *    $validation->validate($data); <= will return false if there are errors
  * $data must be an array with keys matching the validation rule e.g. $data['username'], $data['email']
  *
  * Get the results
@@ -501,10 +501,18 @@ class DataValidator
 		foreach ($this->_validation_errors as $error)
 		{
 			// Field name substitution supplied?
-			$field = $this->_replacements[$error['field']] ?? $error['field'];
+			$field = $error['field'];
+			if (isset($this->_replacements[$field]))
+			{
+				$field = $this->_replacements[$field];
+			}
+			elseif (isset($txt[$field]))
+			{
+				$field = $txt[$field];
+			}
 
 			// Just want specific field errors returned?
-			if (!empty($keys) && is_array($keys) && !in_array($error['field'], $keys))
+			if (!empty($keys) && is_array($keys) && !in_array($error['field'], $keys, true))
 			{
 				continue;
 			}

@@ -170,6 +170,7 @@ class Post extends AbstractModule
 			$editorOptions['buttons'][] = [
 				'name' => 'save_draft',
 				'value' => $txt['draft_save'],
+				'type' => 'submit',
 				'options' => 'onclick="return confirm(' . JavaScriptEscape($txt['draft_save_note']) . ') && submitThisOnce(this);" accesskey="d"',
 			];
 
@@ -391,6 +392,11 @@ class Post extends AbstractModule
 		$req = HttpReq::instance();
 		$post_errors = ErrorContext::context('post', 1);
 		$topic = $req->getPost('topic', 'intval', 0);
+
+		// @todo handle topic=0 board <> 0 indicating a new topic, we need a new sub to load those drafts.
+		$board = $req->getPost('board', 'intval', 0);
+		if (empty($topic) && !empty($board))
+			return false;
 
 		// Validate the request
 		if (!empty($topic) && $this->getApi() !== false && !$post_errors->hasError('session_timeout'))

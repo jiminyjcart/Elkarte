@@ -23,6 +23,7 @@ use ElkArte\ext\Composer\Autoload\ClassLoader;
 use ElkArte\Helper\TokenHash;
 use ElkArte\Hooks;
 use ElkArte\MembersList;
+use ElkArte\Server;
 use ElkArte\Themes\ThemeLoader;
 use ElkArte\User;
 
@@ -163,7 +164,7 @@ class Bootstrap
 
 				// To early for constants or autoloader
 				require_once($boarddir . '/sources/ElkArte/Server.php');
-				$server = new \ElkArte\Server($_SERVER);
+				$server = new Server($_SERVER);
 
 				$version_running = str_replace('ElkArte ', '', FORUM_VERSION);
 				$location = $server->supportsSSL() ? 'https://' : 'http://';

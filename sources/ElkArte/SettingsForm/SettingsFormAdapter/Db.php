@@ -213,6 +213,7 @@ class Db extends Adapter
 		{
 			if (!is_numeric($k))
 			{
+				// Any on events like onchange, onclick, onfocus ....
 				if (strpos($k, 'on') === 0)
 				{
 					$this->context[$configVar[1]]['javascript'] .= ' ' . $k . '="' . $v . '"';
@@ -394,6 +395,10 @@ class Db extends Adapter
 					break;
 				case 'text':
 				case 'color':
+				case 'url':
+				case 'email':
+				case 'search':
+				case 'date':
 				case 'large_text':
 					// Text!
 					$setTypes[$var[1]] = 'string';

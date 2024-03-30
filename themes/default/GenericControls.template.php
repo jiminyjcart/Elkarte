@@ -122,6 +122,6 @@ function template_control_richedit_buttons($editor_id)
 	foreach ($editor_context['buttons'] as $button)
 	{
 		echo '
-		<input type="button" name="', $button['name'], '" value="', $button['value'], '" tabindex="', $context['tabindex']++, '" ', $button['options'], ' />';
+		<input type="', $button['type'] ?? 'button', '" name="', $button['name'], '" value="', $button['value'], '" tabindex="', $context['tabindex']++, '" ', $button['options'], ' />';
 	}
 }

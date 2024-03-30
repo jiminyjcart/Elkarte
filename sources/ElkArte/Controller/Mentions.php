@@ -149,11 +149,13 @@ class Mentions extends AbstractController
 			'timelast' => getTimeLastMention($this->user->id)
 		];
 
+		// Data to be supplied to FavIco via favicon-notify.js
 		if (!empty($modSettings['usernotif_favicon_enable']))
 		{
 			$context['json_data']['mentions'] = (int) $this->user->mentions;
 		}
 
+		// Data to be supplied to Push via desktop-notify.js
 		if (!empty($modSettings['usernotif_desktop_enable']))
 		{
 			$context['json_data']['desktop_notifications'] = [

@@ -481,7 +481,7 @@ function template_show_settings()
 	foreach ($context['config_vars'] as $config_var)
 	{
 		// Is it a title or a description?
-		if (is_array($config_var) && ($config_var['type'] == 'title' || $config_var['type'] == 'desc'))
+		if (is_array($config_var) && ($config_var['type'] === 'title' || $config_var['type'] === 'desc'))
 		{
 			// Not a list yet?
 			if ($is_open)
@@ -598,7 +598,7 @@ function template_show_settings()
 					<dd', (empty($config_var['force_div_id']) ? '' : ' id="' . $config_var['force_div_id'] . '_dd"'), '>',
 				$preinput;
 
-				// Show a check box.
+				// Show a checkbox.
 				if ($config_var['type'] === 'check')
 				{
 					echo '
@@ -626,11 +626,11 @@ function template_show_settings()
 					{
 						if (empty($config_var['multiple']))
 						{
-							$selected = $option[0] == $config_var['value'];
+							$selected = $option[0] === $config_var['value'];
 						}
 						else
 						{
-							$selected = in_array($option[0], $config_var['value']);
+							$selected = in_array($option[0], $config_var['value'], true);
 						}
 
 						echo '
@@ -643,8 +643,25 @@ function template_show_settings()
 				// Text area?
 				elseif ($config_var['type'] === 'large_text')
 				{
+					$rows = 4;
+					$cols = 30;
+
+					if (!empty($config_var['size']))
+					{
+						$rows = $config_var['size'];
+					}
+					elseif (!empty($config_var['rows']))
+					{
+						$rows = $config_var['rows'];
+					}
+
+					if (!empty($config_var['cols']))
+					{
+						$cols = $config_var['cols'];
+					}
+
 					echo '
-						<textarea rows="', (empty($config_var['size']) ? (!empty($config_var['rows']) ? $config_var['rows'] : 4) : ($config_var['size'])), '" cols="', (empty($config_var['cols']) ? 30 : $config_var['cols']), '" name="', $config_var['name'], '" id="', $config_var['name'], '">', $config_var['value'], '</textarea>';
+						<textarea rows="' . $rows . '" cols="' . $cols . '" name="' . $config_var['name'] . '" id="' . $config_var['name'] . '">' . $config_var['value'] . '</textarea>';
 				}
 				// Permission group?
 				elseif ($config_var['type'] === 'permissions')
@@ -684,23 +701,23 @@ function template_show_settings()
 					echo '
 						<div', empty($config_var['name']) ? '' : ' id="' . $config_var['name'] . '"', '>', $config_var['message'], '</div>';
 				}
-				// Color picker?
-				elseif ($config_var['type'] === 'color')
-				{
-					echo '
-						<input type="color"', $javascript, $disabled, ' name="', $config_var['name'], '" id="', $config_var['name'], '" value="', $config_var['value'], '"', $size, ' class="input_text" />';
-				}
 				// An integer?
 				elseif ($config_var['type'] === 'int')
 				{
 					echo '
 						<input type="number"', $javascript, $disabled, ' name="', $config_var['name'], '" id="', $config_var['name'], '" value="', $config_var['value'], '"', $size, 'step="', ($config_var['step'] ?? '1'), '" class="input_text" />';
 				}
-				// A Float
+				// A float
 				elseif ($config_var['type'] === 'float')
 				{
 					echo '
 						<input type="number"', $javascript, $disabled, ' name="', $config_var['name'], '" id="', $config_var['name'], '" value="', $config_var['value'], '"', $size, 'step="', ($config_var['step'] ?? '0.1'), '" class="input_text" />';
+				}
+				// A html5 input
+				elseif (in_array($config_var['type'], ['url', 'search', 'date', 'email', 'color']))
+				{
+					echo '
+						<input type="', $config_var['type'], '"', $javascript, $disabled, ' name="', $config_var['name'], '" id="', $config_var['name'], '" value="', $config_var['value'], '"', $size, ' class="input_text" />';
 				}
 				// Assume it must be a text box.
 				else

@@ -87,7 +87,7 @@ function calcCharLeft (init, event = {})
 		return;
 	}
 
-	init = typeof init !== 'undefined' ? init : false;
+	init = typeof init === 'undefined' ? false : init;
 
 	currentChars = currentSignature.replace(/\r/, '').length;
 
@@ -268,8 +268,8 @@ function changeSel (selected)
 		{
 			if (files[i].indexOf(cat.options[cat.selectedIndex].value) === 0)
 			{
-				let filename = files[i].substr(files[i].indexOf('/') + 1),
-					showFilename = filename.substr(0, filename.lastIndexOf('.'));
+				let filename = files[i].substring(files[i].indexOf('/') + 1),
+					showFilename = filename.substring(0, filename.lastIndexOf('.'));
 
 				showFilename = showFilename.replace(/[_]/g, ' ');
 
