@@ -10,7 +10,7 @@
  */
 
 /** global: $editor_data, elk_scripturl, elk_session_var, elk_session_id */
-/** global: poll_add, poll_remove, XMLHttpRequest */
+/** global: poll_add, poll_remove, XMLHttpRequest, form_name */
 
 /**
  * This file contains javascript associated with the posting and previewing
@@ -129,7 +129,7 @@ function previewNews ()
 }
 
 /**
- * Gets the form data for the selected fields so they can be posted via ajax
+ * Gets the form data for the selected fields, so they can be posted via ajax
  *
  * @param {string[]} textFields
  * @param {string[]} numericFields
@@ -138,7 +138,7 @@ function previewNews ()
  */
 function getFields (textFields, numericFields, checkboxFields, form_name)
 {
-	var fields = [],
+	let fields = [],
 		i = 0,
 		n = 0;
 
@@ -160,7 +160,7 @@ function getFields (textFields, numericFields, checkboxFields, form_name)
 		}
 	}
 
-	// All of the numeric fields
+	// All the numeric fields
 	for (i = 0, n = numericFields.length; i < n; i++)
 	{
 		if (numericFields[i] in document.forms[form_name])
@@ -171,7 +171,7 @@ function getFields (textFields, numericFields, checkboxFields, form_name)
 			}
 			else
 			{
-				for (var j = 0, num = document.forms[form_name][numericFields[i]].length; j < num; j++)
+				for (let j = 0, num = document.forms[form_name][numericFields[i]].length; j < num; j++)
 				{
 					fields[fields.length] = numericFields[i] + '=' + parseInt(document.forms[form_name].elements[numericFields[i]][j].value);
 				}
@@ -562,6 +562,30 @@ function loadDrafts ()
 	// Get the values from the form
 	formValues = getFields(textFields, numericFields, checkboxFields, form_name);
 	formValues[formValues.length] = 'load_drafts=1';
+
+	// New topic, what board are they trying to post in?
+	if (formValues.includes('topic=0'))
+	{
+		let url = document.forms[form_name].action,
+			params = url.split(';'),
+			board = null;
+
+		// really should just add a hidden input :P
+		for (let i = 0; i < params.length; i++)
+		{
+			let param = params[i].split('=');
+			if (param[0] === 'board')
+			{
+				board = param[1];
+				break;
+			}
+		}
+
+		if (board)
+		{
+			formValues[formValues.length] = 'board=' + board;
+		}
+	}
 
 	sendXMLDocument(elk_prepareScriptUrl(elk_scripturl) + 'action=post2;api=xml', formValues.join('&'), onDraftsReturned);
 }

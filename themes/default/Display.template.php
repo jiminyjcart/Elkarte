@@ -430,7 +430,7 @@ function template_quickreply_below()
 							</div>';
 
 		// Show the draft last saved on area
-		if (!empty($context['drafts_autosave']) && !empty($options['drafts_autosave_enabled']))
+		if (!empty($context['drafts_save']))
 		{
 			echo '
 							<div class="draftautosave">

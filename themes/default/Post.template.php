@@ -336,16 +336,6 @@ function template_post_page()
 						</div>';
 
 	// Create an area to show the draft last saved on text
-	if (empty($context['drafts_autosave']))
-	{
-		return;
-	}
-
-	if (empty($options['drafts_autosave_enabled']))
-	{
-		return;
-	}
-
 	echo '
 		<div class="draftautosave">
 			<span id="throbber" class="hide"><i class="icon i-oval"></i>&nbsp;</span>

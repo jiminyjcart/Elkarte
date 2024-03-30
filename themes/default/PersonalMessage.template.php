@@ -953,14 +953,11 @@ function template_send()
 				</div>';
 
 	// Show the draft last saved on area
-	if (!empty($context['drafts_autosave']) && !empty($options['drafts_autosave_enabled']))
-	{
-		echo '
-		 		<div class="draftautosave">
-					<span id="throbber" class="hide"><i class="icon i-oval"></i>&nbsp;</span>
-					<span id="draft_lastautosave"></span>
-				</div>';
-	}
+	echo '
+	        <div class="draftautosave">
+				<span id="throbber" class="hide"><i class="icon i-oval"></i>&nbsp;</span>
+				<span id="draft_lastautosave"></span>
+			</div>';
 
 	echo '
 				<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '" />
