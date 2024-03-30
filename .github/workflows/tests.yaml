@@ -41,7 +41,7 @@ jobs:
       - name: Checkout ElkArte
         uses: actions/checkout@v4
         with:
-          repository: Spuds/Elkarte
+          repository: elkarte/elkarte
           fetch-depth: 10
           ref: ${{ env.ELKARTE_BRANCH }}
           path: elkarte
@@ -77,6 +77,20 @@ jobs:
           WEBSERVER: 'nginx'
         run: .github/setup-elkarte.sh $DB $PHP_VERSION
         working-directory: ./elkarte
+
+      - name: Download Selenium
+        run: |
+          sudo mkdir -p /usr/share/selenium
+          wget -nv -O /usr/share/selenium/selenium-server-standalone.jar https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar
+          sudo chmod 777 /usr/share/selenium/selenium-server-standalone.jar
+
+      - name: Setup ChromeDriver
+        uses: nanasess/setup-chromedriver@v2
+
+      - name: Start ChromeDriver
+        run: |
+          export DISPLAY=:99.0
+          xvfb-run --server-args="-screen 0, 2560x1440x24" java -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver -jar /usr/share/selenium/selenium-server-standalone.jar > /tmp/selenium.log &
 
       - name: Run Unit Tests
         env:
