@@ -42,7 +42,7 @@ class SiteTooltip
 	create (elem)
 	{
 		// No need here
-		if (is_mobile || is_touch)
+		if (is_mobile === true || is_touch === true)
 		{
 			return null;
 		}
@@ -74,7 +74,6 @@ class SiteTooltip
 
 		let rect = event.target.getBoundingClientRect();
 		let tooltipHeight = tooltip.offsetHeight;
-		let viewportHeight = window.innerHeight;
 
 		let x = rect.left;
 		// Initially trying to position above the element

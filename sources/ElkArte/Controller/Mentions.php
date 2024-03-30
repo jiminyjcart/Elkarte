@@ -14,7 +14,6 @@
 namespace ElkArte\Controller;
 
 use ElkArte\AbstractController;
-use ElkArte\Errors\Errors;
 use ElkArte\EventManager;
 use ElkArte\Exceptions\Exception;
 use ElkArte\Helper\DataValidator;

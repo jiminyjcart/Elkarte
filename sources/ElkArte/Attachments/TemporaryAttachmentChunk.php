@@ -97,7 +97,7 @@ class TemporaryAttachmentChunk
 			return $this->errorAsyncFile($validationError, $uuid);
 		}
 
-		$local_file = $this->generateLocalFileName($uuid, $totalChunkCount, $chunkIndex);
+		$local_file = $this->generateLocalFileName($uuid, $chunkIndex);
 		$chunkWritingError = $this->writeChunkToFile($local_file);
 		if ($chunkWritingError !== true)
 		{
@@ -313,12 +313,11 @@ class TemporaryAttachmentChunk
 	 * Generate a local file name based on provided parameters.
 	 *
 	 * @param string $uuid The unique identifier.
-	 * @param int $totalChunkCount The total count of chunks.
 	 * @param int $chunkIndex The index of the current chunk.
 	 *
 	 * @return string The generated local file name.
 	 */
-	private function generateLocalFileName($uuid, $totalChunkCount, $chunkIndex): string
+	private function generateLocalFileName($uuid, $chunkIndex): string
 	{
 		$salt = basename($_FILES['attachment']['tmp_name'][0]);
 		$user_ident = $this->getUserIdentifier();

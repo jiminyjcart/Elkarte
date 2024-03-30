@@ -451,8 +451,7 @@ class Db extends Adapter
 		$codes = ParserWrapper::instance()->getCodes();
 		$bbcTags = $codes->getTags();
 
-		$check = $this->configValues[$var[1] . '_enabledTags'];
-		if (!isset($check))
+		if (!isset($this->configValues[$var[1] . '_enabledTags']))
 		{
 			$this->configValues[$var[1] . '_enabledTags'] = [];
 		}
