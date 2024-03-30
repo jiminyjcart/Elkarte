@@ -84,8 +84,8 @@ elk_AutoSuggest.prototype.init = function() {
 
 	// Set up all the event monitoring
 	this.oTextHandle.onkeydown = this.handleKey.bind(this);
-	this.oTextHandle.onkeyup = this.autoSuggestUpdate.bind(this);
-	this.oTextHandle.onchange = this.autoSuggestUpdate.bind(this);
+	this.oTextHandle.onkeyup = debounce((function () {this.autoSuggestUpdate();}).bind(this), 150);
+	this.oTextHandle.onchange = debounce((function () {this.autoSuggestUpdate();}).bind(this), 150);
 	this.oTextHandle.onblur = this.autoSuggestHide.bind(this);
 	this.oTextHandle.onfocus = this.autoSuggestUpdate.bind(this);
 
