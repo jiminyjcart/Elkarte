@@ -38,7 +38,7 @@ class Help extends AbstractController
 	/**
 	 * Default action handler: just help.
 	 *
-	 * @see \ElkArte\AbstractController::action_index()
+	 * @see AbstractController::action_index
 	 */
 	public function action_index()
 	{
@@ -107,7 +107,7 @@ class Help extends AbstractController
 		$helps = explode('+', $help_str);
 		$context['help_text'] = '';
 
-		// Find what to display: the string will be in $helptxt['help'] or in $txt['help]
+		// Find what to display: the string will be in $helptxt['help'] or in $txt['help']
 		foreach ($helps as $help)
 		{
 			if (isset($helptxt[$help]))
@@ -121,6 +121,8 @@ class Help extends AbstractController
 			// nothing :(
 			else
 			{
+				// Using the passed string, but convert <br /> back for formatting
+				$help = str_replace('&lt;br /&gt;', '<br />', $help);
 				$context['help_text'] .= $help;
 			}
 		}
