@@ -276,7 +276,7 @@ button::-moz-focus-inner, [type="button"]::-moz-focus-inner, [type="submit"]::-m
    users to see which button / submit is active.
    Focusing with a keyboard will show an assistive dashed black line on button type elements. */
 input[type="submit"]:focus-visible, button:focus-visible, .linkbutton:focus-visible {
-	outline: 2px dashed black;
+	outline: 2px dashed #222222;
 }
 
 /* Focusing with a mouse or touch will not change its indication. */
@@ -346,6 +346,11 @@ input[type="number"] {
 [type="number"]::-webkit-inner-spin-button,
 [type="number"]::-webkit-outer-spin-button {
 	height: auto;
+}
+
+/* Fill the input with the color swab */
+input[type="color"] {
+	padding: 0;
 }
 
 /* No borders around checkboxes or radio buttons, and middle aligned. */
@@ -5321,7 +5326,7 @@ div.labels {
 }
 
 /* -------------------------------------------------------
- *	$FORMS @todo
+ *	$FORMS
  * -------------------------------------------------------
  */
 
@@ -5946,8 +5951,8 @@ div.labels {
 	}
 
 	.board_icon {
-		width: 30px;
-		height: 30px;
+		width: 35px;
+		height: 35px;
 	}
 
 	.board_info .moderators, .childboards {
@@ -5956,9 +5961,10 @@ div.labels {
 
 	/* allow for a 2 line post subject */
 	.board_row .lastpost_link {
-		height: 2em;
-		max-height: 3.1em;
+		height: 48px;
+		max-height: 48px;
 		white-space: pre-wrap;
+		padding-top: 10px;
 	}
 
 	/* message listing */
@@ -6754,13 +6760,13 @@ div.labels {
 		grid-column-start: bicon;
 		grid-column-end: end;
 		grid-row-start: latest;
-		margin-top: 1em;
 		border-top: 1px solid;
 	}
 
 	.category_boards .board_icon {
 		grid-column: bicon;
 		grid-row-start: primary;
+		height: 48px;
 	}
 
 	.board_description {
