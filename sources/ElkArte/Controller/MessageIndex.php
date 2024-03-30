@@ -467,6 +467,12 @@ class MessageIndex extends AbstractController implements FrontpageInterface
 
 		// Trigger a post load event with quick access to normal buttons
 		$this->_events->trigger('post_load', ['callbacks' => &$context['normal_buttons']]);
+
+		if (!empty($modSettings['message_index_preview']))
+		{
+			loadJavascriptFile('elk_toolTips.js', ['defer' => true]);
+			$context['message_index_preview'] = true;
+		}
 	}
 
 	/**

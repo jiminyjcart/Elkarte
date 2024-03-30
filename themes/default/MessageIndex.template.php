@@ -423,52 +423,66 @@ function template_topic_listing_below()
 	if (!empty($context['using_relative_time']))
 	{
 		echo '
-				$(\'.topic_latest\').addClass(\'relative\');';
+			document.querySelectorAll(".topic_latest").forEach(element => element.classList.add("relative"));';
 	}
 
 	if (!empty($context['can_quick_mod']) && !empty($options['display_quick_mod']) && !empty($context['topics']) && $context['can_move'])
 	{
 		echo '
-				aJumpTo[aJumpTo.length] = new JumpTo({
-					sContainerId: "quick_mod_jump_to",
-					sJumpToTemplate: "%dropdown_list%",
-					iCurBoardId: ', $context['current_board'], ',
-					iCurBoardChildLevel: ', $context['jump_to']['child_level'], ',
-					sCurBoardName: "', $context['jump_to']['board_name'], '",
-					sBoardChildLevelIndicator: "&#8195;",
-					sBoardPrefix: "&#10148;",
-					sCatPrefix: "",
-					sCatClass: "jump_to_header",
-					sClassName: "qaction",
-					bNoRedirect: true,
-					sCustomName: "move_to",
-					bOnLoad: true
-				});';
+			aJumpTo[aJumpTo.length] = new JumpTo({
+				sContainerId: "quick_mod_jump_to",
+				sJumpToTemplate: "%dropdown_list%",
+				iCurBoardId: ', $context['current_board'], ',
+				iCurBoardChildLevel: ', $context['jump_to']['child_level'], ',
+				sCurBoardName: "', $context['jump_to']['board_name'], '",
+				sBoardChildLevelIndicator: "&#8195;",
+				sBoardPrefix: "&#10148;",
+				sCatPrefix: "",
+				sCatClass: "jump_to_header",
+				sClassName: "qaction",
+				bNoRedirect: true,
+				sCustomName: "move_to",
+				bOnLoad: true
+			});';
 	}
 
 	echo '
-				aJumpTo[aJumpTo.length] = new JumpTo({
-					sContainerId: "message_index_jump_to",
-					sJumpToTemplate: "<label class=\"smalltext\" for=\"%select_id%\">', $context['jump_to']['label'], ':<" + "/label> %dropdown_list%",
-					iCurBoardId: ', $context['current_board'], ',
-					iCurBoardChildLevel: ', $context['jump_to']['child_level'], ',
-					sCurBoardName: "', $context['jump_to']['board_name'], '",
-					sBoardChildLevelIndicator: "&#8195;",
-					sBoardPrefix: "&#10148;",
-					sCatPrefix: "",
-					sCatClass: "jump_to_header",
-					bOnLoad: true,
-					sGoButtonLabel: "', $txt['quick_mod_go'], '"
-				});
-			</script>
+			aJumpTo[aJumpTo.length] = new JumpTo({
+				sContainerId: "message_index_jump_to",
+				sJumpToTemplate: "<label class=\"smalltext\" for=\"%select_id%\">', $context['jump_to']['label'], ':<" + "/label> %dropdown_list%",
+				iCurBoardId: ', $context['current_board'], ',
+				iCurBoardChildLevel: ', $context['jump_to']['child_level'], ',
+				sCurBoardName: "', $context['jump_to']['board_name'], '",
+				sBoardChildLevelIndicator: "&#8195;",
+				sBoardPrefix: "&#10148;",
+				sCatPrefix: "",
+				sCatClass: "jump_to_header",
+				bOnLoad: true,
+				sGoButtonLabel: "', $txt['quick_mod_go'], '"
+			});
+		</script>
 	</footer>';
 
 	// Javascript for inline editing, double-clicking to edit subject
-	echo '
-	<script>
+	theme()->addInlineJavascript('
 		let oQuickModifyTopic = new QuickModifyTopic({
 			aHidePrefixes: Array("pages", "newicon"),
 			bMouseOnDiv: false
-		});
-	</script>';
+		});', true
+	);
+
+	// Message preview when enabled
+	if (!empty($context['message_index_preview']))
+	{
+		theme()->addInlineJavascript('
+		if ((!is_mobile && !is_touch) || use_click_menu) {
+			isFunctionLoaded("SiteTooltip").then((available) => {
+				if (available) {
+					let tooltip = new SiteTooltip();
+					tooltip.create(".preview");
+				}
+			});
+		};', true
+		);
+	}
 }

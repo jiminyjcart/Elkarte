@@ -51,16 +51,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		window.scrollBy({top: heightDiff, behavior: 'smooth'});
 	});
 
-	// Tooltips
-	if ((!is_mobile && !is_touch) || use_click_menu)
-	{
-		if (typeof SiteTooltip === 'function')
-		{
-			let tooltip = new SiteTooltip();
-			tooltip.create('.preview');
-		}
-	}
-
 	// Find all nested linked images and turn off the border
 	let elements = document.querySelectorAll('a.bbc_link img.bbc_img');
 	for (let i = 0; i < elements.length; i++)
