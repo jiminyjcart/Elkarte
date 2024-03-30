@@ -85,9 +85,12 @@ QuickModifyTopic.prototype.onDocReceived_modify_topic = function(XMLDoc) {
 	// Hide the tooltip text, don't want them for this element during the edit
 	if (typeof SiteTooltip === 'function')
 	{
-		this.oSavetipElem = this.oCurSubjectDiv.nextSibling;
-		this.sSavetip = this.oSavetipElem.innerHTML;
-		this.oSavetipElem.innerHTML = '';
+		this.oSavetipElem = this.oCurSubjectDiv.parentElement;
+		if (this.oSavetipElem)
+		{
+			this.sSavetip = this.oSavetipElem.dataset.title;
+			this.oSavetipElem.dataset.title = '';
+		}
 	}
 
 	// Here we hide any other things they want hidden on edit.
@@ -105,9 +108,9 @@ QuickModifyTopic.prototype.modify_topic_cancel = function() {
 	this.bInEditMode = false;
 
 	// Put back the hover text
-	if (this.oSavetipElem !== false)
+	if (this.oSavetipElem)
 	{
-		this.oSavetipElem.innerHTML = this.sSavetip;
+		this.oSavetipElem.dataset.title = this.sSavetip;
 	}
 
 	return false;
@@ -179,12 +182,9 @@ QuickModifyTopic.prototype.modify_topic_done = function(XMLDoc) {
 	this.bInEditMode = false;
 
 	// Redo tooltips if they are on since we just pulled the rug out on this one
-	if (typeof SiteTooltip === 'function')
+	if (this.oSavetipElem)
 	{
-		this.oSavetipElem.innerHTML = this.sSavetip;
-
-		let tooltip = new SiteTooltip();
-		tooltip.create('.preview');
+		this.oSavetipElem.dataset.title = this.sSavetip;
 	}
 
 	return false;
@@ -673,13 +673,17 @@ QuickModify.prototype.onModifyDone = function(XMLDoc) {
 		}
 
 		// Hello, Sweetie
-		document.getElementById(this.sCurMessageId).querySelector('.spoilerheader').addEventListener('click', function() {
-			let content = this.nextElementSibling.children;
-			for (let i = 0; i < content.length; i++)
-			{
-				content[i].slideToggle(150);
-			}
-		});
+		let spoilerHeader = document.getElementById(this.sCurMessageId).querySelector('.spoilerheader');
+		if (spoilerHeader)
+		{
+			spoilerHeader.addEventListener('click', function() {
+				let content = this.nextElementSibling.children;
+				for (let i = 0; i < content.length; i++)
+				{
+					content[i].slideToggle(150);
+				}
+			});
+		}
 
 		// Re-Fix quote blocks
 		if (typeof elk_quotefix === 'function')
