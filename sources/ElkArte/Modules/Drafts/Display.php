@@ -23,7 +23,7 @@ use ElkArte\Modules\AbstractModule;
 /**
  * Class \ElkArte\Modules\Drafts\Display
  *
- * Enables draft functions for teh Display.controller page (quick reply)
+ * Enables draft functions for the Display.controller page (quick reply)
  */
 class Display extends AbstractModule
 {

@@ -1034,7 +1034,7 @@ class Post extends AbstractController
 				isAllowedTo('post_new');
 			}
 
-			// Trigger teh save new topic event
+			// Trigger the save new topic event
 			$this->_events->trigger('save_new_topic', array('becomesApproved' => &$becomesApproved));
 
 			if (isset($_POST['lock']))
