@@ -5,7 +5,7 @@
  *
  * @version 2.0 dev
  *
- * This bits acts as middle-man between the notify (above) and the ElkNotifications
+ * This bits acts as middle-man between Push and the ElkNotifications
  * providing the interface required by the latter.
  */
 
@@ -15,14 +15,14 @@
 		opt = (opt) ? opt : {};
 
 		const send = function(request) {
-			if (request.desktop_notifications.new_from_last > 0)
+			if (request.desktop_notifications && request.desktop_notifications.new_from_last > 0)
 			{
 				if (hasPermissions(request))
 				{
 					Push.create(request.desktop_notifications.title, {
 						body: request.desktop_notifications.message,
 						icon: opt.icon,
-						link: request.desktop_notifications.link, // Used by mobile devices
+						link: request.desktop_notifications.link,
 						onClick: function() {
 							window.focus();
 							this.close();

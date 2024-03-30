@@ -434,15 +434,14 @@ function submitonce (theform)
 function submitThisOnce (oControl, bReadOnly)
 {
 	// oControl might also be a form.
-	var oForm = 'form' in oControl ? oControl.form : oControl,
+	let oForm = 'form' in oControl ? oControl.form : oControl,
 		aTextareas = oForm.getElementsByTagName('textarea');
 
-	bReadOnly = typeof bReadOnly == 'undefined' ? true : bReadOnly;
+	bReadOnly = bReadOnly === 'undefined' ? true : bReadOnly;
 	for (let i = 0, n = aTextareas.length; i < n; i++)
 	{
 		aTextareas[i].readOnly = bReadOnly;
 	}
-
 	// If in a second the form is not gone, there may be a problem somewhere
 	// (e.g. HTML5 required attribute), so release the textarea
 	window.setTimeout(function() {
