@@ -462,7 +462,7 @@ class ManageFeatures extends AbstractController
 			pwaPreview("pwa_small_icon");
 			pwaPreview("pwa_large_icon");
 			pwaPreview("favicon_icon");
-			pwaPreview("apple_touch_icon");', ['defer' => true]);
+			pwaPreview("apple_touch_icon");', true);
 
 		$settingsForm->prepare();
 	}
