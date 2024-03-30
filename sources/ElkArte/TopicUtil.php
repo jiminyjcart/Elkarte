@@ -149,7 +149,7 @@ class TopicUtil
 						'name' => $row['first_display_name'],
 						'id' => $row['first_id_member'],
 						'href' => empty($row['first_id_member']) ? '' : $first_poster_href,
-						'link' => empty($row['first_id_member']) ? $row['first_display_name'] : '<a href="' . $first_poster_href . '" title="' . $txt['profile_of'] . ' ' . $row['first_display_name'] . '" class="preview">' . $row['first_display_name'] . '</a>'
+						'link' => empty($row['first_id_member']) ? $row['first_display_name'] : '<a href="' . $first_poster_href . '" title="' . $txt['profile_of'] . ' ' . $row['first_display_name'] . '">' . $row['first_display_name'] . '</a>'
 					),
 					'time' => standardTime($row['first_poster_time']),
 					'html_time' => htmlTime($row['first_poster_time']),
@@ -168,7 +168,7 @@ class TopicUtil
 						'name' => $row['last_display_name'],
 						'id' => $row['last_id_member'],
 						'href' => empty($row['last_id_member']) ? '' : $last_poster_href,
-						'link' => empty($row['last_id_member']) ? $row['last_display_name'] : '<a href="' . $last_poster_href . '">' . $row['last_display_name'] . '</a>'
+						'link' => empty($row['last_id_member']) ? $row['last_display_name'] : '<a href="' . $last_poster_href . '" title="' . $txt['profile_of'] . ' ' . $row['last_display_name'] . '">' . $row['last_display_name'] . '</a>'
 					),
 					'time' => standardTime($row['last_poster_time']),
 					'html_time' => htmlTime($row['last_poster_time']),
