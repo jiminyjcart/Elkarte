@@ -323,7 +323,7 @@ class TemporaryAttachmentChunk
 		$salt = basename($_FILES['attachment']['tmp_name'][0]);
 		$user_ident = $this->getUserIdentifier();
 
-		return 'post_tmp_async_' . $user_ident . '_' . $uuid . ($totalChunkCount > 1 ? '_part_' . $chunkIndex : '') . '_' . $salt . '.dat';
+		return 'post_tmp_async_' . $user_ident . '_' . $uuid . '_part_' . $chunkIndex . '_' . $salt . '.dat';
 	}
 
 	/**
