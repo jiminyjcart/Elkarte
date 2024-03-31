@@ -1814,7 +1814,6 @@ class InstallInstructions_install_2_0
 				array('name' => 'birthdate', 'type' => 'date', 'default' => '0001-01-01'),
 				array('name' => 'website_title', 'type' => 'varchar', 'size' => 255, 'default' => ''),
 				array('name' => 'website_url', 'type' => 'varchar', 'size' => 255, 'default' => ''),
-				array('name' => 'hide_email', 'type' => 'tinyint', 'size' => 4, 'default' => 0),
 				array('name' => 'show_online', 'type' => 'tinyint', 'size' => 4, 'default' => 1),
 				array('name' => 'time_format', 'type' => 'varchar', 'size' => 80, 'default' => ''),
 				array('name' => 'signature', 'type' => 'text'),

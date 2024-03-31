@@ -20,6 +20,7 @@ use ElkArte\AbstractController;
 use ElkArte\Action;
 use ElkArte\Exceptions\Exception;
 use ElkArte\Languages\Txt;
+use ElkArte\Member;
 use ElkArte\MembersList;
 
 /**
@@ -30,7 +31,7 @@ class ProfileHistory extends AbstractController
 	/** @var int Member id for the history being viewed */
 	private $_memID = 0;
 
-	/** @var \ElkArte\Member The \ElkArte\Member object is stored here to avoid some global */
+	/** @var Member The \ElkArte\Member object is stored here to avoid some global */
 	private $_profile;
 
 	/**
@@ -483,26 +484,26 @@ class ProfileHistory extends AbstractController
 		if ($context['single_ip'])
 		{
 			$context['whois_servers'] = [
-				'afrinic' => [
-					'name' => $txt['whois_afrinic'],
-					'url' => 'http://www.afrinic.net/whois?searchtext=' . $context['ip'],
-				],
 				'apnic' => [
 					'name' => $txt['whois_apnic'],
-					'url' => 'http://wq.apnic.net/apnic-bin/whois.pl?searchtext=' . $context['ip'],
+					'url' => 'https://wq.apnic.net/apnic-bin/whois.pl?searchtext=' . $context['ip'],
 				],
 				'arin' => [
 					'name' => $txt['whois_arin'],
-					'url' => 'http://whois.arin.net/rest/ip/' . $context['ip'],
+					'url' => 'https://whois.arin.net/rest/ip/' . $context['ip'],
 				],
 				'lacnic' => [
 					'name' => $txt['whois_lacnic'],
-					'url' => 'http://lacnic.net/cgi-bin/lacnic/whois?query=' . $context['ip'],
+					'url' => 'https://query.milacnic.lacnic.net/search?id=' . $context['ip'],
 				],
 				'ripe' => [
 					'name' => $txt['whois_ripe'],
-					'url' => 'https://apps.db.ripe.net/search/query.html?searchtext=' . $context['ip'],
+					'url' => 'https://apps.db.ripe.net/db-web-ui/query?searchtext=' . $context['ip'],
 				],
+				'iplocation' => [
+					'name' => $txt['whois_iplocation'],
+					'url' => 'https://www.iplocation.net/?query=' . $context['ip'],
+				]
 			];
 
 			// Let integration add whois servers easily

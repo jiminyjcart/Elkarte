@@ -333,6 +333,7 @@ $txt['whois_apnic'] = 'APNIC (Asia Pacific region)';
 $txt['whois_arin'] = 'ARIN (North America, a portion of the Caribbean and sub-Saharan Africa)';
 $txt['whois_lacnic'] = 'LACNIC (Latin American and Caribbean region)';
 $txt['whois_ripe'] = 'RIPE (Europe, the Middle East and parts of Africa and Asia)';
+$txt['whois_iplocation'] = 'IPLOCATION (Worldwide)';
 
 $txt['moderator_why_missing'] = 'why isn\'t moderator here?';
 $txt['username_change'] = 'change';
