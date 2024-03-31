@@ -421,8 +421,8 @@ class News extends AbstractController
 				$data[] = array(
 					'title' => cdata_parse($row['subject']),
 					'link' => $scripturl . '?topic=' . $row['id_topic'] . '.0',
-					'description' => cdata_parse(strtr(un_htmlspecialchars($row['body']), '&', '&#x26;')),
-					'author' => in_array(showEmailAddress(!empty($row['hide_email']), $row['id_member']), array('yes', 'yes_permission_override')) ? $row['poster_email'] . ' (' . un_htmlspecialchars($row['poster_name']) . ')' : '<![CDATA[none@noreply.net (' . un_htmlspecialchars($row['poster_name']) . ')]]>',
+					'description' => cdata_parse(str_replace('&', '&#x26;', un_htmlspecialchars($row['body']))),
+					'author' => showEmailAddress($row['id_member']) ? $row['poster_email'] . ' (' . un_htmlspecialchars($row['poster_name']) . ')' : '<![CDATA[none@noreply.net (' . un_htmlspecialchars($row['poster_name']) . ')]]>',
 					'comments' => $scripturl . '?action=post;topic=' . $row['id_topic'] . '.0',
 					'category' => '<![CDATA[' . $row['bname'] . ']]>',
 					'pubDate' => gmdate('D, d M Y H:i:s \G\M\T', $row['poster_time']),
@@ -455,7 +455,7 @@ class News extends AbstractController
 					'category' => $row['bname'],
 					'author' => array(
 						'name' => $row['poster_name'],
-						'email' => in_array(showEmailAddress(!empty($row['hide_email']), $row['id_member']), array('yes', 'yes_permission_override')) ? $row['poster_email'] : null,
+						'email' => showEmailAddress($row['id_member']) ? $row['poster_email'] : null,
 						'uri' => empty($row['id_member']) ? '' : $scripturl . '?action=profile;u=' . $row['id_member'],
 					),
 					'published' => Util::gmstrftime('%Y-%m-%dT%H:%M:%SZ', $row['poster_time']),
@@ -530,7 +530,7 @@ class News extends AbstractController
 					'title' => $row['subject'],
 					'link' => $scripturl . '?topic=' . $row['id_topic'] . '.msg' . $row['id_msg'] . '#msg' . $row['id_msg'],
 					'description' => cdata_parse(strtr(un_htmlspecialchars($row['body']), '&', '&#x26;')),
-					'author' => in_array(showEmailAddress(!empty($row['hide_email']), $row['id_member']), array('yes', 'yes_permission_override')) ? $row['poster_email'] . ' (' . un_htmlspecialchars($row['poster_name']) . ')' : '<![CDATA[none@noreply.net (' . un_htmlspecialchars($row['poster_name']) . ')]]>',
+					'author' => showEmailAddress($row['id_member']) ? $row['poster_email'] . ' (' . un_htmlspecialchars($row['poster_name']) . ')' : '<![CDATA[none@noreply.net (' . un_htmlspecialchars($row['poster_name']) . ')]]>',
 					'category' => cdata_parse($row['bname']),
 					'comments' => $scripturl . '?action=post;topic=' . $row['id_topic'] . '.0',
 					'pubDate' => gmdate('D, d M Y H:i:s \G\M\T', $row['poster_time']),
@@ -561,7 +561,7 @@ class News extends AbstractController
 					'category' => $row['bname'],
 					'author' => array(
 						'name' => $row['poster_name'],
-						'email' => in_array(showEmailAddress(!empty($row['hide_email']), $row['id_member']), array('yes', 'yes_permission_override')) ? $row['poster_email'] : null,
+						'email' => showEmailAddress($row['id_member']) ? $row['poster_email'] : null,
 						'uri' => empty($row['id_member']) ? '' : $scripturl . '?action=profile;u=' . $row['id_member']
 					),
 					'published' => Util::gmstrftime('%Y-%m-%dT%H:%M:%SZ', $row['poster_time']),
@@ -671,7 +671,7 @@ class News extends AbstractController
 				'summary' => cdata_parse($member['group'] ?? $member['post_group']),
 				'author' => array(
 					'name' => $member['real_name'],
-					'email' => in_array(showEmailAddress(!empty($member['hide_email']), $member['id']), array('yes', 'yes_permission_override')) ? $member['email'] : null,
+					'email' => showEmailAddress($member['id']) ? $member['email'] : null,
 					'uri' => empty($member['website']) ? '' : $member['website']['url']
 				),
 				'published' => Util::gmstrftime('%Y-%m-%dT%H:%M:%SZ', $member->date_registered),
@@ -736,7 +736,7 @@ class News extends AbstractController
 				);
 			}
 
-			if (in_array($member['show_email'], array('yes', 'yes_permission_override')))
+			if ($member['show_email'])
 			{
 				$data['email'] = $member['email'];
 			}

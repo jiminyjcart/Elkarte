@@ -72,7 +72,7 @@ class ModerationCenterTest extends ElkArteCommonSetupTest
 	/**
 	 * Show a reported post listing
 	 *
-	 * Test testActionReporttm in EmailUserTest.php made a report, we depend on that
+	 * Test testActionReporttm in EmailModeratorTest.php made a report, we depend on that
 	 * being run first.  That order dependency should be defined in the XML at some point
 	 */
 	public function testActionReportedPosts()

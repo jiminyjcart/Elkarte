@@ -15,7 +15,7 @@
 /**
  * The report sub-template needs some error stuff
  */
-function template_Emailuser_init()
+function template_Emailmoderator_init()
 {
 	global $context, $txt;
 
@@ -53,109 +53,6 @@ function template_Emailuser_init()
 }
 
 /**
- * Send an email to a user!
- */
-function template_custom_email()
-{
-	global $context, $txt, $scripturl;
-
-	template_show_error('sendemail_error');
-
-	echo '
-	<div id="send_topic">
-		<form action="', $scripturl, '?action=emailuser;sa=email" method="post" accept-charset="UTF-8">
-			<h2 class="category_header hdicon i-envelope">
-				', $context['page_title'], '
-			</h2>
-			<div class="content">
-				<dl class="settings send_mail">
-					<dt>
-						<strong>', $txt['sendtopic_receiver_name'], ':</strong>
-					</dt>
-					<dd>
-						', $context['recipient']['link'], '
-					</dd>';
-
-	// Can the user see the persons email?
-	if ($context['can_view_recipient_email'])
-	{
-		echo '
-					<dt>
-						<strong>', $txt['sendtopic_receiver_email'], ':</strong>
-					</dt>
-					<dd>
-						', $context['recipient']['email_link'], '
-					</dd>
-				</dl>
-				<hr />
-				<dl class="settings send_mail">';
-	}
-
-	// If it's a guest we need their details.
-	if ($context['user']['is_guest'])
-	{
-		echo '
-					<dt>
-						<label for="y_name">', $txt['sendtopic_sender_name'], ':</label>
-					</dt>
-					<dd>
-						<input type="text" id="y_name" name="y_name" size="24" maxlength="40" value="', $context['user']['name'], '" class="input_text" />
-					</dd>
-					<dt>
-						<label for="y_email">', $txt['sendtopic_sender_email'], ':</label><br />
-						<span class="smalltext">', $txt['send_email_disclosed'], '</span>
-					</dt>
-					<dd>
-						<input type="text" id="y_mail" name="y_email" size="24" maxlength="50" value="', $context['user']['email'], '" class="input_text" />
-					</dt>';
-	}
-	// Otherwise show the user that we know their email.
-	else
-	{
-		echo '
-					<dt>
-						<strong>', $txt['sendtopic_sender_email'], ':</strong><br />
-						<span class="smalltext">', $txt['send_email_disclosed'], '</span>
-					</dt>
-					<dd>
-						<em>', $context['user']['email'], '</em>
-					</dd>';
-	}
-
-	echo '
-					<dt>
-						<label for="email_subject">', $txt['send_email_subject'], ':</label>
-					</dt>
-					<dd>
-						<input type="text" id="email_subject" name="email_subject" size="50" maxlength="100" class="input_text" />
-					</dd>
-					<dt>
-						<label for="email_body">', $txt['message'], ':</label>
-					</dt>
-					<dd>
-						<textarea id="email_body" name="email_body" rows="10" cols="20"></textarea>
-					</dd>
-				</dl>
-				<hr />
-				<div class="submitbutton">
-					<input type="submit" name="send" value="', $txt['sendtopic_send'], '" />';
-
-
-	foreach ($context['form_hidden_vars'] as $key => $value)
-	{
-		echo '
-					<input type="hidden" name="', $key, '" value="', $value, '" />';
-	}
-
-	echo '
-					<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '" />
-				</div>
-			</div>
-		</form>
-	</div>';
-}
-
-/**
  * The report sub template gets shown from:
  *  '?action=reporttm;topic=##.##;msg=##'
  * It should submit to:
@@ -163,7 +60,7 @@ function template_custom_email()
  *
  * It only needs to send the following fields:
  *  comment: an additional comment to give the moderator.
- *  sc: the session id, or $context['session_id'].
+ *  sessionDI: $context['session_id'].
  */
 function template_report()
 {

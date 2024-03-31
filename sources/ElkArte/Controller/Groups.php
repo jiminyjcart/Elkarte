@@ -398,14 +398,14 @@ class Groups extends AbstractController
 		// Sort out the sorting!
 		$sort_methods = array(
 			'name' => 'real_name',
-			'email' => allowedTo('moderate_forum') ? 'email_address' : 'hide_email ' . (isset($this->_req->query->desc) ? 'DESC' : 'ASC') . ', email_address',
+			'email' => allowedTo('moderate_forum') ? 'email_address' : ' ' . (isset($this->_req->query->desc) ? 'DESC' : 'ASC') . ', email_address',
 			'active' => 'last_login',
 			'registered' => 'date_registered',
 			'posts' => 'posts',
 		);
 
 		// They didn't pick one, or tried a wrong one, so default to by name..
-		if (!isset($this->_req->query->sort) || !isset($sort_methods[$this->_req->query->sort]))
+		if (!isset($this->_req->query->sort, $sort_methods[$this->_req->query->sort]))
 		{
 			$context['sort_by'] = 'name';
 			$querySort = 'real_name' . (isset($this->_req->query->desc) ? ' DESC' : ' ASC');
@@ -451,7 +451,7 @@ class Groups extends AbstractController
 				'id' => $row['id_member'],
 				'name' => '<a href="' . getUrl('profile', ['action' => 'profile', 'u' => $row['id_member'], 'name' => $row['real_name']]) . '">' . $row['real_name'] . '</a>',
 				'email' => $row['email_address'],
-				'show_email' => showEmailAddress(!empty($row['hide_email']), $row['id_member']),
+				'show_email' => showEmailAddress($row['id_member']),
 				'ip' => '<a href="' . getUrl('action', ['action' => 'trackip', 'searchip' => $row['member_ip']]) . '">' . $row['member_ip'] . '</a>',
 				'registered' => standardTime($row['date_registered']),
 				'last_online' => $last_online,
@@ -462,7 +462,7 @@ class Groups extends AbstractController
 
 		if (!empty($context['group']['assignable']))
 		{
-			loadJavascriptFile('suggest.js', array('defer' => true));
+			loadJavascriptFile('suggest.js', ['defer' => true]);
 		}
 
 		// Select the template.

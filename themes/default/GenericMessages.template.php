@@ -197,7 +197,7 @@ function template_build_poster_div($message, $ignoring = false)
 			if ($context['can_send_email'])
 			{
 				$poster_div .= '
-									<li>' . template_msg_email($message['id'], $message['member']) . '</li>';
+									<li>' . template_member_email($message['member']) . '</li>';
 			}
 
 			$poster_div .= '
@@ -222,7 +222,7 @@ function template_build_poster_div($message, $ignoring = false)
 	elseif (!empty($message['member']['email']) && $context['can_send_email'])
 	{
 		$poster_div .= '
-							<li class="listlevel2 email">' . template_msg_email($message['id']) . '</li>';
+							<li class="listlevel2 email">' . template_member_email($message['member']) . '</li>';
 	}
 
 	// Stuff for the staff to wallop them with.

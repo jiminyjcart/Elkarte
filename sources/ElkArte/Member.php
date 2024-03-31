@@ -147,7 +147,7 @@ class Member extends ValuesContainer
 		$this->data['href'] = getUrl('profile', ['action' => 'profile', 'u' => $this->data['id_member'], 'name' => $this->data['real_name']]);
 		$this->data['link'] = '<a href="' . $this->data['href'] . '" title="' . $txt['profile_of'] . ' ' . trim($this->data['real_name']) . '">' . $this->data['real_name'] . '</a>';
 		$this->data['email'] = $this->data['email_address'];
-		$this->data['show_email'] = showEmailAddress(!empty($this->data['hide_email']), $this->data['id_member']);
+		$this->data['show_email'] = showEmailAddress($this->data['id_member']);
 		if (empty($this->data['date_registered']))
 		{
 			$this->data['registered_raw'] = 0;

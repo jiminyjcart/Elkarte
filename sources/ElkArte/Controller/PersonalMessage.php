@@ -2561,7 +2561,7 @@ class PersonalMessage extends AbstractController
 					$member['group'] = $txt['guest_title'];
 					$member['link'] = $row['from_name'];
 					$member['email'] = '';
-					$member['show_email'] = showEmailAddress(true, 0);
+					$member['show_email'] = showEmailAddress(0);
 					$member['is_guest'] = true;
 				}
 

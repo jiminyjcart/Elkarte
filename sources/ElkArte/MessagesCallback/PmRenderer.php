@@ -94,7 +94,7 @@ class PmRenderer extends Renderer
 
 		$member_context['show_profile_buttons'] = (!empty($member_context['can_view_profile'])
 			|| (!empty($member_context['website']['url']) && !isset($context['disabled_fields']['website']))
-			|| (in_array($member_context['show_email'], ['yes', 'yes_permission_override', 'no_through_forum']))
+			|| $member_context['show_email']
 			|| $context['can_send_pm']);
 	}
 

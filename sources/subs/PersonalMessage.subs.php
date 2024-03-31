@@ -1018,7 +1018,7 @@ function query_sender_wrapper($from)
 	// The signature and email visibility details
 	$request = $db->query('', '
 		SELECT
-			hide_email, email_address, signature
+			email_address, signature
 		FROM {db_prefix}members
 		WHERE id_member  = {int:uid}
 			AND is_activated = {int:act}

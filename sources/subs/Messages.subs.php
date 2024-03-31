@@ -813,7 +813,7 @@ function mailFromMessage($id_msg)
 
 	$request = $db->query('', '
 		SELECT 
-			COALESCE(mem.email_address, m.poster_email) AS email_address, COALESCE(mem.real_name, m.poster_name) AS real_name, COALESCE(mem.id_member, 0) AS id_member, hide_email
+			COALESCE(mem.email_address, m.poster_email) AS email_address, COALESCE(mem.real_name, m.poster_name) AS real_name, COALESCE(mem.id_member, 0) AS id_member
 		FROM {db_prefix}messages AS m
 			LEFT JOIN {db_prefix}members AS mem ON (mem.id_member = m.id_member)
 		WHERE m.id_msg = {int:id_msg}',

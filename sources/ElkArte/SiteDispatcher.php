@@ -21,7 +21,7 @@ use ElkArte\Controller\Attachment;
 use ElkArte\Controller\Auth;
 use ElkArte\Controller\BoardIndex;
 use ElkArte\Controller\Display;
-use ElkArte\Controller\Emailuser;
+use ElkArte\Controller\Emailmoderator;
 use ElkArte\Controller\Help;
 use ElkArte\Controller\Members;
 use ElkArte\Controller\MergeTopics;
@@ -118,7 +118,7 @@ class SiteDispatcher
 		'quickmod' => [MessageIndex::class, 'action_quickmod'],
 		'quickmod2' => [Display::class, 'action_quickmod2'],
 		'removetopic2' => [RemoveTopic::class, 'action_removetopic2'],
-		'reporttm' => [Emailuser::class, 'action_reporttm'],
+		'reporttm' => [Emailmoderator::class, 'action_reporttm'],
 		'restoretopic' => [RemoveTopic::class, 'action_restoretopic'],
 		'splittopics' => [SplitTopics::class, 'action_splittopics'],
 		'trackip' => [ProfileHistory::class, 'action_trackip'],

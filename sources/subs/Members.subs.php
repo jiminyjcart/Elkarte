@@ -714,7 +714,7 @@ function registerMember(&$regOptions, $ErrorContext = 'register')
 	// Right, now let's prepare for insertion.
 	$knownInts = array(
 		'date_registered', 'posts', 'id_group', 'last_login', 'personal_messages', 'unread_messages', 'notifications',
-		'new_pm', 'pm_prefs', 'hide_email', 'show_online', 'pm_email_notify', 'karma_good', 'karma_bad',
+		'new_pm', 'pm_prefs', 'show_online', 'pm_email_notify', 'karma_good', 'karma_bad',
 		'notify_announcements', 'notify_send_body', 'notify_regularity', 'notify_types',
 		'id_theme', 'is_activated', 'id_msg_last_visit', 'id_post_group', 'total_time_logged_in', 'warning',
 	);
@@ -1589,7 +1589,7 @@ function membersBy($query, $query_params, $details = false, $only_active = true)
 	$db->fetchQuery('
 		SELECT
 		 	id_member' . ($details ? ', member_name, real_name, email_address, member_ip, date_registered, last_login,
-			hide_email, posts, is_activated, real_name' : '') . '
+			posts, is_activated, real_name' : '') . '
 		FROM {db_prefix}members
 		WHERE ' . $query_where . (!empty($query_params['order']) ? '
 		ORDER BY {raw:order}' : '') . (isset($query_params['start']) ? '
@@ -1600,12 +1600,13 @@ function membersBy($query, $query_params, $details = false, $only_active = true)
 			// Return all the details for each member found
 			if ($details)
 			{
+				$row['id_member'] = (int) $row['id_member'];
 				$members[$row['id_member']] = $row;
 			}
 			// Or just a int[] of found member id's
 			else
 			{
-				$members[] = $row['id_member'];
+				$members[] = (int) $row['id_member'];
 			}
 		}
 	);
@@ -1856,7 +1857,7 @@ function getBasicMemberData($member_ids, $options = array())
 	// Get some additional member info...
 	$db->fetchQuery('
 		SELECT 
-			id_member, member_name, real_name, email_address, hide_email, posts, id_theme' . (!empty($options['moderation']) ? ',
+			id_member, member_name, real_name, email_address, posts, id_theme' . (!empty($options['moderation']) ? ',
 			member_ip, id_group, additional_groups, last_login, id_post_group' : '') . (!empty($options['authentication']) ? ',
 		secret_answer, secret_question, is_activated, validation_code, passwd_flood, password_salt' : '') . (!empty($options['preferences']) ? ',
 			lngfile, mod_prefs, notify_types, signature' : '') . '
@@ -2704,7 +2705,7 @@ function updateMemberData($members, $data)
 	// Everything is assumed to be a string unless it's in the below.
 	$knownInts = array(
 		'date_registered', 'posts', 'id_group', 'last_login', 'personal_messages', 'unread_messages', 'mentions',
-		'new_pm', 'pm_prefs', 'hide_email', 'show_online', 'pm_email_notify', 'receive_from', 'karma_good', 'karma_bad',
+		'new_pm', 'pm_prefs', 'show_online', 'pm_email_notify', 'receive_from', 'karma_good', 'karma_bad',
 		'notify_announcements', 'notify_send_body', 'notify_regularity', 'notify_types',
 		'id_theme', 'is_activated', 'id_msg_last_visit', 'id_post_group', 'total_time_logged_in', 'warning', 'likes_given',
 		'likes_received', 'enable_otp', 'otp_used'
@@ -2724,7 +2725,6 @@ function updateMemberData($members, $data)
 			'birthdate',
 			'website_title',
 			'website_url',
-			'hide_email',
 			'time_format',
 			'time_offset',
 			'avatar',

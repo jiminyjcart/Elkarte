@@ -36,13 +36,19 @@ class Memberlist extends AbstractController
 	{
 		global $context, $txt;
 
+		$context['can_send_email'] = allowedTo('send_email_to_members') && showEmailAddress(0);
+
 		// These are all the possible fields.
 		$this->_search_fields = array(
 			'name' => $txt['mlist_search_name'],
-			'email' => $txt['mlist_search_email'],
 			'website' => $txt['mlist_search_website'],
 			'group' => $txt['mlist_search_group'],
 		);
+
+		if ($context['can_send_email'])
+		{
+			$this->_search_fields['email'] = $txt['mlist_search_email'];
+		}
 
 		// Are there custom fields they can search?
 		require_once(SUBSDIR . '/Memberlist.subs.php');
@@ -127,8 +133,8 @@ class Memberlist extends AbstractController
 				'label' => $txt['email'],
 				'class' => 'email',
 				'sort' => array(
-					'down' => allowedTo('moderate_forum') ? 'mem.email_address DESC' : 'mem.hide_email DESC, mem.email_address DESC',
-					'up' => allowedTo('moderate_forum') ? 'mem.email_address ASC' : 'mem.hide_email ASC, mem.email_address ASC'
+					'down' => allowedTo('moderate_forum') ? 'mem.email_address DESC' : '',
+					'up' => allowedTo('moderate_forum') ? 'mem.email_address ASC' : ''
 				),
 			),
 			'website_url' => array(
@@ -193,7 +199,6 @@ class Memberlist extends AbstractController
 		);
 
 		$context['can_send_pm'] = allowedTo('pm_send');
-		$context['can_send_email'] = allowedTo('send_email_to_members');
 
 		// Build the memberlist button array.
 		if ($context['in_search'])
@@ -215,21 +220,23 @@ class Memberlist extends AbstractController
 		$context['search_fields'] = $this->_search_fields;
 
 		// What do we search for by default?
-		$context['search_defaults'] = array('name', 'email');
+		$context['search_defaults'] = [
+			'name',
+			$context['can_send_email'] ? 'email' : ''
+		];
 
 		// Allow mods to add additional buttons here
 		call_integration_hook('integrate_memberlist_buttons');
 
-		if (!allowedTo('send_email_to_members'))
+		// Drop columns they do not have permissions to see/search
+		if (!$context['can_send_email'] )
 		{
 			unset($context['columns']['email_address']);
 		}
-
 		if (isset($context['disabled_fields']['website']))
 		{
 			unset($context['columns']['website']);
 		}
-
 		if (isset($context['disabled_fields']['posts']))
 		{
 			unset($context['columns']['posts']);
@@ -455,7 +462,7 @@ class Memberlist extends AbstractController
 			$context['search_defaults'] = array();
 			foreach ($input_fields as $val)
 			{
-				if (in_array($val, $fields_key))
+				if (in_array($val, $fields_key, true))
 				{
 					$context['search_defaults'] = $input_fields;
 				}
@@ -466,11 +473,14 @@ class Memberlist extends AbstractController
 			// No fields?  Use default...
 			if (empty($input_fields))
 			{
-				$input_fields = array('name');
+				$input_fields = [
+					'name',
+					$context['can_send_email'] ? 'email' : ''
+				];
 			}
 
 			// Set defaults for how the results are sorted
-			if (!isset($sort) || !isset($context['columns'][$sort]))
+			if (!isset($sort, $context['columns'][$sort]))
 			{
 				$sort = 'real_name';
 			}
@@ -533,7 +543,7 @@ class Memberlist extends AbstractController
 			// Search for an email address?
 			if (in_array('email', $input_fields))
 			{
-				$fields += array(2 => allowedTo('moderate_forum') ? 'email_address' : '(hide_email = 0 AND email_address');
+				$fields += [2 => $context['can_send_email']  ? 'email_address' : ''];
 				$condition = allowedTo('moderate_forum') ? '' : ')';
 			}
 			else
@@ -543,9 +553,9 @@ class Memberlist extends AbstractController
 
 			foreach ($fields as $key => $field)
 			{
-				if ($key === 2 && strpos($field, '(hide_email') === 0)
+				if ($key === 9)
 				{
-					$fields[$key] = '(hide_email = 0 AND {column_case_insensitive:email_address}';
+					$fields[$key] = 'COALESCE({column_case_insensitive:group_name}, {string:blank_string})';
 					continue;
 				}
 

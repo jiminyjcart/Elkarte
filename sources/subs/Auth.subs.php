@@ -390,16 +390,12 @@ function findMembers($names, $use_wildcards = false, $buddies_only = false, $max
 	$results = array();
 
 	// This ensures you can't search someones email address if you can't see it.
-	$email_condition = allowedTo('moderate_forum') ? '' : 'hide_email = 0 AND ';
+	$email_condition = allowedTo('moderate_forum') ? '' : '1=0 AND ';
 
 	if ($use_wildcards || $maybe_email)
 	{
 		$email_condition = '
 			OR (' . $email_condition . 'email_address ' . $comparison . ' ' . implode(') OR (' . $email_condition . ' email_address ' . $comparison . ' ', $names) . ')';
-	}
-	else
-	{
-		$email_condition = '';
 	}
 
 	// Get the case of the columns right - but only if we need to as things like MySQL will go slow needlessly otherwise.
@@ -409,7 +405,7 @@ function findMembers($names, $use_wildcards = false, $buddies_only = false, $max
 	// Search by username, display name, and email address.
 	$db->fetchQuery('
 		SELECT 
-			id_member, member_name, real_name, email_address, hide_email
+			id_member, member_name, real_name, email_address
 		FROM {db_prefix}members
 		WHERE ({raw:member_name_search}
 			OR {raw:real_name_search} {raw:email_condition})
@@ -427,10 +423,10 @@ function findMembers($names, $use_wildcards = false, $buddies_only = false, $max
 	)->fetch_callback(
 		function ($row) use (&$results, $scripturl) {
 			$results[$row['id_member']] = array(
-				'id' => $row['id_member'],
+				'id' => (int) $row['id_member'],
 				'name' => $row['real_name'],
 				'username' => $row['member_name'],
-				'email' => in_array(showEmailAddress(!empty($row['hide_email']), $row['id_member']), array('yes', 'yes_permission_override')) ? $row['email_address'] : '',
+				'email' => showEmailAddress($row['id_member']) ? $row['email_address'] : '',
 				'href' => $scripturl . '?action=profile;u=' . $row['id_member'],
 				'link' => '<a href="' . $scripturl . '?action=profile;u=' . $row['id_member'] . '">' . $row['real_name'] . '</a>'
 			);

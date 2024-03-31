@@ -1416,48 +1416,28 @@ function boardsAllowedTo($permissions, $check_access = true, $simple = true)
  * What it does:
  *
  * Possible outcomes are:
- * - 'yes': show the full email address
- * - 'yes_permission_override': show the full email address, either you
- * are a moderator or it's your own email address.
- * - 'no_through_forum': don't show the email address, but do allow
- * things to be mailed using the built-in forum mailer.
- * - 'no': keep the email address hidden.
+ *  If it's your own profile yes.
+ *  If you're a moderator with sufficient permissions: yes.
+ *  Otherwise: no
  *
- * @param bool $userProfile_hideEmail
  * @param int $userProfile_id
  *
- * @return string (yes, yes_permission_override, no_through_forum, no)
+ * @return bool
  */
-function showEmailAddress($userProfile_hideEmail, $userProfile_id)
+function showEmailAddress($userProfile_id)
 {
 	// Should this user's email address be shown?
-	// If you're guest: no.
-	// If the user is post-banned: no.
-	// If it's your own profile, and you've not set your address hidden: yes_permission_override.
-	// If you're a moderator with sufficient permissions: yes_permission_override.
-	// If the user has set their profile to do not email me: no.
-	// Otherwise: no_through_forum. (don't show it but allow emailing the member)
-	if (User::$info->is_guest || isset($_SESSION['ban']['cannot_post']))
+	if ((User::$info->is_guest === false && User::$info->id === (int) $userProfile_id))
 	{
-		return 'no';
-	}
-
-	if ((User::$info->is_guest === false && User::$info->id == $userProfile_id && !$userProfile_hideEmail))
-	{
-		return 'yes_permission_override';
+		return true;
 	}
 
 	if (allowedTo('moderate_forum'))
 	{
-		return 'yes_permission_override';
+		return true;
 	}
 
-	if ($userProfile_hideEmail)
-	{
-		return 'no';
-	}
-
-	return 'no_through_forum';
+	return false;
 }
 
 /**

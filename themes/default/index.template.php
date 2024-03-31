@@ -834,62 +834,27 @@ function template_member_online($member, $link = true)
  */
 function template_member_email($member, $text = false)
 {
-	global $context, $txt, $scripturl;
+	global $context, $txt;
 
 	if ($context['can_send_email'])
 	{
 		if ($text)
 		{
-			if ($member['show_email'] === 'no_through_forum')
+			if ($member !== false && $member['show_email'])
 			{
-				return '<a class="linkbutton" href="' . $scripturl . '?action=emailuser;sa=email;uid=' . $member['id'] . '">' . $txt['email'] . '</a>';
-			}
-
-			if ($member['show_email'] === 'yes_permission_override' || $member['show_email'] === 'yes')
-			{
-				return '<a class="linkbutton" href="' . $scripturl . '?action=emailuser;sa=email;uid=' . $member['id'] . '">' . $member['email'] . '</a>';
+				return '<a class="linkbutton" href="mailto:' . $member['email'] . '" rel="nofollow">' . $txt['email'] . '</a>';
 			}
 
 			return $txt['hidden'];
 		}
 
-		if ($member['show_email'] !== 'no')
+		if ($member !== false && $member['show_email'])
 		{
-			return '<a href="' . $scripturl . '?action=emailuser;sa=email;uid=' . $member['id'] . '" class="icon i-envelope-o' . ($member['online']['is_online'] ? '' : '-blank') . '" title="' . $txt['email'] . ' ' . $member['name'] . '"><s>' . $txt['email'] . ' ' . $member['name'] . '</s></a>';
+			return '<a href="mailto:' . $member['email'] . '" rel="nofollow" class="icon i-envelope-o' . ($member['online']['is_online'] ? '' : '-blank') . '" title="' . $txt['email'] . ' ' . $member['name'] . '"><s>' . $txt['email'] . ' ' . $member['name'] . '</s></a>';
 		}
 
 		return '<i class="icon i-envelope-o" title="' . $txt['email'] . ' ' . $txt['hidden'] . '"><s>' . $txt['email'] . ' ' . $txt['hidden'] . '</s></i>';
 	}
 
 	return '';
-}
-
-/**
- * Sometimes we only get a message id.
- *
- * @param      $id
- * @param bool|mixed[] $member
- *
- * @return string
- */
-function template_msg_email($id, $member = false)
-{
-	global $context, $txt, $scripturl;
-
-	if (!$context['can_send_email'])
-	{
-		return '';
-	}
-
-	if ($member === false || $member['show_email'] !== 'no')
-	{
-		if (empty($member['id']))
-		{
-			return '<a href="' . $scripturl . '?action=emailuser;sa=email;msg=' . $id . '" class="icon i-envelope-o' . (($member !== false && $member['online']['is_online']) ? '' : '-blank') . '" title="' . $txt['email'] . '"><s>' . $txt['email'] . '</s></a>';
-		}
-
-		return '<a href="' . $scripturl . '?action=emailuser;sa=email;uid=' . $member['id'] . '" class="icon i-envelope-o' . (($member !== false && $member['online']['is_online']) ? '' : '-blank') . '" title="' . $txt['email'] . '"><s>' . $txt['email'] . '</s></a>';
-	}
-
-	return '<i class="icon i-envelope-o" title="' . $txt['email'] . ' ' . $txt['hidden'] . '"><s>' . $txt['email'] . ' ' . $txt['hidden'] . '</s></i>';
 }

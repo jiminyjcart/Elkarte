@@ -384,17 +384,6 @@ class ProfileFields
 					return $isValid;
 				},
 			],
-			'hide_email' => [
-				'type' => 'check',
-				'value' => empty($cur_profile['hide_email']),
-				'label' => $txt['allow_user_email'],
-				'permission' => 'profile_identity',
-				'input_validate' => static function (&$value) {
-					$value = (int) $value === 0 ? 1 : 0;
-
-					return true;
-				},
-			],
 			// Selecting group membership is a complicated one, so we treat it separate!
 			'id_group' => [
 				'type' => 'callback',
