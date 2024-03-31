@@ -746,4 +746,24 @@ class UpgradeInstructions_upgrade_2_0
 			)
 		);
 	}
+
+	public function preparing_hideemail_title()
+	{
+		return 'Removing hide email option (always on now)...';
+	}
+
+	public function preparing_hideemail()
+	{
+		return array(
+			array(
+				'debug_title' => 'Dropping column hide_email...',
+				'function' => function () {
+					if ($this->table->column_exists('{db_prefix}members', 'hide_email') !== false)
+					{
+						$this->table->remove_column('{db_prefix}members', 'hide_email');
+					}
+				}
+			)
+		);
+	}
 }
