@@ -251,7 +251,7 @@ class Register extends AbstractController
 		// Trigger the prepare_context event
 		$this->_events->trigger('prepare_context', array('current_step' => $current_step));
 
-		// See whether we have some pre filled values.
+		// See whether we have some pre-filled values.
 		$context['username'] = $this->_req->getPost('user', '\\ElkArte\\Helper\\Util::htmlspecialchars', '');
 		$context['email'] = $this->_req->getPost('email', '\\ElkArte\\Helper\\Util::htmlspecialchars', '');
 		$context['notify_announcements'] = (int) !empty($this->_req->post->notify_announcements);
@@ -421,9 +421,6 @@ class Register extends AbstractController
 		{
 			$this->_req->post->birthdate = sprintf('%04d-%02d-%02d', empty($this->_req->post->bday3) ? 0 : (int) $this->_req->post->bday3, (int) $this->_req->post->bday1, (int) $this->_req->post->bday2);
 		}
-
-		// By default, assume email is hidden, only show it if we tell it to.
-		$this->_req->post->hide_email = empty($this->_req->post->allow_email) ? 1 : 0;
 
 		// Validate the passed language file.
 		if (isset($this->_req->post->lngfile) && !empty($modSettings['userLanguage']))
@@ -660,8 +657,7 @@ class Register extends AbstractController
 		);
 
 		$possible_bools = array(
-			'notify_announcements', 'notify_regularity', 'notify_send_body',
-			'hide_email', 'show_online',
+			'notify_announcements', 'notify_regularity', 'notify_send_body', 'show_online',
 		);
 
 		if ($has_real_name && trim($this->_req->post->real_name) !== '' && !isReservedName($this->_req->post->real_name) && Util::strlen($this->_req->post->real_name) < 60)

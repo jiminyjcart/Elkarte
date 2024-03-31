@@ -708,7 +708,7 @@ legend::before, .i-caret-down::before {
 }
 
 .i-warning-mute::before, .i-post_moderation_deny::before, .i-fail::before,
-.i-alert::before, .i-warn::before, .i-exclamation::before,
+.i-alert::before, .i-exclamation::before,
 .i-dot-red::before,
 .i-mark_unread::before {
 	filter: invert(30%) sepia(65%) saturate(2235%) hue-rotate(342deg) brightness(102%) contrast(91%);

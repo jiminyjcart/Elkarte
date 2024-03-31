@@ -65,7 +65,7 @@ class DisplayRenderer extends Renderer
 		$this_member['ip'] = $this->_this_message['poster_ip'] ?? '';
 		$this_member['show_profile_buttons'] = (!empty($this_member['can_view_profile'])
 			|| (!empty($this_member['website']['url']) && !isset($context['disabled_fields']['website']))
-			|| (in_array($this_member['show_email'], ['yes', 'yes_permission_override', 'no_through_forum']))
+			|| $this_member['show_email']
 			|| $context['can_send_pm']);
 
 		$context['id_msg'] = $this->_this_message['id_msg'] ?? '';

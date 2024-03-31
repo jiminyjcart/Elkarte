@@ -400,7 +400,7 @@ class ProfileOptions extends AbstractController
 				'fields' => [
 					'member_name', 'real_name', 'date_registered', 'posts', 'lngfile', 'hr',
 					'id_group', 'hr',
-					'email_address', 'hide_email', 'show_online', 'hr',
+					'email_address', 'show_online', 'hr',
 					'passwrd1', 'passwrd2', 'hr',
 					'secret_question', 'secret_answer',
 				],
@@ -410,7 +410,7 @@ class ProfileOptions extends AbstractController
 				'fields' => [
 					'member_name', 'real_name', 'date_registered', 'posts', 'lngfile', 'hr',
 					'id_group', 'hr',
-					'email_address', 'hide_email', 'show_online', 'hr',
+					'email_address', 'show_online', 'hr',
 					'passwrd1', 'passwrd2', 'hr',
 					'secret_question', 'secret_answer', 'hr',
 					'enable_otp', 'otp_secret', 'hr'

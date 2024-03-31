@@ -5253,7 +5253,7 @@ div.labels {
 
 #mlsearch_options .mlsearch_option input[type="checkbox"] {
 	float: right;
-	margin: 0 0 0 0.5em;
+	margin: 0.5em 0 0 0.5em;
 }
 
 #mlsearch_options .mlsearch_option {
@@ -5323,6 +5323,10 @@ div.labels {
 /* The admin logon form */
 #admin_login {
 	padding: .8em;
+}
+
+.invalid_input, .check_input {
+	border: 2px solid;
 }
 
 /* -------------------------------------------------------

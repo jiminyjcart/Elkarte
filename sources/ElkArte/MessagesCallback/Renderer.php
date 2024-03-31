@@ -207,7 +207,7 @@ abstract class Renderer
 		$member_context['group'] = $txt['guest_title'];
 		$member_context['link'] = $this->_this_message[$this->_idx_mapper->name];
 		$member_context['email'] = $this->_this_message['poster_email'] ?? '';
-		$member_context['show_email'] = showEmailAddress(true, 0);
+		$member_context['show_email'] = showEmailAddress(0);
 		$member_context['is_guest'] = true;
 	}
 

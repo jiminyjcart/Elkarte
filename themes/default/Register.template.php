@@ -17,17 +17,20 @@ function template_mailcheck_javascript()
 	global $txt;
 
 	theme()->addInlineJavascript('disableAutoComplete();
-	$("input[type=email]").on("blur", function(event) {
-		$(this).mailcheck({
-			suggested: function(element, suggestion) {
-					$("#suggestion").html("' . $txt['register_did_you'] . ' <b><i>" + suggestion.full + "</b></i>");
-					element.addClass("check_input");
-			},
-			empty: function(element) {
-				$("#suggestion").html("");
-				element.removeClass("check_input");
-			}
-		});
+	document.querySelectorAll("input[type=email]").forEach(function(input) {
+	
+	    input.addEventListener("blur", function(event) {
+	        $(this).mailcheck({
+	            suggested: function(input, suggestion) {
+	                document.getElementById("suggestion").innerHTML = "<i class=\"icon i-warn\"></i>' . $txt['register_did_you'] . ' <b><i>" + suggestion.full + "</b></i>";
+	                input[0].classList.add("check_input");
+	            },
+	            empty: function() {
+	                document.getElementById("suggestion").innerHTML = "";
+	                input[0].classList.remove("check_input");
+	            }
+	        });
+	    });
 	});', true);
 }
 
@@ -174,7 +177,6 @@ function template_registration_form()
 		<form action="', getUrl('atcion', ['action' => 'register', 'sa' => 'register2']), '" method="post" accept-charset="UTF-8" name="registration" id="registration" onsubmit="return verifyAgree();">
 			<h2 class="category_header">', $txt['registration_form'], '</h2>
 			<input type="text" name="reason_for_joining_hp" class="hide" autocomplete="off" />
-			<input type="hidden" name="allow_email" value="0" />
 			<div class="content">
 				<div class="form_container">
 					<div class="form_field w_icon">

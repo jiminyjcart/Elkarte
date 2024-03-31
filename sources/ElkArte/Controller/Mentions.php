@@ -36,7 +36,7 @@ class Mentions extends AbstractController
 	/** @var string The url of the display mentions button (all, unread, etc) */
 	protected $_url_param = '';
 
-	/** @var int Used for pagenation, keeps track of the current start point */
+	/** @var int Used for pagination, keeps track of the current start point */
 	protected $_page = 0;
 
 	/** @var int Number of items per page */

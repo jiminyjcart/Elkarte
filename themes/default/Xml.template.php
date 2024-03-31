@@ -113,7 +113,7 @@ function template_post()
 		<subject><![CDATA[', $context['preview_subject'], ']]></subject>
 		<body><![CDATA[', $context['preview_message'], ']]></body>
 	</preview>
-	<errors serious="', empty($context['errors']['type']) || $context['errors']['type'] != 'serious' ? '0' : '1', '" topic_locked="', $context['locked'] ? '1' : '0', '">';
+	<errors serious="', empty($context['errors']['type']) || $context['errors']['type'] !== 'serious' ? '0' : '1', '" topic_locked="', $context['locked'] ? '1' : '0', '">';
 
 	if (!empty($context['post_error']['errors']))
 	{
@@ -468,7 +468,7 @@ function template_generic_xml_recursive($xml_data, $parent_ident, $child_ident, 
 
 /**
  * Formats data retrieved in other functions into xml format.
- * Additionally formats data based on the specific format passed.
+ * Additionally, formats data based on the specific format passed.
  * This function is recursively called to handle sub arrays of data.
  *
  * @param mixed[] $data the array to output as xml data
