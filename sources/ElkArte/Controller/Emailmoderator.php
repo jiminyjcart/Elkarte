@@ -1,8 +1,7 @@
 <?php
 
 /**
- * The functions in this file deal with sending topics to a friend or reports to
- * a moderator.
+ * The functions in this file deal with sending random complaints to a moderator.
  *
  * @package   ElkArte Forum
  * @copyright ElkArte Forum contributors
@@ -28,7 +27,7 @@ use ElkArte\VerificationControls\VerificationControlsIntegrate;
 /**
  * Allows for sending topics via email
  */
-class Emailuser extends AbstractController
+class Emailmoderator extends AbstractController
 {
 	/**
 	 * This function initializes or sets up the necessary, for the other actions
@@ -41,7 +40,7 @@ class Emailuser extends AbstractController
 		$context['robot_no_index'] = true;
 
 		// Load the template.
-		theme()->getTemplates()->load('Emailuser');
+		theme()->getTemplates()->load('Emailmoderator');
 	}
 
 	/**
@@ -51,183 +50,8 @@ class Emailuser extends AbstractController
 	 */
 	public function action_index()
 	{
-		// just accept we haz a default action: action_sendtopic()
-		$this->action_email();
-	}
-
-	/**
-	 * Allow a user to send an email.
-	 *
-	 * - Send email to the user - allow the sender to write the message.
-	 * - Can either be passed a user ID as uid or a message id as msg.
-	 * - Does not check permissions for a message ID as there is no information disclosed.
-	 * - accessed by ?action=emailuser;sa=email from the message list, profile view or message view
-	 */
-	public function action_email()
-	{
-		global $context, $txt;
-
-		// Can the user even see this information?
-		if ($this->user->is_guest)
-		{
-			throw new Exception('no_access', false);
-		}
-
-		isAllowedTo('send_email_to_members');
-
-		// Are we sending to a user?
-		$context['form_hidden_vars'] = [];
-		$uid = '';
-		$mid = '';
-		if (isset($this->_req->post->uid) || isset($this->_req->query->uid))
-		{
-			require_once(SUBSDIR . '/Members.subs.php');
-
-			// Get the latest activated member's display name.
-			$uid = $this->_req->getPost('uid', 'intval', isset($this->_req->query->uid) ? (int) $this->_req->query->uid : 0);
-			$row = getBasicMemberData($uid);
-
-			$context['form_hidden_vars']['uid'] = $uid;
-		}
-		elseif (isset($this->_req->post->msg) || isset($this->_req->query->msg))
-		{
-			require_once(SUBSDIR . '/Messages.subs.php');
-			$mid = $this->_req->getPost('msg', 'intval', isset($this->_req->query->msg) ? (int) $this->_req->query->msg : 0);
-			$row = mailFromMessage($mid);
-
-			$context['form_hidden_vars']['msg'] = $mid;
-		}
-
-		// Are you sure you got the address or any data?
-		if (empty($row['email_address']) || empty($row))
-		{
-			throw new Exception('cant_find_user_email');
-		}
-
-		// Can they actually do this?
-		$context['show_email_address'] = showEmailAddress(!empty($row['hide_email']), $row['id_member']);
-		if ($context['show_email_address'] === 'no')
-		{
-			throw new Exception('no_access', false);
-		}
-
-		// Does the user want to be contacted at all by you?
-		require_once(SUBSDIR . '/Members.subs.php');
-		if (!canContact($row['id_member']))
-		{
-			throw new Exception('no_access', false);
-		}
-
-		// Setup the context!
-		$context['recipient'] = [
-			'id' => $row['id_member'],
-			'name' => $row['real_name'],
-			'email' => $row['email_address'],
-			'email_link' => ($context['show_email_address'] === 'yes_permission_override' ? '<em>' : '') . '<a href="mailto:' . $row['email_address'] . '">' . $row['email_address'] . '</a>' . ($context['show_email_address'] === 'yes_permission_override' ? '</em>' : ''),
-			'link' => $row['id_member'] ? '<a href="' . getUrl('profile', ['action' => 'profile', 'u' => $row['id_member'], 'name' => $row['real_name']]) . '">' . $row['real_name'] . '</a>' : $row['real_name'],
-		];
-
-		// Can we see this person's email address?
-		$context['can_view_recipient_email'] = $context['show_email_address'] === 'yes' || $context['show_email_address'] === 'yes_permission_override';
-
-		// Template
-		$context['sub_template'] = 'custom_email';
-		$context['page_title'] = $txt['send_email'];
-
-		// Are we actually sending it?
-		if (isset($this->_req->post->send, $this->_req->post->email_body))
-		{
-			checkSession();
-
-			// Don't let them send too many!
-			spamProtection('sendmail');
-
-			require_once(SUBSDIR . '/Mail.subs.php');
-
-			// We will need to do some data checking
-			$validator = new DataValidator();
-			$validator->sanitation_rules([
-				'y_name' => 'trim',
-				'email_body' => 'trim',
-				'email_subject' => 'trim'
-			]);
-			$validator->validation_rules([
-				'y_name' => 'required|notequal[_]',
-				'y_email' => 'required|valid_email',
-				'email_body' => 'required',
-				'email_subject' => 'required'
-			]);
-			$validator->text_replacements([
-				'y_name' => $txt['sendtopic_sender_name'],
-				'y_email' => $txt['sendtopic_sender_email'],
-				'email_body' => $txt['message'],
-				'email_subject' => $txt['send_email_subject']
-			]);
-			$validator->validate($this->_req->post);
-
-			// If it's a guest sort out their names.
-			if ($this->user->is_guest)
-			{
-				$errors = $validator->validation_errors(['y_name', 'y_email']);
-				if ($errors)
-				{
-					$context['sendemail_error'] = [
-						'errors' => $errors,
-						'type' => 'minor',
-						'title' => $txt['validation_failure'],
-					];
-
-					return;
-				}
-
-				$from_name = $validator->y_name;
-				$from_email = $validator->y_email;
-			}
-			else
-			{
-				$from_name = $this->user->name;
-				$from_email = $this->user->email;
-			}
-
-			// Check we have a body (etc).
-			$errors = $validator->validation_errors(['email_body', 'email_subject']);
-			if (!empty($errors))
-			{
-				$context['sendemail_error'] = [
-					'errors' => $errors,
-					'type' => 'minor',
-					'title' => $txt['validation_failure'],
-				];
-
-				return;
-			}
-
-			// We use a template in case they want to customise!
-			$replacements = [
-				'EMAILSUBJECT' => $validator->email_subject,
-				'EMAILBODY' => $validator->email_body,
-				'SENDERNAME' => $from_name,
-				'RECPNAME' => $context['recipient']['name'],
-			];
-
-			// Get the template and get out!
-			$emaildata = loadEmailTemplate('send_email', $replacements);
-			sendmail($context['recipient']['email'], $emaildata['subject'], $emaildata['body'], $from_email, null, false, 1, null, true);
-
-			// Now work out where to go!
-			if (!empty($uid))
-			{
-				redirectexit('action=profile;u=' . $uid);
-			}
-			elseif (!empty($mid))
-			{
-				redirectexit('msg=' . $mid);
-			}
-			else
-			{
-				redirectexit();
-			}
-		}
+		// just accept we haz a default action: action_reporttm()
+		$this->action_reporttm();
 	}
 
 	/**
@@ -301,7 +125,7 @@ class Emailuser extends AbstractController
 		$context['message_id'] = $message_id;
 		$context['page_title'] = $txt['report_to_mod'];
 		$context['sub_template'] = 'report';
-		theme()->getTemplates()->load('Emailuser');
+		theme()->getTemplates()->load('Emailmoderator');
 	}
 
 	/**

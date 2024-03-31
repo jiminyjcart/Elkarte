@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TestCase class for the EmailUser Controller
+ * TestCase class for the EmailModerator Controller
  *
  * WARNING. These tests work directly with the local database. Don't run
  * them local if you need to keep your data untouched!
@@ -16,7 +16,7 @@ use ElkArte\Languages\Loader;
 use ElkArte\User;
 use tests\ElkArteCommonSetupTest;
 
-class EmailUserTest extends ElkArteCommonSetupTest
+class EmailModeratorTest extends ElkArteCommonSetupTest
 {
 	protected $backupGlobalsExcludeList = ['user_info'];
 
@@ -61,7 +61,7 @@ class EmailUserTest extends ElkArteCommonSetupTest
 		$req->post->email = 'complainer@nowhere.tld';
 
 		// Get the controller
-		$controller = new Emailuser(new EventManager());
+		$controller = new Emailmoderator(new EventManager());
 		$controller->setUser(User::$info);
 		$controller->pre_dispatch();
 		$controller->action_reporttm();
