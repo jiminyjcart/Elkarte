@@ -272,7 +272,7 @@ class ElkTestingSetup
 			{db_prefix}members',
 			[
 				'member_name' => 'string-25', 'real_name' => 'string-25', 'passwd' => 'string', 'email_address' => 'string',
-				'id_group' => 'int', 'posts' => 'int', 'date_registered' => 'int', 'hide_email' => 'int',
+				'id_group' => 'int', 'posts' => 'int', 'date_registered' => 'int',
 				'password_salt' => 'string', 'lngfile' => 'string', 'avatar' => 'string',
 				'member_ip' => 'string', 'member_ip2' => 'string', 'buddy_list' => 'string', 'pm_ignore_list' => 'string',
 				'message_labels' => 'string', 'website_title' => 'string', 'website_url' => 'string',
@@ -281,7 +281,7 @@ class ElkTestingSetup
 			],
 			[
 				'test_admin', 'test_admin', $passwd, 'email@testadmin.tld',
-				1, 0, time(), 0,
+				1, 0, time(),
 				substr(md5(mt_rand()), 0, 4), '', '',
 				'123.123.123.123', '123.123.123.123', '', '',
 				'', '', '',
