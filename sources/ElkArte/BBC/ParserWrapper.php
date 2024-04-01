@@ -23,22 +23,22 @@ final class ParserWrapper
 	/** @var array Disabled tags */
 	protected $disabled = array();
 
-	/** @var \BBC\Codes */
+	/** @var Codes */
 	protected $codes;
 
-	/** @var  \BBC\BBCParser */
+	/** @var  BBCParser */
 	protected $bbc_parser;
 
-	/** @var  \BBC\SmileyParser */
+	/** @var  SmileyParser */
 	protected $smiley_parser;
 
-	/** @var  \BBC\HtmlParser */
+	/** @var  HtmlParser */
 	protected $html_parser;
 
-	/** @var  \BBC\Autolink */
+	/** @var  Autolink */
 	protected $autolink_parser;
 
-	/** @var \BBC\MarkdownParser */
+	/** @var MarkdownParser */
 	protected $markdown_parser;
 
 	/** @var bool If smileys are enabled */
