@@ -27,7 +27,7 @@ use ElkArte\Http\Headers;
 final class Request
 {
 	/** @var Request Sole private Request instance */
-	private static $_req;
+	private static $_instance;
 
 	/** @var string Remote IP, if we can know it easily (as found in $_SERVER['REMOTE_ADDR']) */
 	private $_client_ip;
@@ -210,12 +210,12 @@ final class Request
 	 */
 	public static function instance()
 	{
-		if (self::$_req === null)
+		if (self::$_instance === null)
 		{
-			self::$_req = new Request();
+			self::$_instance = new Request();
 		}
 
-		return self::$_req;
+		return self::$_instance;
 	}
 
 	/**
