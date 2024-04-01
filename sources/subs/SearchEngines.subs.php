@@ -16,6 +16,7 @@
 
 use ElkArte\Cache\Cache;
 use ElkArte\Helper\Util;
+use ElkArte\Request;
 
 /**
  * Do we think the current user is a spider?
@@ -68,7 +69,7 @@ function spiderCheck()
 	}
 
 	// We need the user agent
-	$req = request();
+	$req = Request::instance();
 
 	// Always attempt IPv6 first.
 	if (strpos($_SERVER['REMOTE_ADDR'], ':') !== false)
@@ -137,7 +138,7 @@ function spiderCheck()
 function spiderQuickCheck()
 {
 	// We need the user agent
-	$req = request();
+	$req = Request::instance();
 	$ci_user_agent = strtolower($req->user_agent());
 
 	return strpos($ci_user_agent, 'mozilla') === false || preg_match('~(googlebot|slurp|msnbot|yandex|bingbot|baidu|duckduckbot|sogou|exabot|facebo|ecosia|ia_archiver|megaindex)~u', $ci_user_agent) == 1;

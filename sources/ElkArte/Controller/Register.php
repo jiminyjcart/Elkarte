@@ -30,6 +30,7 @@ use ElkArte\Http\Headers;
 use ElkArte\Languages\Txt;
 use ElkArte\PrivacyPolicy;
 use ElkArte\Profile\ProfileOptions;
+use ElkArte\Request;
 
 /**
  * It registers new members, and it allows the administrator moderate member registration
@@ -523,7 +524,7 @@ class Register extends AbstractController
 		}
 
 		// Registration needs to know your IP
-		$req = request();
+		$req = Request::instance();
 
 		$regOptions['ip'] = $this->user->ip;
 		$regOptions['ip2'] = $req->ban_ip();

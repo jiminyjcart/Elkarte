@@ -25,6 +25,7 @@ use ElkArte\Hooks;
 use ElkArte\Http\Headers;
 use ElkArte\Languages\Loader;
 use ElkArte\Notifications\Notifications;
+use ElkArte\Request;
 use ElkArte\Search\Search;
 use ElkArte\UrlGenerator\UrlGenerator;
 use ElkArte\User;
@@ -684,7 +685,7 @@ function obExit($header = null, $do_footer = null, $from_index = false, $from_fa
 	}
 
 	// Need user agent
-	$req = request();
+	$req = Request::instance();
 
 	setOldUrl();
 
@@ -705,7 +706,7 @@ function obExit($header = null, $do_footer = null, $from_index = false, $from_fa
 }
 
 /**
- * Takes care of a few dynamic maintenance items Maintenance
+ * Takes care of a few dynamic maintenance items
  */
 function handleMaintenance()
 {
@@ -1617,7 +1618,7 @@ function createList($listOptions)
  */
 function request()
 {
-	return ElkArte\Request::instance();
+	return Request::instance();
 }
 
 /**

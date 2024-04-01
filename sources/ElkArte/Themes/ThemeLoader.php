@@ -21,6 +21,7 @@ use ElkArte\Helper\Util;
 use ElkArte\Helper\ValuesContainer;
 use ElkArte\Hooks;
 use ElkArte\Languages\Txt;
+use ElkArte\Request;
 use ElkArte\User;
 use ElkArte\UserInfo;
 
@@ -608,7 +609,7 @@ class ThemeLoader
 		]);
 
 		// Just some mobile-friendly settings
-		if (strpos(request()->user_agent(), 'Mobi'))
+		if (strpos(Request::instance()->user_agent(), 'Mobi'))
 		{
 			// Disable the search dropdown.
 			$modSettings['search_dropdown'] = false;
