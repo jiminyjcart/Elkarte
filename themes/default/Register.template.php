@@ -16,7 +16,8 @@ function template_mailcheck_javascript()
 {
 	global $txt;
 
-	theme()->addInlineJavascript('disableAutoComplete();
+	theme()->addInlineJavascript('
+	disableAutoComplete();
 	document.querySelectorAll("input[type=email]").forEach(function(input) {
 	
 	    input.addEventListener("blur", function(event) {

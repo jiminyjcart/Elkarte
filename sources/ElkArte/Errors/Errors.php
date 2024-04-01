@@ -180,7 +180,7 @@ class Errors extends AbstractModel
 		$query_string = $this->parseQueryString();
 
 		// Make sure the category that was specified is a valid one
-		$error_type = in_array($error_type, $this->getErrorTypes()) && $error_type !== true ? $error_type : 'general';
+		$error_type = in_array($error_type, $this->getErrorTypes(), true) && $error_type !== true ? $error_type : 'general';
 
 		// Insert the error into the database.
 		$this->insertLog($query_string, $error_message, $error_type, $file, $line);
@@ -254,7 +254,6 @@ class Errors extends AbstractModel
 	 * @param string|bool $error_type
 	 * @param string $file
 	 * @param int $line
-	 * @throws \Exception
 	 */
 	private function insertLog($query_string, $error_message, $error_type, $file, $line)
 	{

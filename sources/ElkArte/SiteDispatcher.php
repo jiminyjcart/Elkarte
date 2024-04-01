@@ -239,6 +239,7 @@ class SiteDispatcher
 
 		// The file and function weren't found yet?  Then set a default!
 		$this->setDefaultActionAndControllerIfEmpty();
+
 		$this->handleApiCall();
 
 		// Ensure both the controller and action exist and are callable
