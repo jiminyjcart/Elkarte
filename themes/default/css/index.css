@@ -1492,6 +1492,20 @@ a.bbc_link {
 	--pointersize: 12px;
 }
 
+/* turn the drop-down into a drop up menu */
+.menulevel2.above {
+	top: initial;
+	bottom: calc(100% + 4px);
+	transform-origin: bottom left;
+}
+
+.listlevel1.subsections.above::after {
+	top: initial;
+	bottom: calc(100% - (1.4142 * var(--pointersize)) / 2 + 6px);
+	/* Clips the top of the rotated square so it does not bleed into dropdown content */
+	clip-path: polygon(100% 100%, 100% 0%, 0% 0%, 0% 100%);
+}
+
 /* The next two show the menulevel 2/3 flyout and level1 pointer arrow
    Rotate Level 2 menu out of the page, sets visibility */
 .no_js .listlevel1:hover .menulevel2,
@@ -2820,6 +2834,11 @@ aside > .poster {
 	width: 100%;
 	padding: 0 .4em;
 	text-align: center;
+}
+
+/* to overcome the PM indicator when its on */
+.poster li.listlevel1:hover {
+	z-index: 20;
 }
 
 .poster .name {

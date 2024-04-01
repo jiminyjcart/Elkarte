@@ -126,6 +126,7 @@ function template_select_boards($name, $label = '', $extra = '', $all = false)
  * @param array $strip_options = [] of options applied to the outer <UL>
  * 		'id' => id to use on the UL
  * 		'no-class' => do not apply the default "buttonlist no_js" to the ul (will still use passed $class)
+ *      'above' => turn dropdown sub-menu into a dropup sub-menu
  * @return void string as echoed content as buttons | submenu | checkbox
  */
 function template_button_strip($button_strip, $class = '', $strip_options = [])
@@ -203,11 +204,11 @@ function template_button_strip($button_strip, $class = '', $strip_options = [])
 	if (!empty($subMenu))
 	{
 		$buttons[] = '
-						<li class="listlevel1 subsections" role="none">
+						<li class="listlevel1 subsections' . (!empty($strip_options['above']) ? ' above"' : '"') . ' role="none">
 							<a aria-haspopup="true" role="menuitem" href="#" ' . (empty($options['use_click_menu']) ? 'onclick="event.stopPropagation();return false;"' : '') . ' class="linklevel1 post_options">' .
 								$txt['post_options'] . '
 							</a>
-							<ul role="menu" class="menulevel2">' . implode('', $subMenu) . '</ul>
+							<ul role="menu" class="menulevel2' . (!empty($strip_options['above']) ? ' above"' : '"') . '>' . implode('', $subMenu) . '</ul>
 						</li>';
 	}
 
