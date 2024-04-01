@@ -15,9 +15,9 @@
 		opt = (opt) ? opt : {};
 
 		const send = function(request) {
-			if (request.desktop_notifications && request.desktop_notifications.new_from_last > 0)
+			if (request.desktop_notifications && request.desktop_notifications.new_from_last !== "0")
 			{
-				if (hasPermissions(request))
+				if (hasPermissions())
 				{
 					Push.create(request.desktop_notifications.title, {
 						body: request.desktop_notifications.message,
