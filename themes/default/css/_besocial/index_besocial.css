@@ -1771,7 +1771,7 @@ nav.breadcrumb {
 
 /* The darkened background for help pop-ups. */
 .popup_container {
-	background: var(--opacity40);
+	background: var(--opacity50);
 }
 
 /* The actual pop-up wrapper. */
