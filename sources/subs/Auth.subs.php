@@ -18,6 +18,7 @@ use ElkArte\Errors\ErrorContext;
 use ElkArte\Helper\TokenHash;
 use ElkArte\Helper\Util;
 use ElkArte\Languages\Txt;
+use ElkArte\Request;
 use ElkArte\User;
 
 /**
@@ -124,6 +125,10 @@ function setLoginCookie($cookie_length, $id, $password = '')
 
 		// Get a new session id, and load it with the data
 		session_regenerate_id();
+
+		// If we generated new session values, be sure to use them as well
+		$oldSessionData['session_value'] = $_SESSION['session_value'] ?? $oldSessionData['session_value'];
+		$oldSessionData['session_var'] = $_SESSION['session_var'] ?? $oldSessionData['session_var'];
 		$_SESSION = $oldSessionData;
 
 		$_SESSION['login_' . $cookiename] = $data;
@@ -212,7 +217,7 @@ function adminLogin($type = 'admin')
 	if (isset($_POST[$type . '_hash_pass']) || isset($_POST[$type . '_pass']))
 	{
 		// log some info along with it! referer, user agent
-		$req = request();
+		$req = Request::instance();
 		$txt['security_wrong'] = sprintf($txt['security_wrong'], $_SERVER['HTTP_REFERER'] ?? $txt['unknown'], $req->user_agent(), User::$info->ip);
 		\ElkArte\Errors\Errors::instance()->log_error($txt['security_wrong'], 'critical');
 
