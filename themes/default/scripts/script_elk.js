@@ -837,14 +837,14 @@ function disableAutoComplete ()
 					'X-Requested-With': 'XMLHttpRequest',
 				}
 			})
-				.then(function(response) {
+				.then(response => {
 					if (!response.ok)
 					{
 						throw new Error('HTTP error ' + response.status);
 					}
 					return response.json();
 				})
-				.then(function(request) {
+				.then(request => {
 					if (request !== '')
 					{
 						// Trigger any updates
@@ -852,13 +852,13 @@ function disableAutoComplete ()
 						lastTime = request.timelast;
 					}
 				})
-				.catch(function(error) {
+				.catch(error => {
 					if ('console' in window && console.info)
 					{
 						console.info('Error:', error);
 					}
 				})
-				.finally(function() {
+				.finally(() => {
 					setTimeout(function() {
 						fetchData();
 					}, opt.delay);
