@@ -63,7 +63,7 @@ class PersonalMessageTest extends ElkArteCommonSetupTest
 
 	public function testActionSendPM()
 	{
-		global $context;
+		global $context, $modSettings;
 
 		$req = HttpReq::instance();
 		$req->query->sa = 'send';
@@ -80,7 +80,7 @@ class PersonalMessageTest extends ElkArteCommonSetupTest
 		$this->assertEquals('', $context['subject']);
 
 		// Lets try and send it now
-		$modSettings['pm_spam_settings'] = [100, 100, 0];
+		$modSettings['pm_spam_settings'] = "100, 100, 0";
 		$req->query->sa = 'send2';
 		$req->post->subject = 'Yo';
 		$req->post->message = 'This is for you, ok, have a great day';
