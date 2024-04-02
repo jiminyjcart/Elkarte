@@ -555,9 +555,9 @@ em, .em {
 }
 
 .nosel {
-	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
+	-webkit-user-select: none;
 	user-select: none;
 }
 
@@ -2315,10 +2315,10 @@ button[type="submit"].quick_quote_button.hide {
 
 .childboard_row {
 	font-size: var(--font13);
+	margin-top: .3em;
 	grid-column-start: info;
 	grid-column-end: end;
 	grid-row-start: children;
-	margin-top: .3em;
 }
 
 /* Styles for the grid content */
@@ -2549,17 +2549,17 @@ button[type="submit"].quick_quote_button.hide {
 /* Each li defined as a grid, since its single line could use flex here as well */
 .topic_listing > li {
 	display: grid;
-	grid-template-columns: [topic_icon] 50px [topic_info] auto [topic_latest] 350px [topic_stats] 150px [topic_moderation] 75px;
-	grid-template-rows: auto;
 	padding: .5em 0;
 	border: 1px solid;
+	grid-template-columns: [topic_icon] 50px [topic_info] auto [topic_latest] 350px [topic_stats] 150px [topic_moderation] 75px;
+	grid-template-rows: auto;
 }
 
 /* Container, holds the topic icon and fred */
 .topic_icons {
-	grid-column-start: topic_icon;
-	/* To keep an icon with fred aligned */
 	padding-left: 1em;
+	/* To keep an icon with fred aligned */
+	grid-column-start: topic_icon;
 	place-self: center left;
 }
 
@@ -2577,10 +2577,10 @@ button[type="submit"].quick_quote_button.hide {
 
 /* Container, holds topic name, starter, small page links and locked/sticky */
 .topic_info {
-	grid-column-start: topic_info;
 	margin: 0 0 0 .8em;
 	padding: .4em .8em .4em .8em;
 	border-right: 1px solid;
+	grid-column-start: topic_info;
 }
 
 .topic_name h4 {
@@ -2595,8 +2595,8 @@ button[type="submit"].quick_quote_button.hide {
 /* Container, Holds last poster and time, link to end */
 .topic_latest {
 	font-size: var(--font14);
-	grid-column-start: topic_latest;
 	white-space: nowrap;
+	grid-column-start: topic_latest;
 }
 
 .topic_latest .board_avatar {
@@ -2617,9 +2617,9 @@ button[type="submit"].quick_quote_button.hide {
 .topic_stats {
 	font-size: var(--font14);
 	line-height: 1.4;
-	grid-column-start: topic_stats;
 	padding: 0 .5em;
 	text-align: right;
+	grid-column-start: topic_stats;
 }
 
 /* Container, holds moderation checkbox or icons */
@@ -2809,9 +2809,9 @@ button[type="submit"].quick_quote_button.hide {
    items like <pre> from blowing out the grid */
 .post_wrapper {
 	display: grid;
+	padding-top: 1em;
 	grid-template-columns: [poster] 225px [postarea] minmax(0, auto);
 	grid-template-rows: [keyinfo] auto [messageContent] auto [attachments] auto [quickbuttons] auto [signature] auto;
-	padding-top: 1em;
 }
 
 aside > .poster {
@@ -2886,17 +2886,17 @@ aside > .poster {
 
 .poster_div_avatar {
 	align-self: center;
+	text-align: center;
 	justify-self: center;
 	grid-column: poster;
-	text-align: center;
 }
 
 .poster_div_details {
-	grid-column: details;
 	padding-right: 10px;
 	padding-left: 10px;
 	border-right: 1px solid;
 	border-left: 1px solid;
+	grid-column: details;
 }
 
 /* Information in the dropdown */
@@ -3020,10 +3020,10 @@ aside > .poster {
    This holds all data related to the post
    keyinfo -> messageContent -> attachments -> quickbuttons -> signature */
 .postarea {
+	padding: 0 1em 0 1.25em;
 	grid-column: postarea;
 	grid-row-start: keyinfo;
 	grid-row-end: footer;
-	padding: 0 1em 0 1.25em;
 }
 
 /* Area above the message, icon, reply number, date, subject */
@@ -3031,8 +3031,8 @@ aside > .poster {
 	font-size: var(--font13);
 	display: flex;
 	align-items: center;
-	grid-row: keyinfo;
 	padding: 1px 0 5px 0;
+	grid-row: keyinfo;
 }
 
 .keyinfo .post_subject {
@@ -3089,10 +3089,10 @@ aside > .poster {
 
 /* The actual message, what the entire software package is about */
 .messageContent {
-	grid-row: messageContent;
 	min-height: 70px;
 	padding: 1em 1em .25em .5em;
 	border-top: 1px solid;
+	grid-row: messageContent;
 	overflow-wrap: break-word;
 }
 
@@ -4108,9 +4108,9 @@ dl.merge_topic dd {
 .tooltip {
 	position: absolute;
 	top: 0;
+	right: 0;
 	bottom: 0;
 	left: 0;
-	right: 0;
 }
 
 /* -------------------------------------------------------
@@ -5041,10 +5041,10 @@ div.labels {
 /* Search results section, setup each li result as a grid */
 .search_results_posts > li {
 	display: grid;
-	grid-template-columns: auto 60px;
-	grid-template-rows: 60px auto auto;
 	padding: 0.5em 0;
 	border: 1px solid;
+	grid-template-columns: auto 60px;
+	grid-template-rows: 60px auto auto;
 }
 
 .search_results_posts .buttons {
@@ -5057,16 +5057,16 @@ div.labels {
 
 .search_results_posts .topic_details {
 	align-self: center;
-	grid-column-start: 1;
 	padding: 1em;
 	border-bottom: 0;
+	grid-column-start: 1;
 }
 
 .search_results_posts .topic_moderation {
 	align-self: center;
+	width: 80px;
 	justify-self: end;
 	grid-column-start: 2;
-	width: 80px;
 }
 
 .search_results_posts .topic_moderation input[type="checkbox"] {
@@ -5075,18 +5075,18 @@ div.labels {
 
 /* Shown when using show results as messages */
 .search_results_posts .quickbuttons {
+	margin: 0 1.5em;
 	grid-column-start: span 2;
 	grid-row-start: 3;
-	margin: 0 1.5em;
 }
 
 .search_results_posts .topic_body {
 	overflow: auto;
-	grid-column-start: span 2;
-	grid-row-start: 2;
 	margin: 0 1em 0;
 	padding: 1em 1em .5em 1em;
 	border-top: 1px solid;
+	grid-column-start: span 2;
+	grid-row-start: 2;
 }
 
 /* Use colored border to give gap between results */
@@ -5628,9 +5628,9 @@ div.labels {
 .like_stats_likers img, .like_stats_small_avatar {
 	width: 40px;
 	height: 40px;
-	object-fit: cover;
 	vertical-align: middle;
 	border-radius: 50%;
+	object-fit: cover;
 }
 
 /* -------------------------------------------------------
@@ -5675,6 +5675,7 @@ div.labels {
 .helpicon, a.helpicon {
 	margin: 0 .4em 0 0;
 	cursor: help;
+	vertical-align: text-bottom;
 }
 
 .chevricon {
@@ -5986,8 +5987,8 @@ div.labels {
 	.board_row .lastpost_link {
 		height: 48px;
 		max-height: 48px;
-		white-space: pre-wrap;
 		padding-top: 10px;
+		white-space: pre-wrap;
 	}
 
 	/* message listing */
@@ -6400,25 +6401,25 @@ div.labels {
 	/* Topic Listing */
 	#unread.topic_listing > li,
 	.topic_listing > li {
-		grid-template-columns: [topic_icon] 0 [topic_info] auto [topic_latest] 225px [topic_moderation] 10px [end];
-		grid-template-rows: [topic_info] auto [topic_latest] auto;
 		margin-bottom: .5em;
 		border: 1px solid;
+		grid-template-columns: [topic_icon] 0 [topic_info] auto [topic_latest] 225px [topic_moderation] 10px [end];
+		grid-template-rows: [topic_info] auto [topic_latest] auto;
 	}
 
 	.topic_info {
 		overflow: hidden;
+		padding: .5em 0;
 		grid-column-start: topic_info;
 		grid-column-end: end;
-		padding: .5em 0;
 	}
 
 	.topic_latest {
+		padding: 5px 0;
+		border-top: 1px solid;
 		grid-column-start: topic_info;
 		grid-column-end: topic_moderation;
 		grid-row-start: topic_latest;
-		padding: 5px 0;
-		border-top: 1px solid;
 	}
 
 	.sticky_row .topic_info::before, .locked_row .topic_info::before, .locked_row.sticky_row .topic_info::before {
@@ -6452,17 +6453,17 @@ div.labels {
 
 	.forumposts > aside {
 		display: flex;
+		border-bottom: 1px solid;
 		grid-column-start: poster;
 		grid-column-end: end;
 		grid-row-start: poster;
-		border-bottom: 1px solid;
 	}
 
 	.postarea {
+		margin: 0;
 		grid-column-start: poster;
 		grid-column-end: end;
 		grid-row-start: postarea;
-		margin: 0;
 	}
 
 	.small_pagelinks {
@@ -6780,16 +6781,16 @@ div.labels {
 	}
 
 	.category_boards .board_latest {
+		border-top: 1px solid;
 		grid-column-start: bicon;
 		grid-column-end: end;
 		grid-row-start: latest;
-		border-top: 1px solid;
 	}
 
 	.category_boards .board_icon {
+		height: 48px;
 		grid-column: bicon;
 		grid-row-start: primary;
-		height: 48px;
 	}
 
 	.board_description {

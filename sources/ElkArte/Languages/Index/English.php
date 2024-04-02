@@ -537,7 +537,7 @@ $txt['follow_ups'] = 'Follow-ups';
 $txt['topic_derived_from'] = 'Topic derived from %1$s';
 $txt['edit'] = 'Edit';
 $txt['quick_edit'] = 'Quick Edit';
-$txt['post_options'] = 'More...';
+$txt['post_options'] = 'Other Options';
 $txt['quote_expand'] = 'Show Quote';
 
 $txt['set_sticky'] = 'Pin';
