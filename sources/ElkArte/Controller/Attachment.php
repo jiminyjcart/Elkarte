@@ -789,14 +789,15 @@ class Attachment extends AbstractController
 
 		$this->prepare_headers($filename, $eTag, $mime_type, 'inline', $real_filename, $do_cache);
 
-		if ($resize)
+		// do not resize for ;image
+		if ($resize && !isset($this->_req->query->ila, $this->_req->query->image))
 		{
 			// Create a thumbnail image
 			$image = new Image($filename);
 
 			$filename .= '_thumb';
-			$max_width = $this->_req->isSet('thumb') && !empty($modSettings['attachmentThumbWidth']) ? $modSettings['attachmentThumbWidth'] : 250;
-			$max_height = $this->_req->isSet('thumb') && !empty($modSettings['attachmentThumbHeight']) ? $modSettings['attachmentThumbHeight'] : 250;
+			$max_width = $this->_req->isSet('thumb') && !empty($modSettings['attachmentThumbWidth']) ? $modSettings['attachmentThumbWidth'] : 300;
+			$max_height = $this->_req->isSet('thumb') && !empty($modSettings['attachmentThumbHeight']) ? $modSettings['attachmentThumbHeight'] : 300;
 
 			$image->createThumbnail($max_width, $max_height, $filename, null, false);
 		}

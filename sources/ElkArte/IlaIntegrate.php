@@ -302,7 +302,7 @@ class IlaIntegrate
 				$alt = Util::htmlspecialchars($attachment['filename'] ?? 'X');
 				self::$typeTag = '
 					<a id="link_$1" data-lightboximage="$1" data-lightboxmessage="0" href="' . getUrl('action', ['action' => 'dlattach', 'attach' => '$1', 'image']) . '">
-						<img src="' . getUrl('action', ['action' => 'dlattach', 'attach' => '$1']) . $type . '" style="' . $style . '" alt="' . $alt . '" class="bbc_img ' . $class . '" loading="lazy" />
+						<img src="' . getUrl('action', ['action' => 'dlattach', 'attach' => '$1', 'ila' => '1']) . $type . '" style="' . $style . '" alt="' . $alt . '" class="bbc_img ' . $class . '" loading="lazy" />
 					</a>';
 			}
 			// Not an image, determine a mime thumbnail or use a default thumbnail
@@ -328,7 +328,7 @@ class IlaIntegrate
 	}
 
 	/**
-	 * This is prevents a little repetition and provides a some control for url tags
+	 * This prevents a little repetition and provides a some control for url tags
 	 *
 	 * - Determines if the ILA is an image or not
 	 * - Keeps track of attachment usage to prevent displaying below the post
