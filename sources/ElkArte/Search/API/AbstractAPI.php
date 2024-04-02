@@ -12,6 +12,8 @@
 
 namespace ElkArte\Search\API;
 
+use ElkArte\Database\AbstractSearch;
+use ElkArte\Database\QueryInterface;
 use ElkArte\Helper\HttpReq;
 use ElkArte\Helper\Util;
 use ElkArte\Helper\ValuesContainer;
@@ -66,13 +68,13 @@ abstract class AbstractAPI
 	/** @var array Phrases not to be found in the search results (-"some phrase") */
 	protected $_excludedPhrases = [];
 
-	/** @var \ElkArte\Database\QueryInterface Database instance */
+	/** @var QueryInterface Database instance */
 	protected $_db;
 
-	/** @var \ElkArte\Helper\HttpReq HttpReq instance */
+	/** @var HttpReq HttpReq instance */
 	protected $_req;
 
-	/** @var \ElkArte\Database\AbstractSearch Search db instance */
+	/** @var AbstractSearch Search db instance */
 	protected $_db_search;
 
 	/** @var array Words excluded from indexes */
@@ -200,8 +202,8 @@ abstract class AbstractAPI
 	 */
 	public function searchSort($a, $b)
 	{
-		$x = Util::strlen($a) - (in_array($a, $this->_excludedWords) ? 1000 : 0);
-		$y = Util::strlen($b) - (in_array($b, $this->_excludedWords) ? 1000 : 0);
+		$x = Util::strlen($a) - (in_array($a, $this->_excludedWords, true) ? 1000 : 0);
+		$y = Util::strlen($b) - (in_array($b, $this->_excludedWords, true) ? 1000 : 0);
 
 		return $y < $x ? 1 : ($y > $x ? -1 : 0);
 	}
@@ -261,6 +263,6 @@ abstract class AbstractAPI
 	{
 		global $modSettings;
 
-		return empty($modSettings['search_match_words']) || $no_regexp ? '%' . strtr($phrase, array('_' => '\\_', '%' => '\\%')) . '%' : '[[:<:]]' . addcslashes(preg_replace(array('/([\[\]$.+*?|{}()])/'), array('[$1]'), $phrase), '\\\'') . '[[:>:]]';
+		return empty($modSettings['search_match_words']) || $no_regexp ? '%' . strtr($phrase, ['_' => '\\_', '%' => '\\%']) . '%' : '[[:<:]]' . addcslashes(preg_replace(['/([\[\]$.+*?|{}()])/'], ['[$1]'], $phrase), '\\\'') . '[[:>:]]';
 	}
 }

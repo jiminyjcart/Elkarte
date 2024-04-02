@@ -42,7 +42,7 @@ class Search extends AbstractController
 	/** @var \ElkArte\Search\Search Holds the search object */
 	protected $_search;
 
-	/** @var null|\ElkArte\MessageTopicIcons The class that takes care of rendering the message icons */
+	/** @var null|MessageTopicIcons The class that takes care of rendering the message icons */
 	protected $_icon_sources;
 
 	/** @var array */
@@ -108,7 +108,7 @@ class Search extends AbstractController
 	 * - Decodes and loads search parameters given in the URL (if any).
 	 * - The form redirects to index.php?action=search;sa=results.
 	 *
-	 * @throws \ElkArte\Exceptions\Exception loadavg_search_disabled
+	 * @throws Exception loadavg_search_disabled
 	 * @uses Search template, searchform sub template
 	 *
 	 * @uses Search language file and Errors language when needed
@@ -211,7 +211,7 @@ class Search extends AbstractController
 		if (!empty($context['search_errors']))
 		{
 			Txt::load('Errors');
-			$context['search_errors']['messages'] = array();
+			$context['search_errors']['messages'] = [];
 			foreach ($context['search_errors'] as $search_error => $dummy)
 			{
 				if ($search_error === 'messages')
@@ -474,13 +474,13 @@ class Search extends AbstractController
 
 		try
 		{
-			$search_config = new ValuesContainer(array(
+			$search_config = new ValuesContainer([
 				'humungousTopicPosts' => $humungousTopicPosts,
 				'shortTopicPosts' => $shortTopicPosts,
 				'maxMessageResults' => $maxMessageResults,
 				'search_index' => empty($modSettings['search_index']) ? '' : $modSettings['search_index'],
-				'banned_words' => empty($modSettings['search_banned_words']) ? array() : explode(',', $modSettings['search_banned_words']),
-			));
+				'banned_words' => empty($modSettings['search_banned_words']) ? [] : explode(',', $modSettings['search_banned_words']),
+			]);
 			$context['topics'] = $this->_search->searchQuery(
 				new SearchApiWrapper($search_config, $this->_search->getSearchParams())
 			);

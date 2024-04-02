@@ -53,7 +53,7 @@ class SearchParams extends ValuesContainer
 	/** @var QueryInterface|null */
 	protected $_db;
 
-	/** @var \ElkArte\Helper\HttpReq HttpReq instance */
+	/** @var HttpReq HttpReq instance */
 	protected $_req;
 
 	/**
@@ -84,7 +84,7 @@ class SearchParams extends ValuesContainer
 	protected function prepare()
 	{
 		// Due to IE's 2083 character limit, we have to compress long search strings
-		$temp_params = base64_decode(str_replace(array('-', '_', '.'), array('+', '/', '='), $this->_search_string));
+		$temp_params = base64_decode(str_replace(['-', '_', '.'], ['+', '/', '='], $this->_search_string));
 
 		// Test for gzuncompress failing, our ErrorException will die on any E_WARNING with no
 		// Exception, so turn it off/on for this check.
@@ -188,11 +188,11 @@ class SearchParams extends ValuesContainer
 		$this->setSortAndDirection($params);
 
 		// Determine some values needed to calculate the relevance.
-		$this->_minMsg = (int) ((1 - $recentPercentage) * $modSettings['maxMsgID']);
+		$this->_minMsg = (int) ceil((1 - $recentPercentage) * $modSettings['maxMsgID']);
 		$this->_recentMsg = $modSettings['maxMsgID'] - $this->_minMsg;
 
 		// *** Parse the search query
-		call_integration_hook('integrate_search_params', array(&$this->_search_params));
+		call_integration_hook('integrate_search_params', [&$this->_search_params]);
 
 		// What are we searching for?
 		$this->_search_params['search'] = $this->setSearchTerm();
@@ -211,7 +211,7 @@ class SearchParams extends ValuesContainer
 		$params['minage'] = $this->daysBetween($params['minage'] ?? null, 0);
 		$params['maxage'] = $this->daysBetween($params['maxage'] ?? null, 9999);
 
-		$validator->sanitation_rules(array(
+		$validator->sanitation_rules([
 			'advanced' => 'intval',
 			'searchtype' => 'intval',
 			'minage' => 'intval',
@@ -224,11 +224,11 @@ class SearchParams extends ValuesContainer
 			'sort' => 'trim',
 			'show_complete' => 'boolval',
 			'sd_brd' => 'intval'
-		));
-		$validator->input_processing(array(
+		]);
+		$validator->input_processing([
 			'brd' => 'array',
 			'sd_brd' => 'array'
-		));
+		]);
 		$validator->validate($params);
 
 		$params = array_replace((array) $params, $validator->validation_data());
@@ -302,13 +302,15 @@ class SearchParams extends ValuesContainer
 				AND approved = {int:is_approved_true}' : '') . (empty($this->_search_params['minage']) ? '' : '
 				AND poster_time <= {int:timestamp_minimum_age}') . (empty($this->_search_params['maxage']) ? '' : '
 				AND poster_time >= {int:timestamp_maximum_age}'),
-			array(
+			[
 				'timestamp_minimum_age' => empty($this->_search_params['minage']) ? 0 : time() - 86400 * $this->_search_params['minage'],
 				'timestamp_maximum_age' => empty($this->_search_params['maxage']) ? 0 : time() - 86400 * $this->_search_params['maxage'],
 				'is_approved_true' => 1,
-			)
+			]
 		);
 		[$this->_minMsgID, $this->_maxMsgID] = $request->fetch_row();
+		$this->_minMsgID = (int) $this->_minMsgID;
+		$this->_maxMsgID = (int) $this->_maxMsgID;
 		if ($this->_minMsgID < 0 || $this->_maxMsgID < 0)
 		{
 			$context['search_errors']['no_messages_in_time_frame'] = true;
@@ -353,7 +355,7 @@ class SearchParams extends ValuesContainer
 	 */
 	public function buildUserQuery($maxMembersToSearch)
 	{
-		$userString = strtr(Util::htmlspecialchars($this->_search_params['userspec'], ENT_QUOTES), array('&quot;' => '"'));
+		$userString = strtr(Util::htmlspecialchars($this->_search_params['userspec'], ENT_QUOTES), ['&quot;' => '"']);
 		$userString = strtr($userString, ['%' => '\%', '_' => '\_', '*' => '%', '?' => '_']);
 
 		preg_match_all('~"([^"]+)"~', $userString, $matches);
@@ -367,9 +369,9 @@ class SearchParams extends ValuesContainer
 		{
 			$realNameMatches[] = $this->_db->quote(
 				'{string:possible_user}',
-				array(
+				[
 					'possible_user' => $possible_user
-				)
+				]
 			);
 		}
 
@@ -379,9 +381,9 @@ class SearchParams extends ValuesContainer
 				id_member
 			FROM {db_prefix}members
 			WHERE {raw:match_possible_users}',
-			array(
+			[
 				'match_possible_users' => 'real_name LIKE ' . implode(' OR real_name LIKE ', $realNameMatches),
-			)
+			]
 		);
 
 		// Simply do nothing if there're too many members matching the criteria.
@@ -394,10 +396,10 @@ class SearchParams extends ValuesContainer
 		{
 			$this->_userQuery = $this->_db->quote(
 				'm.id_member = {int:id_member_guest} AND ({raw:match_possible_guest_names})',
-				array(
+				[
 					'id_member_guest' => 0,
 					'match_possible_guest_names' => 'm.poster_name LIKE ' . implode(' OR m.poster_name LIKE ', $realNameMatches),
-				)
+				]
 			);
 		}
 		// We have some users!
@@ -410,11 +412,11 @@ class SearchParams extends ValuesContainer
 
 			$this->_userQuery = $this->_db->quote(
 				'(m.id_member IN ({array_int:matched_members}) OR (m.id_member = {int:id_member_guest} AND ({raw:match_possible_guest_names})))',
-				array(
+				[
 					'matched_members' => $this->_memberlist,
 					'id_member_guest' => 0,
 					'match_possible_guest_names' => 'm.poster_name LIKE ' . implode(' OR m.poster_name LIKE ', $realNameMatches),
-				)
+				]
 			);
 		}
 
@@ -471,10 +473,10 @@ class SearchParams extends ValuesContainer
 					AND {query_see_board}' . ($modSettings['postmod_active'] ? '
 					AND t.approved = {int:is_approved_true}' : '') . '
 				LIMIT 1',
-				array(
+				[
 					'search_topic_id' => $this->_search_params['topic'],
 					'is_approved_true' => 1,
-				)
+				]
 			);
 			if ($request->num_rows() === 0)
 			{
@@ -496,12 +498,12 @@ class SearchParams extends ValuesContainer
 		}
 
 		require_once(SUBSDIR . '/Boards.subs.php');
-		$brd = array_keys(fetchBoardsInfo(array(
-			'boards' => $query_boards), array(
+		$brd = array_keys(fetchBoardsInfo([
+			'boards' => $query_boards], [
 				'include_recycle' => false,
 				'include_redirects' => false,
 				'wanna_see_board' => empty($this->_search_params['advanced'])
-			)
+			]
 		));
 
 		// This error should pro'bly only happen for hackers.
@@ -534,7 +536,9 @@ class SearchParams extends ValuesContainer
 				return $this->_boardQuery = '';
 			}
 
-			if (count($this->_search_params['brd']) === $num_boards - 1 && !empty($modSettings['recycle_board']) && !in_array($modSettings['recycle_board'], $this->_search_params['brd']))
+			if (count($this->_search_params['brd']) === $num_boards - 1
+				&& !empty($modSettings['recycle_board'])
+				&& !in_array((int) $modSettings['recycle_board'], $this->_search_params['brd'], true))
 			{
 				return $this->_boardQuery = '!= ' . $modSettings['recycle_board'];
 			}
@@ -556,14 +560,14 @@ class SearchParams extends ValuesContainer
 		$sort_columns = ['relevance', 'num_replies', 'id_msg',];
 
 		// Allow integration to add additional sort columns
-		call_integration_hook('integrate_search_sort_columns', array(&$sort_columns));
+		call_integration_hook('integrate_search_sort_columns', [&$sort_columns]);
 
 		if (empty($this->_search_params['sort']) && !empty($params['sort']))
 		{
 			[$this->_search_params['sort'], $this->_search_params['sort_dir']] = array_pad(explode('|', $params['sort']), 2, '');
 		}
 
-		$this->_search_params['sort'] = !empty($this->_search_params['sort']) && in_array($this->_search_params['sort'], $sort_columns) ? $this->_search_params['sort'] : 'relevance';
+		$this->_search_params['sort'] = !empty($this->_search_params['sort']) && in_array($this->_search_params['sort'], $sort_columns, true) ? $this->_search_params['sort'] : 'relevance';
 
 		if (!empty($this->_search_params['topic']) && $this->_search_params['sort'] === 'num_replies')
 		{

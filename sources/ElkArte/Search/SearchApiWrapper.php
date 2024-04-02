@@ -19,6 +19,7 @@ namespace ElkArte\Search;
 use ElkArte\Errors\Errors;
 use ElkArte\Helper\ValuesContainer;
 use ElkArte\Languages\Txt;
+use ElkArte\Search\API\AbstractAPI;
 
 /**
  * Actually do the searches
@@ -34,7 +35,7 @@ class SearchApiWrapper
 	/**
 	 * Constructor
 	 *
-	 * @param \ElkArte\Helper\ValuesContainer|string $config The searchAPI
+	 * @param ValuesContainer|string $config The searchAPI
 	 * @param SearchParams $searchParams
 	 * @package Search
 	 */
@@ -51,7 +52,7 @@ class SearchApiWrapper
 	/**
 	 * Creates a search API and returns the object.
 	 *
-	 * @param \ElkArte\Helper\ValuesContainer $config
+	 * @param ValuesContainer $config
 	 * @param SearchParams $searchParams
 	 */
 	protected function load($config, $searchParams)
@@ -71,7 +72,7 @@ class SearchApiWrapper
 		// Try to initialize the API
 		$fqcn = '\\ElkArte\\Search\\API\\' . ucfirst($searchClass);
 
-		if (class_exists($fqcn) && is_a($fqcn, '\\ElkArte\\Search\\API\\AbstractAPI', true))
+		if (class_exists($fqcn) && is_a($fqcn, AbstractAPI::class, true))
 		{
 			// Create an instance of the search API and check it is valid for this version of the software.
 			$this->_searchAPI = new $fqcn($config, $searchParams);
@@ -97,7 +98,7 @@ class SearchApiWrapper
 	 */
 	public function postCreated($msgOptions, $topicOptions, $posterOptions)
 	{
-		if (is_callable(array($this->_searchAPI, 'postCreated')))
+		if (is_callable([$this->_searchAPI, 'postCreated']))
 		{
 			$this->_searchAPI->postCreated($msgOptions, $topicOptions, $posterOptions);
 		}
@@ -112,7 +113,7 @@ class SearchApiWrapper
 	 */
 	public function postModified($msgOptions, $topicOptions, $posterOptions)
 	{
-		if (is_callable(array($this->_searchAPI, 'postModified')))
+		if (is_callable([$this->_searchAPI, 'postModified']))
 		{
 			$this->_searchAPI->postModified($msgOptions, $topicOptions, $posterOptions);
 		}
@@ -126,7 +127,7 @@ class SearchApiWrapper
 	 */
 	public function topicSplit($split2_ID_TOPIC, $splitMessages)
 	{
-		if (is_callable(array($this->_searchAPI, 'topicSplit')))
+		if (is_callable([$this->_searchAPI, 'topicSplit']))
 		{
 			$this->_searchAPI->topicSplit($split2_ID_TOPIC, $splitMessages);
 		}
@@ -142,7 +143,7 @@ class SearchApiWrapper
 	 */
 	public function topicMerge($id_topic, $topics, $affected_msgs, $subject)
 	{
-		if (is_callable(array($this->_searchAPI, 'topicMerge')))
+		if (is_callable([$this->_searchAPI, 'topicMerge']))
 		{
 			$this->_searchAPI->topicMerge($id_topic, $topics, $affected_msgs, $subject);
 		}
@@ -155,7 +156,7 @@ class SearchApiWrapper
 	 */
 	public function searchSettings(&$config_vars)
 	{
-		if (is_callable(array($this->_searchAPI, 'searchSettings')))
+		if (is_callable([$this->_searchAPI, 'searchSettings']))
 		{
 			$this->_searchAPI->searchSettings($config_vars);
 		}
@@ -216,7 +217,7 @@ class SearchApiWrapper
 	/**
 	 * Wrapper for setSearchArray of the SearchAPI
 	 *
-	 * @param \ElkArte\Search\SearchArray $searchArray
+	 * @param SearchArray $searchArray
 	 */
 	public function setSearchArray(SearchArray $searchArray)
 	{
@@ -252,7 +253,7 @@ class SearchApiWrapper
 	/**
 	 * Wrapper for setWeightFactors of the SearchAPI
 	 *
-	 * @param \ElkArte\Search\WeightFactors $weights
+	 * @param WeightFactors $weights
 	 */
 	public function setWeightFactors(WeightFactors $weights)
 	{

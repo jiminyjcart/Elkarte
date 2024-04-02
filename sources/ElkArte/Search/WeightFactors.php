@@ -57,75 +57,75 @@ class WeightFactors
 	 */
 	private function _setup_weight_factors()
 	{
-		$default_factors = array(
-			'frequency' => array(
+		$default_factors = [
+			'frequency' => [
 				'search' => 'COUNT(*) / (CASE WHEN MAX(t.num_replies) < {int:short_topic_posts} THEN {int:short_topic_posts} ELSE MAX(t.num_replies) + 1 END)',
 				'results' => '(t.num_replies + 1)',
-			),
-			'age' => array(
+			],
+			'age' => [
 				'search' => 'CASE WHEN MAX(m.id_msg) < {int:min_msg} THEN 0 ELSE (MAX(m.id_msg) - {int:min_msg}) / {int:recent_message} END',
 				'results' => 'CASE WHEN t.id_first_msg < {int:min_msg} THEN 0 ELSE (t.id_first_msg - {int:min_msg}) / {int:recent_message} END',
-			),
-			'length' => array(
+			],
+			'length' => [
 				'search' => 'CASE WHEN MAX(t.num_replies) < {int:huge_topic_posts} THEN MAX(t.num_replies) / {int:huge_topic_posts} ELSE 1 END',
 				'results' => 'CASE WHEN t.num_replies < {int:huge_topic_posts} THEN t.num_replies / {int:huge_topic_posts} ELSE 1 END',
-			),
-			'subject' => array(
+			],
+			'subject' => [
 				'search' => 0,
 				'results' => 0,
-			),
-			'first_message' => array(
+			],
+			'first_message' => [
 				'search' => 'CASE WHEN MIN(m.id_msg) = MAX(t.id_first_msg) THEN 1 ELSE 0 END',
-			),
-			'sticky' => array(
+			],
+			'sticky' => [
 				'search' => 'MAX(t.is_sticky)',
 				'results' => 't.is_sticky',
-			),
-			'likes' => array(
+			],
+			'likes' => [
 				'search' => 'CASE WHEN t.num_likes > 20 THEN 1 ELSE t.num_likes / 20 END',
 				'results' => 't.num_likes',
-			),
-		);
-		$this->_weight_factors = array(
-			'frequency' => array(
+			],
+		];
+		$this->_weight_factors = [
+			'frequency' => [
 				'search' => 'COUNT(*) / (CASE WHEN MAX(t.num_replies) < {int:short_topic_posts} THEN {int:short_topic_posts} ELSE MAX(t.num_replies) + 1 END)',
 				'results' => '(t.num_replies + 1)',
-			),
-			'age' => array(
+			],
+			'age' => [
 				'search' => 'CASE WHEN MAX(m.id_msg) < {int:min_msg} THEN 0 ELSE (MAX(m.id_msg) - {int:min_msg}) / {int:recent_message} END',
 				'results' => 'CASE WHEN t.id_first_msg < {int:min_msg} THEN 0 ELSE (t.id_first_msg - {int:min_msg}) / {int:recent_message} END',
-			),
-			'length' => array(
+			],
+			'length' => [
 				'search' => 'CASE WHEN MAX(t.num_replies) < {int:huge_topic_posts} THEN MAX(t.num_replies) / {int:huge_topic_posts} ELSE 1 END',
 				'results' => 'CASE WHEN t.num_replies < {int:huge_topic_posts} THEN t.num_replies / {int:huge_topic_posts} ELSE 1 END',
-			),
-			'subject' => array(
+			],
+			'subject' => [
 				'search' => 0,
 				'results' => 0,
-			),
-			'first_message' => array(
+			],
+			'first_message' => [
 				'search' => 'CASE WHEN MIN(m.id_msg) = MAX(t.id_first_msg) THEN 1 ELSE 0 END',
-			),
-			'sticky' => array(
+			],
+			'sticky' => [
 				'search' => 'MAX(t.is_sticky)',
 				'results' => 't.is_sticky',
-			),
-			'likes' => array(
+			],
+			'likes' => [
 				'search' => 'CASE WHEN t.num_likes > 20 THEN 1 ELSE t.num_likes / 20 END',
 				'results' => 't.num_likes',
-			),
-		);
+			],
+		];
 		// These are fallback weights in case of errors somewhere.
 		// Not intended to be passed to the hook
-		$default_weights = array(
+		$default_weights = [
 			'search_weight_frequency' => 30,
 			'search_weight_age' => 25,
 			'search_weight_length' => 20,
 			'search_weight_subject' => 15,
 			'search_weight_first_message' => 10,
-		);
+		];
 
-		call_integration_hook('integrate_search_weights', array(&$this->_weight_factors));
+		call_integration_hook('integrate_search_weights', [&$this->_weight_factors]);
 
 		// Set the weight factors for each area (frequency, age, etc) as defined in the ACP
 		$this->_calculate_weights($this->_weight_factors, $this->_input_weights);

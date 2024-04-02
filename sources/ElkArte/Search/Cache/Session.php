@@ -57,11 +57,11 @@ class Session
 	 */
 	public function __destruct()
 	{
-		new SessionIndex($this->_session_index, array(
+		new SessionIndex($this->_session_index, [
 			'id_search' => $this->_id_search,
 			'num_results' => $this->_num_results,
 			'params' => $this->_params,
-		));
+		]);
 	}
 
 	/**
