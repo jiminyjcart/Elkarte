@@ -69,7 +69,7 @@ class InstallInstructions_install_2_0
 				array('name' => 'id_thumb', 'type' => 'int', 'size' => 10, 'unsigned' => true, 'default' => 0),
 				array('name' => 'id_msg', 'type' => 'int', 'size' => 10, 'unsigned' => true, 'default' => 0),
 				array('name' => 'id_member', 'type' => 'mediumint', 'size' => 8, 'unsigned' => true, 'default' => 0),
-				array('name' => 'id_folder', 'type' => 'tinyint', 'size' => 3, 'default' => 1),
+				array('name' => 'id_folder', 'type' => 'smallint', 'size' => 5, 'default' => 1),
 				array('name' => 'attachment_type', 'type' => 'tinyint', 'size' => 3, 'unsigned' => true, 'default' => 0),
 				array('name' => 'filename', 'type' => 'varchar', 'default' => '', 'size' => 255),
 				array('name' => 'file_hash', 'type' => 'varchar', 'default' => '', 'size' => 40),
