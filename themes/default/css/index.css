@@ -5540,7 +5540,7 @@ div.labels {
 	margin: 5px auto;
 	padding: 3px;
 	border: 1px solid;
-	border-radius: 16px;
+	border-radius: 8px;
 }
 
 .progress_compact {
@@ -5553,7 +5553,7 @@ div.labels {
 	line-height: 2;
 	height: 2em;
 	text-align: center;
-	border-radius: 12px;
+	border-radius: 6px;
 }
 
 .progress_compact > .green_percent, .progress_compact > .blue_percent {
