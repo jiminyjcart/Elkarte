@@ -140,12 +140,12 @@
 				// Update the count bubble and like list line if it exists
 				if (params.count !== 0)
 				{
-					params.event.innerHTML = '<span class="button_indicator">' + params.count + '</span>&nbsp;' + params.text;
+					params.event.innerHTML = '<span class="button_indicator">' + params.count + '</span><span class="breaking_space">' + params.text;
 
 					if (likesList)
 					{
 						likesList.classList.remove('hide');
-						likesList.innerHTML = '<i class="icon icon-small i-thumbup"></i>&nbsp;' + params.title;
+						likesList.innerHTML = '<i class="icon icon-small i-thumbup"></i><span class="breaking_space">' + params.title;
 					}
 				}
 				else

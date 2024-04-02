@@ -530,7 +530,7 @@ function addCriteriaOption ()
 	setOuterHTML(document.getElementById('criteriaAddHere'), '<br />' +
 		'<select class="criteria" name="ruletype[' + criteriaNum + ']" id="ruletype' + criteriaNum + '" data-optnum="' + criteriaNum + '">' +
 		'   <option value="">' + txt_pm_rule_criteria_pick + ':</option>' + rules_option + '' +
-		'</select>&nbsp;' +
+		'</select><span class="breaking_space">' +
 		'<span id="defdiv' + criteriaNum + '" class="hide">' +
 		'<input type="text" name="ruledef[' + criteriaNum + ']" id="ruledef' + criteriaNum + '" value="" />' +
 		'</span>' +
@@ -579,7 +579,7 @@ function addActionOption ()
 		'   <option value="">' + txt_pm_rule_sel_action + ':</option>' +
 		'   <option value="lab">' + txt_pm_rule_label + '</option>' +
 		'   <option value="del">' + txt_pm_rule_delete + '</option>' +
-		'</select>&nbsp;' +
+		'</select><span class="breaking_space">' +
 		'<span id="labdiv' + actionNum + '" class="hide">' +
 		'<select name="labdef[' + actionNum + ']" id="labdef' + actionNum + '">' +
 		'   <option value="">' + txt_pm_rule_sel_label + '</option>' + label_option +

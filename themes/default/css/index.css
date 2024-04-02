@@ -226,6 +226,11 @@ h2 + fieldset {
 	margin: 4px 0;
 }
 
+/* Used in JS in place of inlined &nbsp; */
+.breaking_space::before {
+	content: "\00a0";
+}
+
 /* Set list-style to none by default. Best in most places.*/
 ul, ol {
 	list-style: none;
