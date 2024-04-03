@@ -201,7 +201,7 @@ function loadDefaultMenuButtons()
 				),
 				'contact' => array(
 					'title' => $txt['contact'],
-					'href' => getUrl('action', ['action' => 'register', 'sa' => 'contact']),
+					'href' => getUrl('action', ['action' => 'about', 'sa' => 'contact']),
 					'show' => User::$info->is_guest && !empty($modSettings['enable_contactform']) && $modSettings['enable_contactform'] == 'menu',
 				),
 			),
