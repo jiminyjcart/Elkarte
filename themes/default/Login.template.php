@@ -13,7 +13,7 @@
  */
 
 /**
- * This is just the basic "login" form.
+ * This is the basic "login" form.
  */
 function template_login()
 {

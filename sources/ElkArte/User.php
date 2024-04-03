@@ -50,7 +50,7 @@ class User
 		{
 			$db = database();
 			$cache = Cache::instance();
-			$req = request();
+			$req = Request::instance();
 
 			self::$instance = new UserSettingsLoader($db, $cache, $req);
 			$already_verified = self::loadFromIntegration();

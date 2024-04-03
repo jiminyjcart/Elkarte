@@ -1181,13 +1181,13 @@ class PersonalMessage extends AbstractController
 		$bbc_parser = ParserWrapper::instance();
 
 		// Construct the list of recipients.
-		$recipientList = array();
-		$namedRecipientList = array();
-		$namesNotFound = array();
-		foreach (array('to', 'bcc') as $recipientType)
+		$recipientList = [];
+		$namedRecipientList = [];
+		$namesNotFound = [];
+		foreach (['to', 'bcc'] as $recipientType)
 		{
 			// First, let's see if there's user ID's given.
-			$recipientList[$recipientType] = array();
+			$recipientList[$recipientType] = [];
 			$type = 'recipient_' . $recipientType;
 			if (!empty($this->_req->post->{$type}) && is_array($this->_req->post->{$type}))
 			{
@@ -1216,7 +1216,7 @@ class PersonalMessage extends AbstractController
 					}
 				}
 
-				// Now see if we can resolve the entered name to an actual user
+				// Now see if we can resolve any entered name (not suggest selected) to an actual user
 				if (!empty($namedRecipientList[$recipientType]))
 				{
 					$foundMembers = findMembers($namedRecipientList[$recipientType]);

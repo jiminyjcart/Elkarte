@@ -17,6 +17,7 @@
 use ElkArte\Cache\Cache;
 use ElkArte\Helper\FileFunctions;
 use ElkArte\Helper\Util;
+use ElkArte\Request;
 use ElkArte\User;
 
 /**
@@ -124,7 +125,7 @@ function writeLog($force = false)
 	if (ELK !== 'SSI' && !empty(User::$info->last_login) && User::$info->last_login < time() - 60)
 	{
 		// We log IPs the request came with, around here
-		$req = request();
+		$req = Request::instance();
 
 		// Don't count longer than 15 minutes.
 		if (time() - $_SESSION['timeOnlineUpdated'] > 60 * 15)

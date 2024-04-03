@@ -4926,7 +4926,7 @@ div.labels {
 	width: 600px;
 	margin: 0 auto;
 	border: 1px solid;
-	border-radius: 5px;
+	border-radius: 8px;
 }
 
 /* The actual pop-up wrapper. */
@@ -4949,7 +4949,7 @@ div.labels {
 
 .popup_window.in.content {
 	transition-duration: .5s;
-	transform: translate(0, 30px);
+	transform: translate(0, 40px);
 }
 
 /* The text content, hopefully helpful. */

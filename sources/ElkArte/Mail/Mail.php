@@ -101,8 +101,8 @@ class Mail extends BaseMail
 				// Keep our post via email log
 				if ($this->mailList)
 				{
-					$this->unqPBEHead[] = time();
-					$this->unqPBEHead[] = $sendTo;
+					$this->unqPBEHead[3] = time();
+					$this->unqPBEHead[4] = $sendTo;
 					$sent[] = $this->unqPBEHead;
 				}
 
@@ -240,8 +240,8 @@ class Mail extends BaseMail
 			// Keep our post via email log
 			if ($this->mailList)
 			{
-				$this->unqPBEHead[] = time();
-				$this->unqPBEHead[] = $mail_to;
+				$this->unqPBEHead[3] = time();
+				$this->unqPBEHead[4] = $mail_to;
 				$sent[] = $this->unqPBEHead;
 			}
 

@@ -23,6 +23,7 @@ use ElkArte\ext\Composer\Autoload\ClassLoader;
 use ElkArte\Helper\TokenHash;
 use ElkArte\Hooks;
 use ElkArte\MembersList;
+use ElkArte\Request;
 use ElkArte\Server;
 use ElkArte\Themes\ThemeLoader;
 use ElkArte\User;
@@ -446,7 +447,7 @@ class Bootstrap
 		}
 
 		// We need to set up user agent, and make more checks on the request
-		$req = request();
+		$req = Request::instance();
 
 		// Make sure they didn't muss around with the settings... but only if it's not cli.
 		if (isset($_SERVER['REMOTE_ADDR']) && session_id() === '')

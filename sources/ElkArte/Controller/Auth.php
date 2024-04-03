@@ -24,6 +24,7 @@ use ElkArte\Exceptions\Exception;
 use ElkArte\Helper\Util;
 use ElkArte\Http\Headers;
 use ElkArte\Languages\Txt;
+use ElkArte\Request;
 use ElkArte\User;
 use ElkArte\UserSettingsLoader;
 
@@ -143,7 +144,7 @@ class Auth extends AbstractController
 		}
 
 		// Are you guessing with a script?
-		checkSession('post');
+		checkSession();
 		validateToken('login');
 		spamProtection('login');
 
@@ -234,7 +235,7 @@ class Auth extends AbstractController
 		$member_found = loadExistingMember($_POST['user']);
 		$db = database();
 		$cache = Cache::instance();
-		$req = request();
+		$req = Request::instance();
 
 		$user = new UserSettingsLoader($db, $cache, $req);
 		$user->loadUserById($member_found === false ? 0 : $member_found['id_member'], true, '');
@@ -377,10 +378,15 @@ class Auth extends AbstractController
 		$pw_strlen = strlen($passwrd);
 
 		// Start off with none, that's safe
-		$other_passwords = array();
+		$other_passwords = [];
+
+		if (empty($modSettings['enable_password_conversion']))
+		{
+			return $other_passwords;
+		}
 
 		// None of the below cases will be used most of the time (because the salt is normally set.)
-		if (!empty($modSettings['enable_password_conversion']) && $password_salt === '')
+		if ($password_salt === '')
 		{
 			// YaBB SE, Discus, MD5 (used a lot), SHA-1 (used some), SMF 1.0.x, IkonBoard, and none at all.
 			$other_passwords[] = crypt($posted_password, substr($posted_password, 0, 2));
@@ -415,7 +421,7 @@ class Auth extends AbstractController
 			$other_passwords[] = crypt($posted_password, $passwrd);
 		}
 		// The hash should be 40 if it's SHA-1, so we're safe with more here too.
-		elseif (!empty($modSettings['enable_password_conversion']) && $pw_strlen === 32)
+		elseif ($pw_strlen === 32)
 		{
 			// vBulletin 3 style hashing?  Let's welcome them with open arms \o/.
 			$other_passwords[] = md5(md5($posted_password) . stripslashes($password_salt));
@@ -460,7 +466,7 @@ class Auth extends AbstractController
 			}
 		}
 		// SHA-256 will be 64 characters long, lets check some of these possibilities
-		elseif (!empty($modSettings['enable_password_conversion']) && $pw_strlen === 64)
+		elseif ($pw_strlen === 64)
 		{
 			// PHP-Fusion7
 			$other_passwords[] = hash_hmac('sha256', $posted_password, $password_salt);
@@ -782,7 +788,7 @@ function doLogin(UserSettingsLoader $user)
 	}
 
 	// You're one of us: need to know all about you now, IP, stuff.
-	$req = request();
+	$req = Request::instance();
 
 	// You've logged in, haven't you?
 	require_once(SUBSDIR . '/Members.subs.php');

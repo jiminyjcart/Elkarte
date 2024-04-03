@@ -18,6 +18,7 @@
 
 use ElkArte\Cache\Cache;
 use ElkArte\Languages\Txt;
+use ElkArte\Request;
 use ElkArte\User;
 
 /**
@@ -99,7 +100,7 @@ function getServerVersions($checkFor)
 	// Server info
 	if (in_array('server', $checkFor))
 	{
-		$req = request();
+		$req = Request::instance();
 		$versions['server_header'] = ['header' => $txt['admin_server_settings']];
 		$versions['server'] = ['title' => $txt['support_versions_server'], 'version' => $req->server_software()];
 

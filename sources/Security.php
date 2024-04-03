@@ -23,6 +23,7 @@ use ElkArte\Helper\TokenHash;
 use ElkArte\Helper\Util;
 use ElkArte\Http\Headers;
 use ElkArte\Languages\Txt;
+use ElkArte\Request;
 use ElkArte\User;
 
 /**
@@ -765,7 +766,7 @@ function checkSession($type = 'post', $from_action = '', $is_fatal = true)
 	global $modSettings, $boardurl;
 
 	// We'll work out user agent checks
-	$req = request();
+	$req = Request::instance();
 
 	// Is it in as $_POST['sc']?
 	if ($type === 'post')
@@ -927,7 +928,7 @@ function createToken($action, $type = 'post')
 	$token = $tokenizer->generate_hash(32);
 
 	// We need user agent and the client IP
-	$req = request();
+	$req = Request::instance();
 	$csrf_hash = hash('sha1', $token . $req->client_ip() . $req->user_agent());
 
 	// Save the session token and make it available to the forms
@@ -983,7 +984,7 @@ function validateToken($action, $type = 'post', $reset = true, $fatal = true)
 	}
 
 	// We need the user agent and client IP
-	$req = request();
+	$req = Request::instance();
 
 	// Shortcut
 	$passed_token_var = $GLOBALS['_' . strtoupper($type)][$_SESSION['token'][$token_index][0]] ?? null;
@@ -1943,7 +1944,7 @@ function validLoginUrl($url, $match_board = false)
 		return false;
 	}
 
-	if (substr($url, 0, 7) !== 'http://' && substr($url, 0, 8) !== 'https://')
+	if (strpos($url, 'http://') !== 0 && strpos($url, 'https://') !== 0)
 	{
 		return false;
 	}
@@ -1953,7 +1954,8 @@ function validLoginUrl($url, $match_board = false)
 
 	foreach ($invalid_strings as $invalid_string => $valid_match)
 	{
-		if (strpos($url, $invalid_string) !== false || ($match_board === true && !empty($valid_match) && preg_match($valid_match, $url) == 0))
+		if (strpos($url, $invalid_string) !== false
+			|| ($match_board === true && !empty($valid_match) && preg_match($valid_match, $url) !== 1))
 		{
 			return false;
 		}
