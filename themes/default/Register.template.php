@@ -402,136 +402,6 @@ function template_after()
 }
 
 /**
- * Template for giving instructions about COPPA activation.
- */
-function template_coppa()
-{
-	global $context, $txt;
-
-	// Formulate a nice complicated message!
-	echo '
-			<h2 class="category_header">', $context['page_title'], '</h2>
-			<div class="content">
-				<p>', $context['coppa']['body'], '</p>
-				<p>
-					<span><a href="', getUrl('action', ['action' => 'register', 'sa' => 'coppa', 'form', 'member' => $context['coppa']['id']]), '" target="_blank" class="new_win">', $txt['coppa_form_link_popup'], '</a> | <a href="', getUrl('action', ['action' => 'register', 'sa' => 'coppa;form;dl', 'member' => $context['coppa']['id']]), '">', $txt['coppa_form_link_download'], '</a></span>
-				</p>
-				<p>', $context['coppa']['many_options'] ? $txt['coppa_send_to_two_options'] : $txt['coppa_send_to_one_option'], '</p>
-				<ol>';
-
-	// Can they send by post?
-	if (!empty($context['coppa']['post']))
-	{
-		echo '
-				<li> ', $txt['coppa_send_by_post'], '
-					<p class="coppa_contact">
-						', $context['coppa']['post'], '
-					</p>
-				</li>';
-
-		// Can they send by fax??
-		if (!empty($context['coppa']['fax']))
-		{
-			echo '
-					<li>', $txt['coppa_send_by_fax'], '
-						<p>
-						', $context['coppa']['fax'], '
-						</p>
-					</li>';
-		}
-
-		// Offer an alternative Phone Number?
-		if ($context['coppa']['phone'])
-		{
-			echo '
-				<li>', $context['coppa']['phone'], '</li>';
-		}
-
-		echo '
-			</ol>
-		<div>';
-	}
-}
-
-/**
- * An easily printable form for giving permission to access the forum for a minor.
- */
-function template_coppa_form()
-{
-	global $context, $txt;
-
-	// Show the form (As best we can)
-	echo '
-		<table class="table_grid">
-			<tr>
-				<td class="lefttext">', $context['forum_contacts'], '</td>
-			</tr>
-			<tr>
-				<td class="righttext">
-					<em>', $txt['coppa_form_address'], '</em>: ', $context['ul'], '<br />
-					', $context['ul'], '<br />
-					', $context['ul'], '<br />
-					', $context['ul'], '
-				</td>
-			</tr>
-			<tr>
-				<td class="righttext">
-					<em>', $txt['coppa_form_date'], '</em>: ', $context['ul'], '
-					<br /><br />
-				</td>
-			</tr>
-			<tr>
-				<td class="lefttext">
-					', $context['coppa_body'], '
-				</td>
-			</tr>
-		</table>';
-}
-
-/**
- * Show a window containing the spoken verification code.
- */
-function template_verification_sound()
-{
-	global $context, $settings, $txt, $db_show_debug;
-
-	$db_show_debug = false;
-
-	echo '<!DOCTYPE html>
-<html ', $context['right_to_left'] ? 'dir="rtl"' : '', '>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-		<title>', $txt['visual_verification_sound'], '</title>
-		<meta name="robots" content="noindex" />
-		<link rel="stylesheet" href="', $settings['theme_url'], '/css/index.css', CACHE_STALE, '" />
-		<link rel="stylesheet" href="', $settings['theme_url'], '/css/', $context['theme_variant_url'], 'index', $context['theme_variant'], '.css', CACHE_STALE, '" />';
-
-	// Just show the help text and a "close window" link.
-	echo '
-	</head>
-	<body style="margin: 0.5em;">
-		<div class="content centertext">
-			<br />
-			<a href="', $context['verification_sound_href'], ';sound" rel="nofollow">
-				<span style="font-size: 4em;">&#128266;</span>
-			</a>
-			<br />
-			<br />
-			<div>
-			<audio controls="controls" autoplay="autoplay">
-				<source src="', $context['verification_sound_href'], '" type="audio/x-wav">
-			</audio>
-			</div>
-			<a href="', $context['verification_sound_href'], ';sound" rel="nofollow">', $txt['visual_verification_sound_again'], '</a><br />
-			<a href="', $context['verification_sound_href'], '" rel="nofollow">', $txt['visual_verification_sound_direct'], '</a><br /><br />
-			<a href="javascript:self.close();">', $txt['visual_verification_sound_close'], '</a>
-			<br />
-		</div>
-	</body>
-</html>';
-}
-
-/**
  * Show a page for admins to register new members.
  */
 function template_admin_register()
@@ -772,7 +642,7 @@ function template_contact_form()
 
 	echo '
 		<h2 class="category_header">', $txt['admin_contact_form'], '</h2>
-		<form id="contact_form" class="content" action="', getUrl('action', ['action' => 'register', 'sa' => 'contact']), '" method="post" accept-charset="UTF-8">
+		<form id="contact_form" class="content" action="', getUrl('action', ['action' => 'about', 'sa' => 'contact']), '" method="post" accept-charset="UTF-8">
 			<div class="content">';
 
 	if (!empty($context['errors']))

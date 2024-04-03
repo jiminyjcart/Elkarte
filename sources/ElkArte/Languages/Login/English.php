@@ -118,7 +118,7 @@ $txt['coppa_form_link_popup'] = 'Load Form In New Window';
 $txt['coppa_form_link_download'] = 'Download Form as Text File';
 $txt['coppa_send_to_one_option'] = 'Then arrange for your parent/guardian to send the completed form by:';
 $txt['coppa_send_to_two_options'] = 'Then arrange for your parent/guardian to send the completed form by either:';
-$txt['coppa_send_by_post'] = 'Post, to the following address:';
+$txt['coppa_send_by_post'] = 'Mail/Post, to the following address:';
 $txt['coppa_send_by_fax'] = 'Fax, to the following number:';
 $txt['coppa_send_by_phone'] = 'Alternatively, arrange for them to phone the administrator at {PHONE_NUMBER}.';
 
@@ -126,10 +126,6 @@ $txt['coppa_form_title'] = 'Permission form for registration at {forum_name_html
 $txt['coppa_form_address'] = 'Address';
 $txt['coppa_form_date'] = 'Date';
 $txt['coppa_form_body'] = 'I {PARENT_NAME},<br /><br />give permission for {CHILD_NAME} (child name) to become a fully registered member of the forum: {forum_name_html_safe}, with the username: {USER_NAME}.<br /><br />I understand that certain personal information entered by {USER_NAME} may be shown to other users of the forum.<br /><br />Signed:<br />{PARENT_NAME} (Parent/Guardian).';
-
-$txt['visual_verification_sound_again'] = 'Play again';
-$txt['visual_verification_sound_close'] = 'Close window';
-$txt['visual_verification_sound_direct'] = 'Having problems hearing this?  Try a direct link to it.';
 
 // Use numeric entities in the below.
 $txt['registration_username_available'] = 'Username is available';

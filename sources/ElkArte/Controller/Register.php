@@ -26,7 +26,6 @@ use ElkArte\Errors\Errors;
 use ElkArte\Exceptions\Exception;
 use ElkArte\Helper\DataValidator;
 use ElkArte\Helper\Util;
-use ElkArte\Http\Headers;
 use ElkArte\Languages\Txt;
 use ElkArte\PrivacyPolicy;
 use ElkArte\Profile\ProfileOptions;
@@ -90,8 +89,6 @@ class Register extends AbstractController
 			'register2' => array($this, 'action_register2'),
 			'usernamecheck' => array($this, 'action_registerCheckUsername'),
 			'activate' => array($this, 'action_activate'),
-			'contact' => array($this, 'action_contact'),
-			'coppa' => array($this, 'action_coppa'),
 			'agrelang' => array($this, 'action_agrelang'),
 			'privacypol' => array($this, 'action_privacypol'),
 			'agreement' => array($this, 'action_agreement'),
@@ -133,7 +130,7 @@ class Register extends AbstractController
 		// Confused and want to contact the admins instead
 		if (isset($this->_req->post->show_contact))
 		{
-			redirectexit('action=register;sa=contact');
+			redirectexit('action=about;sa=contact');
 		}
 
 		// If we have language support enabled then they need to be loaded
@@ -156,7 +153,7 @@ class Register extends AbstractController
 		$context['show_contact_button'] = !empty($modSettings['enable_contactform']) && $modSettings['enable_contactform'] === 'registration';
 		$context['insert_display_name'] = !empty($modSettings['show_DisplayNameOnRegistration']);
 
-		// Under age restrictions?
+		// Underage restrictions?
 		if ($context['show_coppa'])
 		{
 			$context['skip_coppa'] = false;
@@ -572,7 +569,7 @@ class Register extends AbstractController
 		// If COPPA has been selected then things get complicated, setup the template.
 		if (!empty($modSettings['coppaAge']) && empty($_SESSION['skip_coppa']))
 		{
-			redirectexit('action=register;sa=coppa;member=' . $memberID);
+			redirectexit('action=about;sa=coppa;member=' . $memberID);
 		}
 		// Basic template variable setup.
 		elseif (!empty($modSettings['registration_method']))
@@ -628,7 +625,7 @@ class Register extends AbstractController
 	 * @param bool $has_real_name - if true adds 'real_name' as well
 	 *
 	 * @return array
-	 * @throws \ElkArte\Exceptions\Exception
+	 * @throws Exception
 	 */
 	private function _extra_vars($has_real_name)
 	{
@@ -978,7 +975,7 @@ class Register extends AbstractController
 	 *
 	 * @param bool $email_change if the email was changed or not
 	 *
-	 * @throws \ElkArte\Exceptions\Exception
+	 * @throws Exception
 	 */
 	private function _activate_resend($email_change)
 	{
@@ -1015,9 +1012,6 @@ class Register extends AbstractController
 			spamProtection('remind');
 
 			// This will ensure we don't actually get an error message if it works!
-			$context['error_title'] = '';
-
-			// This will ensure we don't actually get an error message if it works!
 			$context['error_title'] = $txt['invalid_activation_resend'];
 			throw new Exception(empty($email_change) ? 'resend_email_success' : 'change_email_success', false);
 		}
@@ -1026,7 +1020,7 @@ class Register extends AbstractController
 	/**
 	 * Validates a supplied activation code is valid
 	 *
-	 * @throws \ElkArte\Exceptions\Exception already_activated, registration_not_approved
+	 * @throws Exception already_activated, registration_not_approved
 	 */
 	private function _activate_validate_code()
 	{
@@ -1052,191 +1046,6 @@ class Register extends AbstractController
 		}
 
 		return true;
-	}
-
-	/**
-	 * This function will display the contact information for the forum, as well a form to fill in.
-	 *
-	 * - Accessed by action=register;sa=coppa
-	 */
-	public function action_coppa()
-	{
-		global $context, $modSettings, $txt;
-
-		Txt::load('Login');
-		theme()->getTemplates()->load('Register');
-
-		// No User ID??
-		if (!isset($this->_req->query->member))
-		{
-			throw new Exception('no_access', false);
-		}
-
-		// Get the user details...
-		require_once(SUBSDIR . '/Members.subs.php');
-		$member = getBasicMemberData((int) $this->_req->query->member, array('authentication' => true));
-
-		// If doesn't exist or not pending coppa
-		if (empty($member) || (int) $member['is_activated'] !== self::STATUS_AWAITING_COPPA)
-		{
-			throw new Exception('no_access', false);
-		}
-
-		if (isset($this->_req->query->form))
-		{
-			// Some simple contact stuff for the forum.
-			$context['forum_contacts'] = (empty($modSettings['coppaPost']) ? '' : $modSettings['coppaPost'] . '<br /><br />') . (empty($modSettings['coppaFax']) ? '' : $modSettings['coppaFax'] . '<br />');
-			$context['forum_contacts'] = empty($context['forum_contacts']) ? '' : $context['forum_name_html_safe'] . '<br />' . $context['forum_contacts'];
-
-			// Showing template?
-			if (!isset($this->_req->query->dl))
-			{
-				// Shortcut for producing underlines.
-				$context['ul'] = '<span class="underline">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>';
-				theme()->getLayers()->removeAll();
-				$context['sub_template'] = 'coppa_form';
-				$context['page_title'] = replaceBasicActionUrl($txt['coppa_form_title']);
-				$context['coppa_body'] = str_replace(array('{PARENT_NAME}', '{CHILD_NAME}', '{USER_NAME}'), array($context['ul'], $context['ul'], $member['member_name']), replaceBasicActionUrl($txt['coppa_form_body']));
-			}
-			// Downloading.
-			else
-			{
-				// The data.
-				$ul = '                ';
-				$crlf = "\r\n";
-				$data = $context['forum_contacts'] . $crlf . $txt['coppa_form_address'] . ':' . $crlf . $txt['coppa_form_date'] . ':' . $crlf . $crlf . $crlf . replaceBasicActionUrl($txt['coppa_form_body']);
-				$data = str_replace(array('{PARENT_NAME}', '{CHILD_NAME}', '{USER_NAME}', '<br />', '<br />'), array($ul, $ul, $member['member_name'], $crlf, $crlf), $data);
-
-				// Send the headers.
-				Headers::instance()
-					->removeHeader('all')
-					->header('Connection', 'close')
-					->header('Content-Disposition', 'attachment; filename="approval.txt"')
-					->contentType('application/octet-stream')
-					->header('Content-Length', count($data))
-					->sendHeaders();
-
-				echo $data;
-				obExit(false);
-			}
-		}
-		else
-		{
-			$context += array(
-				'page_title' => $txt['coppa_title'],
-				'sub_template' => 'coppa',
-			);
-
-			$context['coppa'] = array(
-				'body' => str_replace('{MINIMUM_AGE}', $modSettings['coppaAge'], replaceBasicActionUrl($txt['coppa_after_registration'])),
-				'many_options' => !empty($modSettings['coppaPost']) && !empty($modSettings['coppaFax']),
-				'post' => empty($modSettings['coppaPost']) ? '' : $modSettings['coppaPost'],
-				'fax' => empty($modSettings['coppaFax']) ? '' : $modSettings['coppaFax'],
-				'phone' => empty($modSettings['coppaPhone']) ? '' : str_replace('{PHONE_NUMBER}', $modSettings['coppaPhone'], $txt['coppa_send_by_phone']),
-				'id' => $this->_req->query->member,
-			);
-		}
-	}
-
-	/**
-	 * Shows the contact form for the user to fill out
-	 *
-	 * - Functionality needs to be enabled in the ACP for this to be used
-	 * - Triggers the verify_contact event
-	 */
-	public function action_contact()
-	{
-		global $context, $txt, $modSettings;
-
-		// Users have no need to use this, just send a PM
-		// Disabled, you cannot enter.
-		if ($this->user->is_guest === false || empty($modSettings['enable_contactform']) || $modSettings['enable_contactform'] === 'disabled')
-		{
-			redirectexit();
-		}
-
-		Txt::load('Login');
-		theme()->getTemplates()->load('Register');
-
-		// Submitted the contact form?
-		if (isset($this->_req->post->send))
-		{
-			checkSession('post');
-			validateToken('contact');
-
-			// Can't send a lot of these in a row, no sir!
-			spamProtection('contact');
-
-			// No errors, yet.
-			$context['errors'] = array();
-			Txt::load('Errors');
-
-			// Could they get the right send topic verification code?
-			require_once(SUBSDIR . '/Members.subs.php');
-
-			// Form validation
-			$validator = new DataValidator();
-			$validator->sanitation_rules(array(
-				'emailaddress' => 'trim',
-				'contactmessage' => 'trim'
-			));
-			$validator->validation_rules(array(
-				'emailaddress' => 'required|valid_email',
-				'contactmessage' => 'required'
-			));
-			$validator->text_replacements(array(
-				'emailaddress' => $txt['error_email'],
-				'contactmessage' => $txt['error_message']
-			));
-
-			// Any form errors
-			if (!$validator->validate($this->_req->post))
-			{
-				$context['errors'] = $validator->validation_errors();
-			}
-
-			// Get the clean data
-			$this->_req->post = new \ArrayObject($validator->validation_data(), \ArrayObject::ARRAY_AS_PROPS);
-
-			// Trigger the verify contact event for captcha checks
-			$this->_events->trigger('verify_contact', array());
-
-			// No errors, then send the PM to the admins
-			if (empty($context['errors']))
-			{
-				$admins = admins();
-				if (!empty($admins))
-				{
-					require_once(SUBSDIR . '/PersonalMessage.subs.php');
-					sendpm(array('to' => array_keys($admins), 'bcc' => array()), $txt['contact_subject'], $this->_req->post->contactmessage, false, array('id' => 0, 'name' => $this->_req->post->emailaddress, 'username' => $this->_req->post->emailaddress));
-				}
-
-				// Send the PM
-				redirectexit('action=register;sa=contact;done');
-			}
-			else
-			{
-				$context['emailaddress'] = $this->_req->post->emailaddress;
-				$context['contactmessage'] = $this->_req->post->contactmessage;
-			}
-		}
-
-		// Show the contact done form or the form itself
-		if (isset($this->_req->query->done))
-		{
-			$context['sub_template'] = 'contact_form_done';
-		}
-		else
-		{
-			loadJavascriptFile('ext/mailcheck.min.js');
-			$context['sub_template'] = 'contact_form';
-			$context['page_title'] = $txt['admin_contact_form'];
-
-			// Setup any contract form events, like validation
-			$this->_events->trigger('setup_contact', array());
-		}
-
-		createToken('contact');
 	}
 
 	/**
@@ -1317,6 +1126,16 @@ class Register extends AbstractController
 		createToken('register');
 	}
 
+	/**
+	 * Action for handling privacy policy acceptance during registration.
+	 *
+	 * - Called from Register controller
+	 * - Handles the acceptance and redirection
+	 *    - If the user accepts the privacy policy, it updates the user's acceptance status in the database,
+	 *      sets a session variable indicating acceptance, and redirects the user to the specified URL.
+	 *    - If the user declines the privacy policy, it redirects the user to the account deletion page.
+	 *    - If the user has not yet made a decision, it loads the registration agreement template for displaying the privacy policy.
+	 */
 	public function action_privacypol()
 	{
 		global $context, $modSettings, $txt;

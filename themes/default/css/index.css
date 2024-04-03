@@ -409,7 +409,8 @@ button[type="button"]:hover, .linkbutton:hover {
 }
 
 /* Don't show disabled buttons as active on hover */
-input[type=submit][disabled]:hover, button[disabled], button[disabled]:hover, input[disabled].input_text {
+input[type=submit][disabled]:hover, input[disabled].input_text, textarea[disabled],
+button[disabled], button[disabled]:hover {
 	cursor: not-allowed;
 	border: 1px solid;
 }

@@ -1578,7 +1578,7 @@ function replaceBasicActionUrl($string)
 			'{recent_url}' => getUrl('action', ['action' => 'recent']),
 			'{search_url}' => getUrl('action', ['action' => 'search']),
 			'{who_url}' => getUrl('action', ['action' => 'who']),
-			'{credits_url}' => getUrl('action', ['action' => 'who', 'sa' => 'credits']),
+			'{credits_url}' => getUrl('action', ['action' => 'about', 'sa' => 'credits']),
 			'{calendar_url}' => getUrl('action', ['action' => 'calendar']),
 			'{memberlist_url}' => getUrl('action', ['action' => 'memberlist']),
 			'{stats_url}' => getUrl('action', ['action' => 'stats']),

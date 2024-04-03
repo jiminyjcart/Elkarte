@@ -847,7 +847,6 @@ $txt['new_posts_in_category'] = 'Click to see the new posts in %1$s';
 $txt['verification'] = 'Verification';
 $txt['visual_verification_hidden'] = 'Please leave this box empty';
 $txt['visual_verification_description'] = 'Type the letters shown in the picture';
-$txt['visual_verification_sound'] = 'Listen to the letters';
 $txt['visual_verification_request_new'] = 'Request another image';
 
 // @todo Send email strings - should move?

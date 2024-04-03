@@ -797,7 +797,7 @@ function registerMember(&$regOptions, $ErrorContext = 'register')
 		'ACTIVATIONLINK' => $scripturl . '?action=register;sa=activate;u=' . $memberID . ';code=' . $validation_code,
 		'ACTIVATIONLINKWITHOUTCODE' => $scripturl . '?action=register;sa=activate;u=' . $memberID,
 		'ACTIVATIONCODE' => $validation_code,
-		'COPPALINK' => $scripturl . '?action=register;sa=coppa;u=' . $memberID,
+		'COPPALINK' => $scripturl . '?action=about;sa=coppa;u=' . $memberID,
 	);
 
 	// Administrative registrations are a bit different...
