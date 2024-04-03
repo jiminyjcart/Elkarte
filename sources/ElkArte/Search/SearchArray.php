@@ -52,9 +52,9 @@ class SearchArray extends AbstractModel
 		parent::__construct();
 
 		// Build the search query appropriate for the API in use
-		$search_config = new ValuesContainer(array(
+		$search_config = new ValuesContainer([
 			'search_index' => $this->_modSettings['search_index'] ?: '',
-		));
+		]);
 		$searchAPI = new SearchApiWrapper($search_config);
 		$searchAPI->supportsExtended() ? $this->searchArrayExtended() : $this->searchArray();
 		unset($searchAPI);
@@ -73,7 +73,7 @@ class SearchArray extends AbstractModel
 		// This option will do fulltext searching in the most basic way.
 		if ($this->_search_simple_fulltext)
 		{
-			$stripped_query = strtr($stripped_query, array('"' => ''));
+			$stripped_query = strtr($stripped_query, ['"' => '']);
 		}
 
 		$this->_no_regexp = preg_match('~&#(?:\d{1,7}|x[0-9a-fA-F]{1,6});~', $stripped_query) === 1;
@@ -155,7 +155,7 @@ class SearchArray extends AbstractModel
 	/**
 	 * Looks for words that should be excluded in the results (-word)
 	 *
-	 * - Look for -test, etc
+	 * - Look for -test, etc.
 	 * - Prevents excluding blocklist words since it is redundant
 	 *
 	 * @param string[] $wordArray
@@ -184,13 +184,13 @@ class SearchArray extends AbstractModel
 	 * Constructs a binary mode query to pass back to a search API
 	 *
 	 * Understands the use of OR | AND & as search modifiers
-	 * Currently used by the sphinx API's
+	 * Currently used by the sphinx API
 	 *
 	 * @return string
 	 */
 	public function searchArrayExtended()
 	{
-		$keywords = array('include' => [], 'exclude' => []);
+		$keywords = ['include' => [], 'exclude' => []];
 
 		// Split our search string and return an empty string if no matches
 		if (!preg_match_all('~(-?)("[^"]+"|[^" ]+)~', $this->_search_string, $tokens, PREG_SET_ORDER))

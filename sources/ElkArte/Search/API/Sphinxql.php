@@ -20,6 +20,8 @@ namespace ElkArte\Search\API;
 use ElkArte\Cache\Cache;
 use ElkArte\Errors\Errors;
 use ElkArte\User;
+use Exception;
+use mysqli;
 
 /**
  * SearchAPI-Sphinxql.class.php, SphinxQL API,
@@ -97,7 +99,7 @@ class Sphinxql extends AbstractAPI
 	 */
 	public function prepareIndexes($word, &$wordsSearch, &$wordsExclude, $isExcluded, $excludedSubjectWords)
 	{
-		$subwords = text2words($word, false);
+		$subwords = text2words($word);
 
 		$fulltextWord = count($subwords) === 1 ? $word : '"' . $word . '"';
 		$wordsSearch['indexed_words'][] = $fulltextWord;
@@ -215,7 +217,7 @@ class Sphinxql extends AbstractAPI
 						'id' => $match['id_topic'],
 						'num_matches' => $num,
 						'matches' => [],
-						'relevance' => round($match['relevance'], 0),
+						'relevance' => round($match['relevance']),
 					];
 				}
 			}
@@ -245,7 +247,7 @@ class Sphinxql extends AbstractAPI
 	/**
 	 * Connect to the sphinx server, on failure log error and exit
 	 *
-	 * @return \mysqli
+	 * @return mysqli
 	 * @throws \ElkArte\Exceptions\Exception
 	 */
 	private function sphinxConnect()
@@ -257,7 +259,7 @@ class Sphinxql extends AbstractAPI
 		{
 			$mySphinx = mysqli_connect(($modSettings['sphinx_searchd_server'] === 'localhost' ? '127.0.0.1' : $modSettings['sphinx_searchd_server']), '', '', '', (int) $modSettings['sphinxql_searchd_port']);
 		}
-		catch (\Exception)
+		catch (Exception)
 		{
 			$mySphinx = false;
 		}

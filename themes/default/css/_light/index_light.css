@@ -734,6 +734,13 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 	background: var(--primary_content_background);
 }
 
+/* Triangle pointer when the menu is above the pointer */
+.listlevel1.subsections.above::after {
+	border-color: var(--transparent);
+	border-bottom-color: var(--primary_border);
+	border-left-color: var(--primary_border);
+}
+
 .poster .linklevel2, .poster .linklevel2:focus,
 .poster .listlevel2:hover .linklevel2 {
 	border-color: var(--transparent);

@@ -766,4 +766,28 @@ class UpgradeInstructions_upgrade_2_0
 			)
 		);
 	}
+
+	public function attachment_folder_column_title()
+	{
+		return 'Changing the attachment folder column to smallint.';
+	}
+
+	public function attachment_folder_column()
+	{
+		return array(
+			array(
+				'debug_title' => 'Changing the attachment folder column to smallint.',
+				'function' => function () {
+					$this->table->change_column('{db_prefix}attachments',
+						'id_folder',
+						array(
+							'type' => 'smallint',
+							'size' => 5,
+							'default' => 1
+						)
+					);
+				}
+			)
+		);
+	}
 }

@@ -17,6 +17,7 @@
 namespace ElkArte\Search;
 
 use ElkArte\Database\AbstractResult;
+use ElkArte\Database\QueryInterface;
 use ElkArte\Search\API\Standard;
 
 /**
@@ -30,16 +31,16 @@ class Search
 	/** @var array */
 	protected $_participants = [];
 
-	/** @var \ElkArte\Search\SearchParams */
+	/** @var SearchParams */
 	protected $_searchParams;
 
-	/** @var \ElkArte\Search\SearchArray Holds the words and phrases to be searched on */
+	/** @var SearchArray Holds the words and phrases to be searched on */
 	private $_searchArray;
 
 	/** @var null|object Holds instance of the search api in use such as \ElkArte\Search\API\Standard_Search */
 	private $_searchAPI;
 
-	/** @var \ElkArte\Database\QueryInterface Database instance */
+	/** @var QueryInterface Database instance */
 	private $_db;
 
 	/** @var array Builds the array of words for use in the db query */
@@ -54,7 +55,7 @@ class Search
 	/** @var array Phrases not to be found in the search results (-"some phrase") */
 	private $_excludedPhrases = [];
 
-	/** @var \ElkArte\Search\WeightFactors The weights to associate to various areas for relevancy */
+	/** @var WeightFactors The weights to associate to various areas for relevancy */
 	private $_weightFactors = [];
 
 	/** @var bool If we are creating a tmp db table */
@@ -79,43 +80,43 @@ class Search
 
 		$this->_createTemporary = $db_search->createTemporaryTable(
 				'{db_prefix}tmp_log_search_messages',
-				array(
-					array(
+				[
+					[
 						'name' => 'id_msg',
 						'type' => 'int',
 						'size' => 10,
 						'unsigned' => true,
 						'default' => 0,
-					)
-				),
-				array(
-					array(
+					]
+				],
+				[
+					[
 						'name' => 'id_msg',
-						'columns' => array('id_msg'),
+						'columns' => ['id_msg'],
 						'type' => 'primary'
-					)
-				)
+					]
+				]
 			) !== false;
 
 		// Skip the error as it is not uncommon for temp tables to be denied
 		$db_search->skip_next_error();
 		$db_search->createTemporaryTable('{db_prefix}tmp_log_search_topics',
-			array(
-				array(
+			[
+				[
 					'name' => 'id_topic',
 					'type' => 'mediumint',
 					'unsigned' => true,
 					'size' => 8,
 					'default' => 0
-				)
-			),
-			array(
-				array(
+				]
+			],
+			[
+				[
 					'name' => 'id_topic',
-					'columns' => array('id_topic'),
+					'columns' => ['id_topic'],
 					'type' => 'primary'
-				)
-			)
+				]
+			]
 		);
 	}
 
@@ -136,11 +137,11 @@ class Search
 	 */
 	public function getParams()
 	{
-		$this->_searchParams->mergeWith(array(
-			'min_msg_id' => (int) $this->_searchParams->_minMsgID,
-			'max_msg_id' => (int) $this->_searchParams->_maxMsgID,
+		$this->_searchParams->mergeWith([
+			'min_msg_id' => $this->_searchParams->_minMsgID,
+			'max_msg_id' => $this->_searchParams->_maxMsgID,
 			'memberlist' => $this->_searchParams->_memberlist,
-		));
+		]);
 	}
 
 	/**
@@ -154,7 +155,7 @@ class Search
 	/**
 	 * Set the weight factors
 	 *
-	 * @param \ElkArte\Search\WeightFactors $weight
+	 * @param WeightFactors $weight
 	 */
 	public function setWeights($weight)
 	{
@@ -164,7 +165,7 @@ class Search
 	/**
 	 * Set disallowed words etc.
 	 *
-	 * @param \ElkArte\Search\SearchParams $paramObject
+	 * @param SearchParams $paramObject
 	 * @param false $search_simple_fulltext
 	 */
 	public function setParams($paramObject, $search_simple_fulltext = false)
@@ -206,8 +207,8 @@ class Search
 	{
 		// Unfortunately, searching for words like these is going to result in to many hits,
 		// so we're blocking them.
-		$blocklist_words = array('img', 'url', 'quote', 'www', 'http', 'the', 'is', 'it', 'are', 'if', 'in');
-		call_integration_hook('integrate_search_blocklist_words', array(&$blocklist_words));
+		$blocklist_words = ['img', 'url', 'quote', 'www', 'http', 'the', 'is', 'it', 'are', 'if', 'in'];
+		call_integration_hook('integrate_search_blocklist_words', [&$blocklist_words]);
 
 		$this->_blocklist_words = $blocklist_words;
 	}
@@ -247,7 +248,7 @@ class Search
 	 *
 	 * @param bool $array If true returns an array, otherwise an object
 	 *
-	 * @return \ElkArte\Search\SearchParams|string[]
+	 * @return SearchParams|string[]
 	 */
 	public function getSearchParams($array = false)
 	{
@@ -284,7 +285,7 @@ class Search
 	 *
 	 * @return string - the encoded string to be appended to the URL
 	 */
-	public function compileURLparams($search = array())
+	public function compileURLparams($search = [])
 	{
 		return $this->_searchParams->compileURL($search);
 	}
@@ -293,14 +294,14 @@ class Search
 	 * Finds the posters of the messages
 	 *
 	 * @param int[] $msg_list - All the messages we want to find the posters
-	 * @param int $limit - There are only so much topics
+	 * @param int $limit - There are only so many topics
 	 *
 	 * @return int[] - array of members id
 	 */
 	public function loadPosters($msg_list, $limit)
 	{
 		// Load the posters...
-		$posters = array();
+		$posters = [];
 		$this->_db->fetchQuery('
 			SELECT
 				id_member
@@ -308,14 +309,14 @@ class Search
 			WHERE id_member != {int:no_member}
 				AND id_msg IN ({array_int:message_list})
 			LIMIT {int:limit}',
-			array(
+			[
 				'message_list' => $msg_list,
 				'limit' => $limit,
 				'no_member' => 0,
-			)
+			]
 		)->fetch_callback(
 			static function ($row) use (&$posters) {
-				$posters[] = $row['id_member'];
+				$posters[] = (int) $row['id_member'];
 			}
 		);
 
@@ -326,7 +327,7 @@ class Search
 	 * Finds the posters of the messages
 	 *
 	 * @param int[] $msg_list - All the messages we want to find the posters
-	 * @param int $limit - There are only so much topics
+	 * @param int $limit - There are only so many topics
 	 *
 	 * @return bool|AbstractResult
 	 */
@@ -360,12 +361,12 @@ class Search
 				AND m.approved = {int:is_approved}' : '') . '
 			ORDER BY FIND_IN_SET(m.id_msg, {string:message_list_in_set})
 			LIMIT {int:limit}',
-			array(
+			[
 				'message_list' => $msg_list,
 				'is_approved' => 1,
 				'message_list_in_set' => implode(',', $msg_list),
 				'limit' => $limit,
-			)
+			]
 		);
 	}
 
@@ -456,7 +457,7 @@ class Search
 			$this->_searchAPI->setExcludedWords($excludedWords);
 
 			// Sort the indexed words (large words -> small words -> excluded words).
-			usort($orParts[$orIndex], array($this->_searchAPI, 'searchSort'));
+			usort($orParts[$orIndex], [$this->_searchAPI, 'searchSort']);
 
 			foreach ($orParts[$orIndex] as $word)
 			{

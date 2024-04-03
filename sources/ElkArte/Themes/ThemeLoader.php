@@ -359,6 +359,9 @@ class ThemeLoader
 	 * Detects url and checks against expected boardurl
 	 *
 	 * Attempts to correct improper URL's
+	 *  - Point to httpS if http is requested
+	 *  - Point to www.siteName.com if siteName.com is requested
+	 *  - Point to an proper address if this is an alias address
 	 */
 	private function loadThemeUrls()
 	{
@@ -392,7 +395,10 @@ class ThemeLoader
 			}
 
 			// Okay, #4 - perhaps it's an IP address?  We're gonna want to use that one, then. (assuming it's the IP or something...)
-			if ($do_fix === true || preg_match('~^http[s]?://(?:[\d\.:]+|\[[\d:]+\](?::\d+)?)(?:$|/)~', $detected_url) === 1)
+			// Okay, #4a - The previous code had || preg_match('~^http[s]?://(?:[\d\.:]+|\[[\d:]+\](?::\d+)?)(?:$|/)~', $detected_url) === 1)
+			// however this has shown to replace valid site name with a ip address, leaving the site wrecked due to $_SERVER
+			// returning suspect info
+			if ($do_fix === true)
 			{
 				$this->fixThemeUrls($detected_url);
 			}

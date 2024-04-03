@@ -17,6 +17,7 @@
 namespace ElkArte\Search\API;
 
 use ElkArte\Search\Cache\Session;
+use Exception;
 
 /**
  * SearchAPI-Standard.class.php, Standard non-full index, non-custom index search
@@ -48,7 +49,7 @@ class Standard extends AbstractAPI
 	 * @param bool[] $participants
 	 *
 	 * @return array
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function searchQuery($search_words, $excluded_words, &$participants)
 	{
@@ -80,7 +81,7 @@ class Standard extends AbstractAPI
 
 				if (empty($num_res))
 				{
-					throw new \Exception('query_not_specific_enough');
+					throw new Exception('query_not_specific_enough');
 				}
 			}
 
@@ -105,9 +106,9 @@ class Standard extends AbstractAPI
 		$this->_db_search->search_query('', '
 			DELETE FROM {db_prefix}log_search_results
 			WHERE id_search = {int:search_id}',
-			array(
+			[
 				'search_id' => $id_search,
-			)
+			]
 		);
 	}
 
@@ -127,13 +128,13 @@ class Standard extends AbstractAPI
 		// We do this to try and avoid duplicate keys on databases not supporting INSERT IGNORE.
 		foreach ($search_words as $words)
 		{
-			$subject_query_params = array();
-			$subject_query = array(
+			$subject_query_params = [];
+			$subject_query = [
 				'from' => '{db_prefix}topics AS t',
-				'inner_join' => array(),
-				'left_join' => array(),
-				'where' => array(),
-			);
+				'inner_join' => [],
+				'left_join' => [],
+				'where' => [],
+			];
 
 			if ($modSettings['postmod_active'])
 			{
@@ -146,7 +147,7 @@ class Standard extends AbstractAPI
 			foreach ($words['subject_words'] as $subjectWord)
 			{
 				$numTables++;
-				if (in_array($subjectWord, $excluded_words))
+				if (in_array($subjectWord, $excluded_words, true))
 				{
 					$subject_query['left_join'][] = '{db_prefix}log_search_subjects AS subj' . $numTables . ' ON (subj' . $numTables . '.word ' . (empty($modSettings['search_match_words']) ? '{ilike} {string:subject_words_' . $numTables . '_wild}' : '= {string:subject_words_' . $numTables . '}') . ' AND subj' . $numTables . '.id_topic = t.id_topic)';
 					$subject_query['where'][] = '(subj' . $numTables . '.word IS NULL)';
@@ -201,15 +202,15 @@ class Standard extends AbstractAPI
 			}
 
 			// Build the search query
-			$subject_query['select'] = array(
+			$subject_query['select'] = [
 				'id_search' => '{int:id_search}',
 				'id_topic' => 't.id_topic',
 				'relevance' => $this->_build_relevance(),
 				'id_msg' => empty($this->_searchParams->_userQuery) ? 't.id_first_msg' : 'm.id_msg',
 				'num_matches' => 1,
-			);
+			];
 
-			$subject_query['parameters'] = array_merge($subject_query_params, array(
+			$subject_query['parameters'] = array_merge($subject_query_params, [
 				'id_search' => $id_search,
 				'min_msg' => $this->_searchParams->_minMsg,
 				'recent_message' => $this->_searchParams->_recentMsg,
@@ -217,7 +218,7 @@ class Standard extends AbstractAPI
 				'short_topic_posts' => $this->config->shortTopicPosts,
 				'is_approved' => 1,
 				'limit' => empty($modSettings['search_max_results']) ? 0 : $modSettings['search_max_results'] - $numSubjectResults,
-			));
+			]);
 
 			call_integration_hook('integrate_subject_only_search_query', [&$subject_query, &$subject_query_params]);
 
@@ -358,7 +359,7 @@ class Standard extends AbstractAPI
 				$usedIDs[$row['id_topic']] = true;
 				foreach ($row as $key => $value)
 				{
-					$inserts[$row['id_topic']][] = (int) $row[$key];
+					$inserts[$row['id_topic']][] = (int) $value;
 				}
 			}
 			$ignoreRequest->free_result();
@@ -399,27 +400,27 @@ class Standard extends AbstractAPI
 
 		$num_results = 0;
 
-		$main_query = array(
-			'select' => array(
+		$main_query = [
+			'select' => [
 				'id_search' => $id_search,
 				'relevance' => '0',
-			),
+			],
 			'from' => '{db_prefix}topics AS t',
-			'inner_join' => array(
+			'inner_join' => [
 				'{db_prefix}messages AS m ON (m.id_topic = t.id_topic)'
-			),
+			],
 			'left_join' => [],
 			'where' => [],
 			'group_by' => [],
-			'parameters' => array(
+			'parameters' => [
 				'min_msg' => $this->_searchParams->_minMsg,
 				'recent_message' => $this->_searchParams->_recentMsg,
 				'huge_topic_posts' => $this->config->humungousTopicPosts,
 				'short_topic_posts' => $this->config->shortTopicPosts,
 				'is_approved' => 1,
 				'limit' => $modSettings['search_max_results'],
-			),
-		);
+			],
+		];
 
 		if (empty($this->_searchParams['topic']) && empty($this->_searchParams['show_complete']))
 		{
@@ -436,18 +437,18 @@ class Standard extends AbstractAPI
 			$main_query['select']['id_msg'] = 'm.id_msg';
 			$main_query['select']['num_matches'] = '1 AS num_matches';
 
-			$main_query['weights'] = array(
-				'age' => array(
+			$main_query['weights'] = [
+				'age' => [
 					'search' => '((m.id_msg - t.id_first_msg) / CASE WHEN t.id_last_msg = t.id_first_msg THEN 1 ELSE t.id_last_msg - t.id_first_msg END)',
-				),
-				'first_message' => array(
+				],
+				'first_message' => [
 					'search' => 'CASE WHEN m.id_msg = t.id_first_msg THEN 1 ELSE 0 END',
-				),
+				],
 				// experimental, give longer messages more weight
-				'length' => array(
+				'length' => [
 					'search' => '(CASE WHEN LENGTH(m.body) - LENGTH(REPLACE(m.body, " ", "")) > 500 THEN 1 ELSE (LENGTH(m.body) - LENGTH(REPLACE(m.body, " ", "")) / 500) END)',
-				),
-			);
+				],
+			];
 
 			if (!empty($this->_searchParams['topic']))
 			{
@@ -506,7 +507,7 @@ class Standard extends AbstractAPI
 				$where = [];
 				foreach ($words['all_words'] as $regularWord)
 				{
-					$where[] = 'm.body' . (in_array($regularWord, $excludedWords) ? ' {not_' : '{') . (empty($modSettings['search_match_words']) || $this->noRegexp() ? 'ilike} ' : 'rlike} ') . '{string:all_word_body_' . $count . '}';
+					$where[] = 'm.body' . (in_array($regularWord, $excludedWords, true) ? ' {not_' : '{') . (empty($modSettings['search_match_words']) || $this->noRegexp() ? 'ilike} ' : 'rlike} ') . '{string:all_word_body_' . $count . '}';
 					if (in_array($regularWord, $excludedWords, true))
 					{
 						$where[] = 'm.subject ' . (empty($modSettings['search_match_words']) || $this->noRegexp() ? ' {not_ilike} ' : ' {not_rlike} ') . '{string:all_word_body_' . $count . '}';
@@ -557,7 +558,7 @@ class Standard extends AbstractAPI
 			}
 		}
 
-		call_integration_hook('integrate_main_search_query', array(&$main_query));
+		call_integration_hook('integrate_main_search_query', [&$main_query]);
 
 		// Did we either get some indexed results, or otherwise did not do an indexed query?
 		if (!empty($indexedResults) || !$this->useWordIndex())
@@ -569,30 +570,30 @@ class Standard extends AbstractAPI
 		// Insert subject-only matches.
 		if ($num_results < $modSettings['search_max_results'] && $numSubjectResults !== 0)
 		{
-			$subject_query = array(
-				'select' => array(
+			$subject_query = [
+				'select' => [
 					'id_search' => '{int:id_search}',
 					'id_topic' => 't.id_topic',
 					'relevance' => $this->_build_relevance(),
 					'id_msg' => 't.id_first_msg',
 					'num_matches' => 1,
-				),
+				],
 				'from' => '{db_prefix}topics AS t',
-				'inner_join' => array(
+				'inner_join' => [
 					'{db_prefix}' . ($this->_createTemporary ? 'tmp_' : '') . 'log_search_topics AS lst ON (lst.id_topic = t.id_topic)'
-				),
-				'where' => array(
+				],
+				'where' => [
 					$this->_createTemporary ? '1=1' : 'lst.id_search = {int:id_search}',
-				),
-				'parameters' => array(
+				],
+				'parameters' => [
 					'id_search' => $id_search,
 					'min_msg' => $this->_searchParams->_minMsg,
 					'recent_message' => $this->_searchParams->_recentMsg,
 					'huge_topic_posts' => $this->config->humungousTopicPosts,
 					'short_topic_posts' => $this->config->shortTopicPosts,
 					'limit' => empty($modSettings['search_max_results']) ? 0 : $modSettings['search_max_results'] - $num_results,
-				),
-			);
+				],
+			];
 
 			$num_results += $this->_build_search_results_log($subject_query, 'insert_log_search_results_sub_only', true);
 		}
@@ -620,7 +621,7 @@ class Standard extends AbstractAPI
 			return 0;
 		}
 
-		$inserts = array();
+		$inserts = [];
 		$numSubjectResults = 0;
 
 		// Clean up some previous cache.
@@ -629,21 +630,21 @@ class Standard extends AbstractAPI
 			$this->_db_search->search_query('', '
 				DELETE FROM {db_prefix}log_search_topics
 				WHERE id_search = {int:search_id}',
-				array(
+				[
 					'search_id' => $id_search,
-				)
+				]
 			);
 		}
 
 		foreach ($this->_searchWords as $words)
 		{
-			$subject_query = array(
+			$subject_query = [
 				'from' => '{db_prefix}topics AS t',
-				'inner_join' => array(),
-				'left_join' => array(),
-				'where' => array(),
-				'params' => array(),
-			);
+				'inner_join' => [],
+				'left_join' => [],
+				'where' => [],
+				'params' => [],
+			];
 
 			$numTables = 0;
 			$prev_join = 0;
@@ -651,7 +652,7 @@ class Standard extends AbstractAPI
 			foreach ($words['subject_words'] as $subjectWord)
 			{
 				$numTables++;
-				if (in_array($subjectWord, $this->_excludedSubjectWords))
+				if (in_array($subjectWord, $this->_excludedSubjectWords, true))
 				{
 					$subject_query['inner_join'][] = '{db_prefix}messages AS m ON (m.id_msg = t.id_first_msg)';
 					$subject_query['left_join'][] = '{db_prefix}log_search_subjects AS subj' . $numTables . ' ON (subj' . $numTables . '.word ' . (empty($modSettings['search_match_words']) ? '{ilike} {string:subject_not_' . $count . '}' : '= {string:subject_not_' . $count . '}') . ' AND subj' . $numTables . '.id_topic = t.id_topic)';
@@ -713,7 +714,7 @@ class Standard extends AbstractAPI
 				}
 			}
 
-			call_integration_hook('integrate_subject_search_query', array(&$subject_query));
+			call_integration_hook('integrate_subject_search_query', [&$subject_query]);
 
 			// Nothing to search for?
 			if (empty($subject_query['where']))
@@ -778,9 +779,9 @@ class Standard extends AbstractAPI
 		{
 			$this->_db->insert('',
 				('{db_prefix}' . ($this->_createTemporary ? 'tmp_' : '') . 'log_search_topics'),
-				$this->_createTemporary ? array('id_topic' => 'int') : array('id_search' => 'int', 'id_topic' => 'int'),
+				$this->_createTemporary ? ['id_topic' => 'int'] : ['id_search' => 'int', 'id_topic' => 'int'],
 				$inserts,
-				$this->_createTemporary ? array('id_topic') : array('id_search', 'id_topic')
+				$this->_createTemporary ? ['id_topic'] : ['id_search', 'id_topic']
 			);
 		}
 
@@ -815,9 +816,9 @@ class Standard extends AbstractAPI
 			$this->_db_search->search_query('', '
 				DELETE FROM {db_prefix}log_search_messages
 				WHERE id_search = {int:id_search}',
-				array(
+				[
 					'id_search' => $id_search,
-				)
+				]
 			);
 		}
 
@@ -829,24 +830,24 @@ class Standard extends AbstractAPI
 			if (!empty($words['indexed_words']))
 			{
 				// Variables required for the search.
-				$search_data = array(
+				$search_data = [
 					'insert_into' => ($this->_createTemporary ? 'tmp_' : '') . 'log_search_messages',
 					'no_regexp' => $this->noRegexp(),
 					'max_results' => $this->config->maxMessageResults,
 					'indexed_results' => $indexedResults,
-					'params' => array(
+					'params' => [
 						'id_search' => $this->_createTemporary ? 0 : $id_search,
 						'excluded_words' => $excludedWords,
 						'user_query' => empty($this->_searchParams->_userQuery) ? '' : $this->_searchParams->_userQuery,
 						'board_query' => empty($this->_searchParams->_boardQuery) ? '' : $this->_searchParams->_boardQuery,
 						'topic' => (int) $this->_searchParams->topic,
-						'min_msg_id' => (int) $this->_searchParams->_minMsgID,
-						'max_msg_id' => (int) $this->_searchParams->_maxMsgID,
+						'min_msg_id' => $this->_searchParams->_minMsgID,
+						'max_msg_id' => $this->_searchParams->_maxMsgID,
 						'excluded_phrases' => $this->_excludedPhrases,
 						'excluded_index_words' => $this->_excludedIndexWords,
 						'excluded_subject_words' => $this->_excludedSubjectWords,
-					),
-				);
+					],
+				];
 
 				$ignoreRequest = $this->indexedWordQuery($words, $search_data);
 
@@ -883,9 +884,9 @@ class Standard extends AbstractAPI
 		{
 			$this->_db->insert('',
 				'{db_prefix}' . ($this->_createTemporary ? 'tmp_' : '') . 'log_search_messages',
-				$this->_createTemporary ? array('id_msg' => 'int') : array('id_msg' => 'int', 'id_search' => 'int'),
+				$this->_createTemporary ? ['id_msg' => 'int'] : ['id_msg' => 'int', 'id_search' => 'int'],
 				$inserts,
-				$this->_createTemporary ? array('id_msg') : array('id_msg', 'id_search')
+				$this->_createTemporary ? ['id_msg'] : ['id_msg', 'id_search']
 			);
 		}
 
@@ -912,7 +913,7 @@ class Standard extends AbstractAPI
 	public function addRelevance(&$topics, $id_search, $start, $limit)
 	{
 		// *** Retrieve the results to be shown on the page
-		$participants = array();
+		$participants = [];
 		$request = $this->_db_search->search_query('', '
 			SELECT ' .
 			(empty($this->_searchParams['topic']) ? 'lsr.id_topic' : $this->_searchParams->topic . ' AS id_topic') . ',
@@ -922,21 +923,21 @@ class Standard extends AbstractAPI
 			WHERE lsr.id_search = {int:id_search}
 			ORDER BY {raw:sort} {raw:sort_dir}
 			LIMIT {int:limit} OFFSET {int:start}',
-			array(
+			[
 				'id_search' => $id_search,
 				'sort' => $this->_searchParams->sort,
 				'sort_dir' => $this->_searchParams->sort_dir,
 				'start' => $start,
 				'limit' => $limit,
-			)
+			]
 		);
 		while (($row = $request->fetch_assoc()))
 		{
-			$topics[$row['id_msg']] = array(
+			$topics[$row['id_msg']] = [
 				'relevance' => round($row['relevance'] / 10, 1) . '%',
 				'num_matches' => $row['num_matches'],
-				'matches' => array(),
-			);
+				'matches' => [],
+			];
 			// By default they didn't participate in the topic!
 			$participants[$row['id_topic']] = false;
 		}

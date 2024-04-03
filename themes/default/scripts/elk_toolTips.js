@@ -52,8 +52,8 @@ class SiteTooltip
 		{
 			let title = el.getAttribute('title');
 
-			el.setAttribute('data-title', title);
 			el.removeAttribute('title');
+			el.setAttribute('data-title', title);
 			el.addEventListener('mouseenter', this.showTooltip.bind(this));
 			el.addEventListener('mouseleave', this.hideTooltip.bind(this));
 		}
@@ -123,6 +123,16 @@ class SiteTooltip
 				// Load the tooltip content with our data-title
 				if (this.settings.tooltipContent === 'html')
 				{
+					// Regular expression to match content inside .bbc_code_inline span
+					let regex = new RegExp('(<span class="bbc_code_inline">).*?(<\/span>)', 's');
+
+					title = title.replace(regex, function(match, p1, p2)
+					{
+						let content = match.slice(p1.length, -p2.length);
+						let replacedContent = content.replace(/</g, "&lt;");
+						return p1 + replacedContent + p2;
+					});
+
 					tooltipText.innerHTML = title;
 				}
 				else

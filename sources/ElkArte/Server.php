@@ -204,6 +204,16 @@ class Server extends \ArrayObject
 			|| (isset($this->HTTP_X_FORWARDED_PROTO) && $this->HTTP_X_FORWARDED_PROTO === 'https');
 	}
 
+	/**
+	 * Get the host of the current request
+	 *
+	 * This method retrieves the host of the current request. It first attempts to get the host
+	 * from the `HTTP_HOST` property of the object. If the `HTTP_HOST` property is empty,
+	 * it falls back to using the `SERVER_NAME` property. If a port other than 80 or 443 is specified
+	 * in the `SERVER_PORT` property, it appends the port number to the host.
+	 *
+	 * @return string The host of the current request
+	 */
 	public function getHost()
 	{
 		$host = $this->HTTP_HOST;

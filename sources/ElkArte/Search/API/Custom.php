@@ -28,10 +28,10 @@ use ElkArte\Helper\Util;
 class Custom extends Standard
 {
 	/** @var string This is the last version of ElkArte that this was tested on, to protect against API changes. */
-	public $version_compatible = 'ElkArte 2.0 dev';
+	public $version_compatible = 'ElkArte 2.0';
 
 	/** @var string This won't work with versions of ElkArte less than this. */
-	public $min_elk_version = 'ElkArte 1.0 Beta';
+	public $min_elk_version = 'ElkArte 1.0';
 
 	/** @var bool Is it supported? */
 	public $is_supported = true;
@@ -63,7 +63,7 @@ class Custom extends Standard
 
 		$this->indexSettings = Util::unserialize($modSettings['search_custom_index_config']);
 
-		$this->bannedWords = empty($modSettings['search_stopwords']) ? array() : explode(',', $modSettings['search_stopwords']);
+		$this->bannedWords = empty($modSettings['search_stopwords']) ? [] : explode(',', $modSettings['search_stopwords']);
 	}
 
 	/**
@@ -95,9 +95,11 @@ class Custom extends Standard
 		{
 			return;
 		}
+
 		foreach ($subwords as $subword)
 		{
-			if (Util::strlen($subword) >= $this->min_word_length && !in_array($subword, $this->bannedWords))
+			if (Util::strlen($subword) >= $this->min_word_length
+				&& !in_array($subword, $this->bannedWords, true))
 			{
 				$wordsSearch['indexed_words'][] = $subword;
 				if ($isExcluded !== false)
@@ -135,9 +137,7 @@ class Custom extends Standard
 		// We can't do anything without this
 		$db_search = db_search();
 
-		$query_select = array(
-			'id_msg' => 'm.id_msg',
-		);
+		$query_select = ['id_msg' => 'm.id_msg',];
 		$query_inner_join = [];
 		$query_left_join = [];
 		$query_where = [];
@@ -151,15 +151,15 @@ class Custom extends Standard
 		$count = 0;
 		foreach ($words['words'] as $regularWord)
 		{
-			$query_where[] = 'm.body' . (in_array($regularWord, $query_params['excluded_words']) ? ' {not_' : '{') . (empty($modSettings['search_match_words']) || $search_data['no_regexp'] ? 'ilike} ' : 'rlike} ') . '{string:complex_body_' . $count . '}';
+			$query_where[] = 'm.body' . (in_array($regularWord, $query_params['excluded_words'], true) ? ' {not_' : '{') . (empty($modSettings['search_match_words']) || $search_data['no_regexp'] ? 'ilike} ' : 'rlike} ') . '{string:complex_body_' . $count . '}';
 			$query_params['complex_body_' . ($count++)] = $this->prepareWord($regularWord, $search_data['no_regexp']);
 		}
 
 		// Modifiers such as specific user or specific board.
-		$query_where += $this->queryWhereModifiers($query_params);
+		$query_where = array_merge($query_where, $this->queryWhereModifiers($query_params));
 
 		// Modifiers to exclude words from the subject
-		$query_where += $this->queryExclusionModifiers($query_params, $search_data);
+		$query_where = array_merge($query_where, $this->queryExclusionModifiers($query_params, $search_data));
 
 		$numTables = 0;
 		$prev_join = 0;
@@ -216,7 +216,7 @@ class Custom extends Standard
 		{
 			$db->insert('ignore',
 				'{db_prefix}log_search_words',
-				array('id_word' => 'int', 'id_msg' => 'int'),
+				['id_word' => 'int', 'id_msg' => 'int'],
 				$inserts,
 				['id_word', 'id_msg']
 			);

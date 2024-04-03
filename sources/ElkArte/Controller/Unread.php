@@ -129,6 +129,9 @@ class Unread extends AbstractController
 		// If empty, no preview at all
 		if (!empty($modSettings['message_index_preview']))
 		{
+			loadJavascriptFile('elk_toolTips.js', ['defer' => true]);
+			$context['message_index_preview'] = true;
+
 			// If 0 means everything
 			if (empty($modSettings['preview_characters']))
 			{

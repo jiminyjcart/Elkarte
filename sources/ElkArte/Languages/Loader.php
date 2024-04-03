@@ -180,6 +180,11 @@ class Loader
 	{
 		global $txt;
 
+		if ($file === '')
+		{
+			return;
+		}
+
 		if ($file !== 'Addons')
 		{
 			Errors::instance()->log_error(

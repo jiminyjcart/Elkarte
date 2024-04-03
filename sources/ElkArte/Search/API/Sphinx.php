@@ -98,7 +98,7 @@ class Sphinx extends AbstractAPI
 	 */
 	public function prepareIndexes($word, &$wordsSearch, &$wordsExclude, $isExcluded, $excludedSubjectWords)
 	{
-		$subwords = text2words($word, false);
+		$subwords = text2words($word);
 
 		$fulltextWord = count($subwords) === 1 ? $word : '"' . $word . '"';
 		$wordsSearch['indexed_words'][] = $fulltextWord;
@@ -149,7 +149,7 @@ class Sphinx extends AbstractAPI
 
 			// Update the field weights for subject vs body
 			$subject_weight = empty($modSettings['search_weight_subject']) ? 30 : (int) $modSettings['search_weight_subject'];
-			$mySphinx->SetFieldWeights(array('subject' => $subject_weight, 'body' => 100 - $subject_weight));
+			$mySphinx->SetFieldWeights(['subject' => $subject_weight, 'body' => 100 - $subject_weight]);
 
 			// Set the limits based on the search parameters.
 			$this->buildQueryLimits($mySphinx);
@@ -191,21 +191,21 @@ class Sphinx extends AbstractAPI
 			}
 
 			// Get the relevant information from the search results.
-			$cached_results = array(
+			$cached_results = [
 				'matches' => [],
 				'num_results' => $request['total'],
-			);
+			];
 
 			if (isset($request['matches']))
 			{
 				foreach ($request['matches'] as $msgID => $match)
 				{
-					$cached_results['matches'][$msgID] = array(
+					$cached_results['matches'][$msgID] = [
 						'id' => $match['attrs']['id_topic'],
 						'relevance' => round($match['attrs']['@count'] + $match['attrs']['relevance'] / 5000, 1) . '%',
 						'num_matches' => empty($this->_searchParams->topic) ? $match['attrs']['@count'] : 0,
 						'matches' => [],
-					);
+					];
 				}
 			}
 
@@ -252,7 +252,7 @@ class Sphinx extends AbstractAPI
 
 		if (!empty($this->_searchParams->topic))
 		{
-			$mySphinx->SetFilter('id_topic', array((int) $this->_searchParams->topic));
+			$mySphinx->SetFilter('id_topic', [(int) $this->_searchParams->topic]);
 		}
 
 		if (!empty($this->_searchParams->brd))

@@ -233,13 +233,24 @@ function template_unread_below()
 
 		if (!empty($context['using_relative_time']))
 		{
-			echo '
-			<script type="module">
-				const topics = document.querySelectorAll(".topic_latest");
-				for (const topic of topics) {
-					topic.classList.add("relative");
-				}
-			</script>';
+			theme()->addInlineJavascript('
+				document.querySelectorAll(".topic_latest").forEach(element => element.classList.add("relative"));
+			', true);
+		}
+
+		// Message preview when enabled
+		if (!empty($context['message_index_preview']))
+		{
+			theme()->addInlineJavascript('
+			if ((!is_mobile && !is_touch) || use_click_menu) {
+				isFunctionLoaded("SiteTooltip").then((available) => {
+					if (available) {
+						let tooltip = new SiteTooltip();
+						tooltip.create(".preview");
+					}
+				});
+			};', true
+			);
 		}
 
 		echo '

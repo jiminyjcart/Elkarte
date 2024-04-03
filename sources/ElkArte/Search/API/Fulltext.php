@@ -27,7 +27,7 @@ use ElkArte\Helper\Util;
 class Fulltext extends Standard
 {
 	/** @var string This is the last version of ElkArte that this was tested on, to protect against API changes. */
-	public $version_compatible = 'ElkArte 2.0 dev';
+	public $version_compatible = 'ElkArte 2.0';
 
 	/** @var string This won't work with versions of ElkArte less than this. */
 	public $min_elk_version = 'ElkArte 1.0';
@@ -42,7 +42,7 @@ class Fulltext extends Standard
 	protected $min_word_length = 4;
 
 	/** @var array What databases support the fulltext index? */
-	protected $supported_databases = array('MySQL');
+	protected $supported_databases = ['MySQL'];
 
 	/**
 	 * Fulltext::__construct()
@@ -79,9 +79,9 @@ class Fulltext extends Standard
 		$request = $db_search->search_query('', '
 			SHOW VARIABLES
 			LIKE {string:fulltext_minimum_word_length}',
-			array(
+			[
 				'fulltext_minimum_word_length' => 'ft_min_word_len',
-			)
+			]
 		);
 		if ($request !== false && $request->num_rows() === 1)
 		{
@@ -104,7 +104,7 @@ class Fulltext extends Standard
 	{
 		global $modSettings;
 
-		$subwords = text2words($word, false);
+		$subwords = text2words($word);
 
 		if (empty($modSettings['search_force_index']))
 		{
@@ -183,7 +183,7 @@ class Fulltext extends Standard
 		{
 			foreach ($words['words'] as $regularWord)
 			{
-				$query_where[] = 'm.body' . (in_array($regularWord, $query_params['excluded_words']) ? ' {not_' : '{') . (empty($modSettings['search_match_words']) || $search_data['no_regexp'] ? 'ilike} ' : 'rlike} ') . '{string:complex_body_' . $count . '}';
+				$query_where[] = 'm.body' . (in_array($regularWord, $query_params['excluded_words'], true) ? ' {not_' : '{') . (empty($modSettings['search_match_words']) || $search_data['no_regexp'] ? 'ilike} ' : 'rlike} ') . '{string:complex_body_' . $count . '}';
 				$query_params['complex_body_' . ($count++)] = $this->prepareWord($regularWord, $search_data['no_regexp']);
 			}
 		}

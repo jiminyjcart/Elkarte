@@ -108,10 +108,10 @@ class BBCParser
 	/**
 	 * BBCParser constructor.
 	 *
-	 * @param \BBC\Codes $bbc
-	 * @param \BBC\Autolink|null $autolinker
-	 * @param \BBC\HtmlParser|null $html_parser
-	 * @param \BBC\MarkdownParser|null $markdown_parser
+	 * @param Codes $bbc
+	 * @param Autolink|null $autolinker
+	 * @param HtmlParser|null $html_parser
+	 * @param MarkdownParser|null $markdown_parser
 	 */
 	public function __construct(Codes $bbc, Autolink $autolinker = null, HtmlParser $html_parser = null, MarkdownParser $markdown_parser = null)
 	{

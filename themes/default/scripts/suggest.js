@@ -48,7 +48,7 @@ function elk_AutoSuggest (oOptions)
 	// Are there any items that should be added in advance?
 	this.aListItems = this.opt.aListItems || [];
 
-	this.sItemTemplate = this.opt.sItemTemplate || '<input type="hidden" name="%post_name%[]" value="%item_id%" /><a href="%item_href%" class="extern" onclick="window.open(this.href, \'_blank\'); return false;">%item_name%</a>&nbsp;<i class="icon icon-small i-remove" title="%delete_text%"><s>%delete_text%</s></i>';
+	this.sItemTemplate = this.opt.sItemTemplate || '<input type="hidden" name="%post_name%[]" value="%item_id%" /><a href="%item_href%" class="extern" onclick="window.open(this.href, \'_blank\'); return false;">%item_name%</a><span class="breaking_space"></span><i class="icon icon-small i-remove" title="%delete_text%"><s>%delete_text%</s></i>';
 	this.sTextDeleteItem = this.opt.sTextDeleteItem || '';
 	this.oCallback = {};
 	this.bDoAutoAdd = false;

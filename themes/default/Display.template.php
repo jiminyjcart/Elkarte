@@ -242,7 +242,7 @@ function template_messages()
 		}
 
 		// Show the quickbuttons, for various operations on posts.
-		template_button_strip($message['postbuttons'], 'quickbuttons no_js', ['no-class' => true, 'id' => 'buttons_' . $message['id']]);
+		template_button_strip($message['postbuttons'], 'quickbuttons no_js', ['above' => true, 'no-class' => true, 'id' => 'buttons_' . $message['id']]);
 
 		echo '
 
