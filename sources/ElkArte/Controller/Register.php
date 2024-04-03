@@ -599,7 +599,7 @@ class Register extends AbstractController
 	private function _can_register()
 	{
 		global $modSettings;
-return;
+
 		// You can't register if it's disabled.
 		if (!empty($modSettings['registration_method']) && $modSettings['registration_method'] == 3)
 		{

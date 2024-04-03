@@ -181,67 +181,96 @@ class About extends AbstractController
 
 		if (isset($this->_req->query->form))
 		{
-			// Some simple contact stuff for the forum.
-			$context['forum_contacts'] = (empty($modSettings['coppaPost']) ? '' : $modSettings['coppaPost'] . '<br /><br />') . (empty($modSettings['coppaFax']) ? '' : $modSettings['coppaFax'] . '<br />');
-			$context['forum_contacts'] = empty($context['forum_contacts']) ? '' : $context['forum_name_html_safe'] . '<br />' . $context['forum_contacts'];
-
-			// Showing template?
-			if (!isset($this->_req->query->dl))
-			{
-				// Shortcut for producing underlines.
-				$context['ul'] = '<span class="underline">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>';
-				theme()->getLayers()->removeAll();
-				$context['sub_template'] = 'coppa_form';
-				$context['page_title'] = replaceBasicActionUrl($txt['coppa_form_title']);
-				$context['coppa_body'] = str_replace(['{PARENT_NAME}', '{CHILD_NAME}', '{USER_NAME}'], [$context['ul'], $context['ul'], $member['member_name']], replaceBasicActionUrl($txt['coppa_form_body']));
-			}
-			// Downloading.
-			else
-			{
-				// Set up to output a file to the users browser
-				while (ob_get_level() > 0)
-				{
-					@ob_end_clean();
-				}
-
-				// The data.
-				$ul = '                ';
-				$crlf = "\r\n";
-				$data = $context['forum_contacts'] . $crlf . $txt['coppa_form_address'] . ':' . $crlf . $txt['coppa_form_date'] . ':' . $crlf . $crlf . $crlf . replaceBasicActionUrl($txt['coppa_form_body']);
-				$data = str_replace(['{PARENT_NAME}', '{CHILD_NAME}', '{USER_NAME}', '<br />', '<br />'], [$ul, $ul, $member['member_name'], $crlf, $crlf], $data);
-
-				// Send the headers.
-				Headers::instance()
-					->removeHeader('all')
-					->header('Content-Encoding', 'none')
-					->header('Pragma', 'no-cache')
-					->header('Cache-Control', 'no-cache')
-					->header('Connection', 'close')
-					->header('Content-Disposition', 'attachment; filename="approval.txt"')
-					->contentType('application/octet-stream', '')
-					->sendHeaders();
-
-				echo $data;
-
-				obExit(false, false);
-			}
+			$this->handleContactForm();
 		}
 		else
 		{
-			$context += [
-				'page_title' => $txt['coppa_title'],
-				'sub_template' => 'coppa',
-			];
-
-			$context['coppa'] = [
-				'body' => str_replace('{MINIMUM_AGE}', $modSettings['coppaAge'], replaceBasicActionUrl($txt['coppa_after_registration'])),
-				'many_options' => !empty($modSettings['coppaPost']) && !empty($modSettings['coppaFax']),
-				'post' => empty($modSettings['coppaPost']) ? '' : $modSettings['coppaPost'],
-				'fax' => empty($modSettings['coppaFax']) ? '' : $modSettings['coppaFax'],
-				'phone' => empty($modSettings['coppaPhone']) ? '' : str_replace('{PHONE_NUMBER}', $modSettings['coppaPhone'], $txt['coppa_send_by_phone']),
-				'id' => $this->_req->query->member,
-			];
+			$this->handleCoppa();
 		}
+	}
+
+	/**
+	 * Handle the contact form for the forum.
+	 *
+	 * This method allows for the viewing or downloading of the COPPA form.
+	 * Accessed by action=about;sa=coppa;form;dl;member= and action=about;sa=coppa;form;member=
+	 *
+	 * @return void
+	 */
+	private function handleContactForm()
+	{
+		global $context, $modSettings, $txt;
+
+		// Some simple contact stuff for the forum.
+		$context['forum_contacts'] = (empty($modSettings['coppaPost']) ? '' : $modSettings['coppaPost'] . '<br /><br />') . (empty($modSettings['coppaFax']) ? '' : $modSettings['coppaFax'] . '<br />');
+		$context['forum_contacts'] = empty($context['forum_contacts']) ? '' : $context['forum_name_html_safe'] . '<br />' . $context['forum_contacts'];
+
+		// Showing template?
+		if (!isset($this->_req->query->dl))
+		{
+			// Shortcut for producing underlines.
+			$context['ul'] = '<span class="underline">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>';
+			theme()->getLayers()->removeAll();
+			$context['sub_template'] = 'coppa_form';
+			$context['page_title'] = replaceBasicActionUrl($txt['coppa_form_title']);
+			$context['coppa_body'] = str_replace(['{PARENT_NAME}', '{CHILD_NAME}', '{USER_NAME}'], [$context['ul'], $context['ul'], $member['member_name']], replaceBasicActionUrl($txt['coppa_form_body']));
+		}
+		// Downloading.
+		else
+		{
+			// Set up to output a file to the users browser
+			while (ob_get_level() > 0)
+			{
+				@ob_end_clean();
+			}
+
+			// The data.
+			$ul = '                ';
+			$crlf = "\r\n";
+			$data = $context['forum_contacts'] . $crlf . $txt['coppa_form_address'] . ':' . $crlf . $txt['coppa_form_date'] . ':' . $crlf . $crlf . $crlf . replaceBasicActionUrl($txt['coppa_form_body']);
+			$data = str_replace(['{PARENT_NAME}', '{CHILD_NAME}', '{USER_NAME}', '<br />', '<br />'], [$ul, $ul, $member['member_name'], $crlf, $crlf], $data);
+
+			// Send the headers.
+			Headers::instance()
+				->removeHeader('all')
+				->header('Content-Encoding', 'none')
+				->header('Pragma', 'no-cache')
+				->header('Cache-Control', 'no-cache')
+				->header('Connection', 'close')
+				->header('Content-Disposition', 'attachment; filename="approval.txt"')
+				->contentType('application/octet-stream', '')
+				->sendHeaders();
+
+			echo $data;
+
+			obExit(false, false);
+		}
+	}
+
+	/**
+	 * Handle the Children's Online Privacy Protection Act (COPPA) for member registration.
+	 *
+	 * This method sets the necessary variables in the global $context for displaying the COPPA page.
+	 *
+	 * @return void
+	 */
+	private function handleCoppa()
+	{
+		global $context, $modSettings, $txt;
+
+		$context += [
+			'page_title' => $txt['coppa_title'],
+			'sub_template' => 'coppa',
+		];
+
+		$context['coppa'] = [
+			'body' => str_replace('{MINIMUM_AGE}', $modSettings['coppaAge'], replaceBasicActionUrl($txt['coppa_after_registration'])),
+			'many_options' => !empty($modSettings['coppaPost']) && !empty($modSettings['coppaFax']),
+			'post' => empty($modSettings['coppaPost']) ? '' : $modSettings['coppaPost'],
+			'fax' => empty($modSettings['coppaFax']) ? '' : $modSettings['coppaFax'],
+			'phone' => empty($modSettings['coppaPhone']) ? '' : str_replace('{PHONE_NUMBER}', $modSettings['coppaPhone'], $txt['coppa_send_by_phone']),
+			'id' => $this->_req->query->member,
+		];
 	}
 
 	/**
