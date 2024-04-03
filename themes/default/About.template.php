@@ -240,6 +240,6 @@ function template_coppa()
 
 		echo '
 			</ol>
-		<div>';
+		</div>';
 	}
 }

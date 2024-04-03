@@ -11,6 +11,7 @@
  */
 
 use ElkArte\AdminController\Admin;
+use ElkArte\Controller\About;
 use ElkArte\Controller\Announce;
 use ElkArte\Controller\Attachment;
 use ElkArte\Controller\Auth;
@@ -72,8 +73,8 @@ class DispatcherTest extends TestCase
 			'attachapprove' => ModerateAttachments::class,
 			'addbuddy' => Members::class,
 			'collapse' => BoardIndex::class,
-			'contact' => Register::class,
-			'coppa' => Register::class,
+			'contact' => About::class,
+			'coppa' => About::class,
 			'deletemsg' => RemoveTopic::class,
 			'dlattach' => Attachment::class,
 			'unwatchtopic' => Notify::class,
