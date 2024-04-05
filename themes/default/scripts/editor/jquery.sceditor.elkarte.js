@@ -163,7 +163,7 @@ const itemCodes = ["*:disc", "@:disc", "+:square", "x:square", "#:decimal", "0:d
 		},
 		/**
 		 * When you don't have a DOM node to check (non rendering tag), this will
-		 * check if the cursor is inside of the supplied tag.  Used for footnote
+		 * check if the cursor is inside the supplied tag.  Used for footnote
 		 * and spoiler which don't and should not have wizzy rendering for best UE
 		 *
 		 * @param tag
@@ -288,7 +288,7 @@ const itemCodes = ["*:disc", "@:disc", "+:square", "x:square", "#:decimal", "0:d
 			return false;
 		},
 		/**
-		 * Determine the caret position inside of sceditor's iframe for dropdown
+		 * Determine the caret position inside sceditor's iframe for dropdown
 		 * positioning of select box
 		 *
 		 * What it does:
@@ -994,13 +994,16 @@ sceditor.formats.bbcode
 		allowsEmpty: true,
 		tags: {
 			a: {
-				href: null
+				href: null,
+				rel: null
 			}
 		},
 		quoteType: sceditor.BBCodeParser.QuoteType.never,
 		format: function (element, content)
 		{
-			let url = element.getAttribute('href');
+			let url = element.getAttribute('href'),
+				rels = element.getAttribute('rel'),
+				follow = '';
 
 			// return the type of link we are currently dealing with
 			if (url.substring(0, 7) === 'mailto:')
@@ -1018,13 +1021,29 @@ sceditor.formats.bbcode
 				return '[attachurl]' + element.getAttribute('data-ila') + '[/attachurl]';
 			}
 
+			if (rels)
+			{
+				return '[url url=' + url + ' follow=' + rels + ']' + content + '[/url]';
+			}
+
 			return '[url=' + url + ']' + content + '[/url]';
 		},
 		html: function (token, attrs, content)
 		{
+			let rel = '';
+
+			if (typeof attrs.defaultattr === 'undefined' && typeof attrs.url !== 'undefined')
+			{
+				attrs.defaultattr = attrs.url;
+			}
 			attrs.defaultattr = sceditor.escapeEntities(attrs.defaultattr, true) || content;
 
-			return '<a target="_blank" rel="noopener noreferrer" href="' + sceditor.escapeUriScheme(attrs.defaultattr) + '" class="bbc_link">' + content + '</a>';
+			if (typeof attrs.follow !== 'undefined')
+			{
+				rel = ' rel=' + attrs.follow;
+			}
+
+			return '<a href="' + sceditor.escapeUriScheme(attrs.defaultattr) + '"' + rel + '>' + content + "</a>";
 		}
 	});
 

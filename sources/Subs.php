@@ -1738,6 +1738,45 @@ function addProtocol($url, $protocols = array())
 }
 
 /**
+ * Validate if a URL is allowed to be a "dofollow"
+ *
+ * @param string $checkUrl The URL to be checked
+ * @return bool Returns true if the URL is allowed, false otherwise
+ */
+function validateURLAllowList($checkUrl)
+{
+	global $modSettings, $boardurl;
+	static $allowList = null;
+
+	if ($allowList === null)
+	{
+		$allowList = empty($modSettings['nofollow_allowlist']) ? [] : json_decode($modSettings['nofollow_allowlist']);
+
+		// Always allow your own site
+		$parse = parse_url($boardurl);
+		$allowList[] = $parse['host'];
+
+		$allowList = array_unique($allowList);
+	}
+
+	$parsed = parse_url($checkUrl);
+	if (empty($parsed['host']))
+	{
+		return false;
+	}
+
+	foreach ($allowList as $validDomain)
+	{
+		if (substr($parsed['host'], -strlen($validDomain)) === $validDomain)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
  * Removes all, or those over a limit, of nested quotes from a text string.
  *
  * @param string $text - The body we want to remove nested quotes from

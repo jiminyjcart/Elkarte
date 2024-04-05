@@ -449,6 +449,7 @@ function loadAllPermissions()
 			'karma_edit' => array(false, 'general'),
 			'like_posts_stats' => array(false, 'general'),
 			'disable_censor' => array(false, 'general'),
+			'post_nofollow' => array(false, 'general'),
 			'pm_read' => array(false, 'pm'),
 			'pm_send' => array(false, 'pm'),
 			'send_email_to_members' => array(false, 'pm'),

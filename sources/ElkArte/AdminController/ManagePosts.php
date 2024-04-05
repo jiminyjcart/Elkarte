@@ -234,6 +234,11 @@ class ManagePosts extends AbstractController
 		// Initialize the form
 		$settingsForm = new SettingsForm(SettingsForm::DB_ADAPTER);
 
+		if (!empty($modSettings['nofollow_allowlist']))
+		{
+			$modSettings['nofollow_allowlist'] = implode("\n", (array) json_decode($modSettings['nofollow_allowlist'], true));
+		}
+
 		// Initialize it with our settings
 		$settingsForm->setConfigVars($this->_settings());
 
@@ -264,7 +269,6 @@ class ManagePosts extends AbstractController
 				{
 					throw new Exception('convert_to_mediumtext', false, array(getUrl('admin', ['action' => 'admin', 'area' => 'maintain', 'sa' => 'database'])));
 				}
-
 			}
 
 			// If we're changing the post preview length let's check its valid
@@ -278,6 +282,10 @@ class ManagePosts extends AbstractController
 			{
 				$this->_req->post->heightBeforeShowMore = max((int) $this->_req->post->heightBeforeShowMore, 155);
 			}
+
+			$allowList = array_unique(explode("\n", $this->_req->post['nofollow_allowlist']));
+			$allowList = array_filter(array_map('\ElkArte\Helper\Util::htmlspecialchars', array_map('trim', $allowList)));
+			$this->_req->post['nofollow_allowlist'] = json_encode($allowList);
 
 			call_integration_hook('integrate_save_post_settings');
 
@@ -321,8 +329,8 @@ class ManagePosts extends AbstractController
 			['int', 'spamWaitTime', 'postinput' => $txt['manageposts_seconds']],
 			['int', 'edit_wait_time', 'postinput' => $txt['manageposts_seconds']],
 			['int', 'edit_disable_time', 'subtext' => $txt['edit_disable_time_zero'], 'postinput' => $txt['manageposts_minutes']],
-			'',
 			['check', 'show_modify'],
+			'',
 			['check', 'show_user_images'],
 			['check', 'hide_post_group'],
 			'',
@@ -330,7 +338,12 @@ class ManagePosts extends AbstractController
 			['select', 'message_index_preview', [$txt['message_index_preview_off'], $txt['message_index_preview_first'], $txt['message_index_preview_last']]],
 			['int', 'preview_characters', 'subtext' => $txt['preview_characters_zero'], 'postinput' => $txt['preview_characters_units']],
 			// Misc
+			['title', 'mods_cat_modifications_misc'],
 			['check', 'enableCodePrettify'],
+			['check', 'autoLinkUrls'],
+			['large_text', 'nofollow_allowlist', 'subtext' => $txt['nofollow_allowlist_desc']],
+			['check', 'enablePostHTML'],
+			['check', 'enablePostMarkdown'],
 		];
 
 		// Add new settings with a nice hook, makes them available for admin settings search as well

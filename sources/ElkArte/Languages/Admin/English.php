@@ -652,7 +652,6 @@ $txt['show_modify'] = 'Show last modification date on modified posts.';
 $txt['show_user_images'] = 'Show user avatars in message view.';
 $txt['hide_post_group'] = 'Hide post group titles for grouped members.';
 
-
 $txt['enableBBC'] = 'Enable bulletin board code (BBC)';
 $txt['enablePostHTML'] = 'Enable basic HTML in posts';
 $txt['enablePostMarkdown'] = 'Enable basic Markdown in posts';
@@ -670,6 +669,9 @@ $txt['giphyRating'] = 'Permitted Giphy rating';
 $txt['giphyLanguage'] = 'Giphy language code, defaults to en';
 $txt['giphyLanguageURL'] = '<a href="https://developers.giphy.com/docs/optional-settings/#language-support">Language Codes</a>';
 $txt['giphyApiURL'] = '<a href="https://support.giphy.com/hc/en-us/articles/360020283431-Request-A-GIPHY-API-Key">Request API Key</a>';
+
+$txt['nofollow_allowlist'] = 'Allow listed domains without nofollow attribute';
+$txt['nofollow_allowlist_desc'] = 'The domains listed here (one per line) will always be presented without the nofollow attribute';
 
 $txt['enableParticipation'] = 'Enable participation icons';
 $txt['enableFollowup'] = 'Enable followups';

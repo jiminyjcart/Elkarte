@@ -30,8 +30,8 @@ class ManageEditor extends AbstractController
 	 *
 	 * What it does:
 	 *
-	 * - This method is the entry point for index.php?action=admin;area=postsettings;sa=editor
-	 * and it calls a function based on the sub-action, here only display.
+	 * - This method is the entry point for index.php?action=admin;area=editor
+	 * - It calls a function based on the sub-action, here only display.
 	 * - requires admin_forum permissions
 	 *
 	 * @event integrate_sa_manage_editor Used to add more sub actions
@@ -145,11 +145,6 @@ class ManageEditor extends AbstractController
 			array('text', 'giphyApiKey', 40, 'subtext' => $txt['giphyApiURL']),
 			array('select', 'giphyRating', ['g' => 'G', 'pg' => 'PG', 'pg13' => 'PG13', 'r' => 'R']),
 			array('text', 'giphyLanguage', 5, 'subtext' => $txt['giphyLanguageURL']),
-
-			array('title', 'mods_cat_modifications_misc'),
-			array('check', 'autoLinkUrls'), // @todo not editor or bbc
-			array('check', 'enablePostHTML'),
-			array('check', 'enablePostMarkdown'),
 		);
 
 		// Add new settings with a nice hook, makes them available for admin settings search as well
