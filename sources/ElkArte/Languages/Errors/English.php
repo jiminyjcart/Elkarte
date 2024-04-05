@@ -120,6 +120,8 @@ $txt['cannot_send_email_to_members'] = 'Sorry, but the administrator has disallo
 $txt['cannot_split_any'] = 'Splitting just any topic is not allowed in this board.';
 $txt['cannot_view_attachments'] = 'It seems that you are not allowed to download or view attachments on this board.';
 $txt['cannot_view_mlist'] = 'You can\'t view the member list because you don\'t have permission to.';
+$txt['cannot_post_nofollow'] = 'You can\'t post URLs without a "nofollow" attribute.';
+
 $txt['cannot_view_stats'] = 'You aren\'t allowed to view the forum statistics.';
 $txt['cannot_who_view'] = 'Sorry - you don\'t have the proper permissions to view the Who\'s Online list.';
 $txt['cannot_like_posts_stats'] = 'Sorry - you don\'t have the proper permissions to view the Like posts stats.';

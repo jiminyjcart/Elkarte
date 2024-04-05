@@ -77,7 +77,7 @@ class Autolink
 			//'[url_auto=$1]$1[/url_auto]',
 			//'[url_auto=$1]$1[/url_auto]',
 			'[url]$1[/url]',
-			'[url=http://$1]$1[/url]',
+			'[url=https://$1]$1[/url]',
 		);
 
 		$search_email = array(

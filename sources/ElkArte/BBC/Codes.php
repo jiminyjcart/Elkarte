@@ -154,7 +154,7 @@ class Codes
 	/** a regular expression to validate and match the value. */
 	public const PARAM_ATTR_MATCH = 0;
 
-	/** true if the value should be quoted. */
+	/** @var int Constant that represents if the value should be quoted. */
 	public const PARAM_ATTR_QUOTED = 1;
 
 	/** callback to evaluate on the data, which is $data. */
@@ -166,16 +166,16 @@ class Codes
 	/** true if the parameter is optional. */
 	public const PARAM_ATTR_OPTIONAL = 4;
 
-	/**  */
+	/** @var int Constant that represents no trimming. */
 	public const TRIM_NONE = 0;
 
-	/**  */
+	/** @var int Constant that represents trimming inside of a tag. */
 	public const TRIM_INSIDE = 1;
 
-	/**  */
+	/** @var int Constant that represents trimming outside of a tag. */
 	public const TRIM_OUTSIDE = 2;
 
-	/**  */
+	/** @var int Constant that represents trimming both the left and right sides of a string. */
 	public const TRIM_BOTH = 3;
 
 	// These are mainly for *ATTR_QUOTED since there are 3 options
@@ -184,6 +184,9 @@ class Codes
 	public const NONE = 0;
 
 	public const REQUIRED = 1;
+
+	/** @var string can be used to build tags in a ATTR_VALIDATE function and consumed in ATTR_CONTEXT */
+	public static $contentTag;
 
 	/** An array of self::ATTR_*
 	    ATTR_TAG and ATTR_TYPE are required for every tag.
@@ -826,9 +829,13 @@ class Codes
 			array(
 				self::ATTR_TAG => 'url',
 				self::ATTR_TYPE => self::TYPE_UNPARSED_CONTENT,
-				self::ATTR_CONTENT => '<a href="$1" class="bbc_link" target="_blank" rel="noopener noreferrer">$1</a>',
+				self::ATTR_CONTENT => &self::$contentTag,
 				self::ATTR_VALIDATE => static function (&$data) {
 					$data = addProtocol($data);
+
+					self::$contentTag = '<a href="$1" class="bbc_link" target="_blank"';
+					self::$contentTag .= validateURLAllowList($data) ? ' rel="noopener ugc">' : ' rel="noopener noreferrer nofollow ugc">';
+					self::$contentTag .= '$1</a>';
 				},
 				self::ATTR_BLOCK_LEVEL => false,
 				self::ATTR_AUTOLINK => false,
@@ -837,10 +844,13 @@ class Codes
 			array(
 				self::ATTR_TAG => 'url',
 				self::ATTR_TYPE => self::TYPE_UNPARSED_EQUALS,
-				self::ATTR_BEFORE => '<a href="$1" class="bbc_link" target="_blank" rel="noopener noreferrer">',
+				self::ATTR_BEFORE => &self::$contentTag,
 				self::ATTR_AFTER => '</a>',
 				self::ATTR_VALIDATE => static function (&$data) {
 					$data = addProtocol($data);
+
+					self::$contentTag = '<a href="$1" class="bbc_link" target="_blank"';
+					self::$contentTag .= validateURLAllowList($data) ? ' rel="noopener ugc">' : ' rel="noopener noreferrer nofollow ugc">';
 				},
 				self::ATTR_DISALLOW_CHILDREN => array(
 					'email' => 1,
@@ -851,6 +861,38 @@ class Codes
 				self::ATTR_BLOCK_LEVEL => false,
 				self::ATTR_AUTOLINK => false,
 				self::ATTR_LENGTH => 3,
+			),
+			array(
+				self::ATTR_TAG => 'url',
+				self::ATTR_TYPE => self::TYPE_PARSED_CONTENT,
+				self::ATTR_BEFORE => '<a href="{url}" class="bbc_link" target="_blank" rel="{follow}">',
+				self::ATTR_AFTER => '</a>',
+				self::ATTR_PARAM => array(
+					'url' => array(
+						self::PARAM_ATTR_MATCH => '([^\s\]]+\]?)',
+						// preparse will check the domain allowList
+						self::PARAM_ATTR_VALIDATE => static function($param) {
+							return addProtocol($param);
+						}
+					),
+					'follow' => array(
+						self::PARAM_ATTR_MATCH => '([^\s\]]+\]?)',
+						self::PARAM_ATTR_VALIDATE => static function($param) {
+							// preparse will validate permissions
+							$on = in_array($param, ['follow', 'true', 'on', 'yes'], true);
+							return ($on) ? 'noopener ugc' : 'noopener noreferrer nofollow ugc';
+						}
+					),
+				),
+				self::ATTR_DISALLOW_CHILDREN => array(
+					'email' => 1,
+					'url' => 1,
+					'iurl' => 1,
+				),
+				self::ATTR_DISABLED_AFTER => ' ($1)',
+				self::ATTR_BLOCK_LEVEL => false,
+				self::ATTR_AUTOLINK => false,
+				self::ATTR_LENGTH => 3
 			),
 		));
 	}

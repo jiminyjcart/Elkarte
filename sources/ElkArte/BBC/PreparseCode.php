@@ -60,7 +60,7 @@ class PreparseCode
 	 * What it does:
 	 *   - Cleans up links (javascript, etc.)
 	 *   - Fixes improperly constructed lists [lists]
-	 *   - Repairs improperly constructed tables, row, headers, etc
+	 *   - Repairs improperly constructed tables, row, headers, etc.
 	 *   - Protects code sections
 	 *   - Checks for proper quote open / closing
 	 *   - Processes /me tag
@@ -133,6 +133,9 @@ class PreparseCode
 		// Font tags with multiple fonts (copy&paste in the WYSIWYG by some browsers).
 		$this->message = preg_replace_callback('~\[font=([^]]*)](.*?(?:\[/font\]))~s',
 			fn($matches) => $this->_preparsecode_font_callback($matches), $this->message);
+
+		// Don't allow rel follow links if they don't have permissions
+		$this->_validateLinks();
 
 		// Allow integration to do further processing on protected code block message
 		call_integration_hook('integrate_preparse_tokenized_code', array(&$this->message, $previewing, $this->code_blocks));
@@ -767,6 +770,48 @@ class PreparseCode
 		foreach ($table_array as $tag)
 		{
 			$this->message .= '[/' . $tag . ']';
+		}
+	}
+
+	/**
+	 * Validates bbc code URL of the form: [url url=123.com follow=true]123[/url]
+	 *
+	 * - Modifies if the user does not have the post_nofollow permission
+	 * - Checks if the domain is on the allowList and modifies as required
+	 */
+	private function _validateLinks()
+	{
+		$allowed = allowedTo('post_nofollow');
+		$regexFollow = '~\[url[^]]*(follow=([^] \s]+))[^]]*]~';
+		$regexUrl = '~\[url[^]]*(url=([^] \s]+))[^]]*]~';
+
+		preg_match_all($regexFollow, $this->message, $matches);
+		if (isset($matches[1]) && is_array($matches[1]))
+		{
+			// Every [URL} code with follow= in them
+			foreach ($matches[1] as $key => $followTerm)
+			{
+				// Flush out the actual URL and follow value
+				preg_match($regexUrl, $matches[0][$key], $match);
+				$allowedDomain = validateURLAllowList(addProtocol($match[2]));
+				$followChoice = in_array(trim($matches[2][$key]), ['follow', 'true', 'on', 'yes'], true);
+
+				// Allowed domain and purposely turning it off?
+				if ($allowedDomain && $allowed && !$followChoice)
+				{
+					$this->message = str_replace($followTerm, 'follow=false', $this->message);
+				}
+				// Allowed domain OR you are allowed and already have it on
+				elseif ($allowedDomain || ($allowed && $followChoice))
+				{
+					$this->message = str_replace($followTerm, 'follow=true', $this->message);
+				}
+				// Not allowed to use the function and the domain is not on the allowList
+				else
+				{
+					$this->message = str_replace($followTerm, 'follow=false', $this->message);
+				}
+			}
 		}
 	}
 

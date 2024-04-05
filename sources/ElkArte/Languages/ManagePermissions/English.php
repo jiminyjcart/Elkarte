@@ -90,6 +90,7 @@ $txt['permissionname_like_posts_stats'] = 'See like posts stats';
 $txt['permissionhelp_like_posts_stats'] = 'This will allow users to see stats of posts liking';
 $txt['permissionname_disable_censor'] = 'Disable word censor';
 $txt['permissionhelp_disable_censor'] = 'Allows members the option to disable the word censor.';
+$txt['permissionname_post_nofollow'] = 'Post URLs without "nofollow" attribute.';
 
 $txt['permissiongroup_pm'] = 'Personal Messaging';
 $txt['permissionname_pm_read'] = 'Read personal messages';
