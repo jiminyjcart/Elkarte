@@ -715,7 +715,7 @@ function registerMember(&$regOptions, $ErrorContext = 'register')
 	$knownInts = array(
 		'date_registered', 'posts', 'id_group', 'last_login', 'personal_messages', 'unread_messages', 'notifications',
 		'new_pm', 'pm_prefs', 'show_online', 'pm_email_notify', 'karma_good', 'karma_bad',
-		'notify_announcements', 'notify_send_body', 'notify_regularity', 'notify_types',
+		'notify_announcements', 'notify_send_body', 'notify_regularity', 'notify_types', 'notify_from',
 		'id_theme', 'is_activated', 'id_msg_last_visit', 'id_post_group', 'total_time_logged_in', 'warning',
 	);
 	$knownFloats = array(
@@ -1812,14 +1812,14 @@ function maxMemberID()
  *
  * @param int[]|int $member_ids an array of member IDs or a single ID
  * @param mixed[] $options an array of possible little alternatives, can be:
- * - 'add_guest' (bool) to add a guest user to the returned array
- * - 'limit' int if set overrides the default query limit
- * - 'sort' (string) a column to sort the results
- * - 'moderation' (bool) includes member_ip, id_group, additional_groups, last_login
- * - 'authentication' (bool) includes secret_answer, secret_question,
- *    is_activated, validation_code, passwd_flood, password_salt
- * - 'preferences' (bool) includes lngfile, mod_prefs, notify_types, signature
- * @return mixed[]
+ *  - 'add_guest' (bool) to add a guest user to the returned array
+ *  - 'limit' int if set overrides the default query limit
+ *  - 'sort' (string) a column to sort the results
+ *  - 'moderation' (bool) includes member_ip, id_group, additional_groups, last_login
+ *  - 'authentication' (bool) includes secret_answer, secret_question, is_activated, validation_code, passwd_flood, password_salt
+ *  - 'preferences' (bool) includes lngfile, mod_prefs, notify_types, signature
+ *  - 'lists' (boot) includes buddy_list, pm_ignore_list
+ * @return array
  * @package Members
  */
 function getBasicMemberData($member_ids, $options = array())
@@ -1828,7 +1828,7 @@ function getBasicMemberData($member_ids, $options = array())
 
 	$db = database();
 
-	$members = array();
+	$members = [];
 	$single = false;
 
 	if (empty($member_ids))
@@ -1859,8 +1859,9 @@ function getBasicMemberData($member_ids, $options = array())
 		SELECT 
 			id_member, member_name, real_name, email_address, posts, id_theme' . (!empty($options['moderation']) ? ',
 			member_ip, id_group, additional_groups, last_login, id_post_group' : '') . (!empty($options['authentication']) ? ',
-		secret_answer, secret_question, is_activated, validation_code, passwd_flood, password_salt' : '') . (!empty($options['preferences']) ? ',
-			lngfile, mod_prefs, notify_types, signature' : '') . '
+			secret_answer, secret_question, is_activated, validation_code, passwd_flood, password_salt' : '') . (!empty($options['preferences']) ? ',
+			lngfile, mod_prefs, notify_types, notify_from, signature' : '') . (!empty($options['lists']) ? ',
+			buddy_list, pm_ignore_list' : '') . '
 		FROM {db_prefix}members
 		WHERE id_member IN ({array_int:member_list})
 		' . (isset($options['sort']) ? '
@@ -1872,7 +1873,7 @@ function getBasicMemberData($member_ids, $options = array())
 			'sort' => $options['sort'] ?? '',
 		)
 	)->fetch_callback(
-		function ($row) use (&$members, $language, $single) {
+		function ($row) use (&$members, $language, $single, $options) {
 			$row['id_member'] = (int) $row['id_member'];
 			$row['posts'] = (int) $row['posts'];
 			$row['id_theme'] = (int) $row['id_theme'];
@@ -1884,6 +1885,7 @@ function getBasicMemberData($member_ids, $options = array())
 			if (!empty($options['preferences']))
 			{
 				$row['notify_types'] = (int) $row['notify_types'];
+				$row['notify_from'] = (int) $row['notify_from'];
 			}
 
 			if (empty($row['lngfile']))
@@ -2706,7 +2708,7 @@ function updateMemberData($members, $data)
 	$knownInts = array(
 		'date_registered', 'posts', 'id_group', 'last_login', 'personal_messages', 'unread_messages', 'mentions',
 		'new_pm', 'pm_prefs', 'show_online', 'pm_email_notify', 'receive_from', 'karma_good', 'karma_bad',
-		'notify_announcements', 'notify_send_body', 'notify_regularity', 'notify_types',
+		'notify_announcements', 'notify_send_body', 'notify_regularity', 'notify_types', 'notify_from',
 		'id_theme', 'is_activated', 'id_msg_last_visit', 'id_post_group', 'total_time_logged_in', 'warning', 'likes_given',
 		'likes_received', 'enable_otp', 'otp_used'
 	);

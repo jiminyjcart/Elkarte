@@ -660,6 +660,7 @@ class ProfileOptions extends AbstractController
 		$context['member']['notify_send_body'] = $this->_profile['notify_send_body'];
 		$context['member']['notify_types'] = $this->_profile['notify_types'];
 		$context['member']['notify_regularity'] = $this->_profile['notify_regularity'];
+		$context['member']['notify_from'] = $this->_profile['notify_from'];
 
 		$this->loadThemeOptions();
 	}

@@ -822,23 +822,43 @@ function template_action_notification()
 	// The main containing header.
 	echo '
 		<form id="creator" class="flow_hidden" action="', getUrl('action', ['action' => 'profile', 'area' => 'notification']), '" method="post" accept-charset="UTF-8">
-			<h2 class="category_header hdicon i-user">
-				', $txt['profile'], '
+			<h2 class="category_header hdicon i-comment">
+				', $txt['notifications'], '
 			</h2>
-			<p class="description">', $txt['notification_info'], '</p>
+			<p class="description">', $txt['notification_settings_info'], '</p>
 			<div class="content">
+				<dl>
+					<dt>
+						<label for="notify_from">', $txt['notify_from'], '</label>
+						<p class="smalltext">', $txt['notify_from_description'], '</p>
+					</dt>
+					<dd>
+						<select name="notify_from" id="notify_from">
+							<option value="0"', $context['member']['notify_from'] == 0 ? ' selected="selected"' : '', '>', $txt['receive_from_everyone'], '</option>
+							<option value="1"', $context['member']['notify_from'] == 1 ? ' selected="selected"' : '', '>', $txt['receive_from_ignore'], '</option>
+							<option value="2"', $context['member']['notify_from'] == 2 ? ' selected="selected"' : '', '>', $txt['receive_from_buddies'], '</option>
+						</select>
+					</dd>
+				</dl>
+				
 				<dl>';
 
 	foreach ($context['mention_types'] as $type => $mention_methods)
 	{
+		if ($type === 'watchedtopic' || $type === 'watchedboard')
+		{
+			continue;
+		}
+
 		echo '
 					<dt>
 						<label for="notify_', $type, '">', $txt['notify_type_' . $type], '</label>
 					</dt>
-					<dd>
+					<dd>	
 						<label for="notify_', $type, '_default">', $txt['notify_method_use_default'], '</label>
 						<input id="notify_', $type, '_default" name="', $mention_methods['default_input_name'], '" class="toggle_notify" type="checkbox" value="', $mention_methods['value'], '" ', $mention_methods['value'] ? '' : 'checked="checked"', '/>
 						<select class="select_multiple" multiple="multiple" id="notify_', $type, '" name="', $mention_methods['default_input_name'], '[]">';
+
 		foreach ($mention_methods['data'] as $key => $method)
 		{
 			echo '
@@ -846,14 +866,18 @@ function template_action_notification()
 		}
 
 		echo '
-						</select>';
-
-		echo '
+						</select>
 					</dd>';
 	}
 
 	echo '
 				</dl>
+			</div>
+			<h2 class="category_header hdicon i-envelope">
+				', $txt['notify_topic_board'], '
+			</h2>
+			<p class="description">', $txt['notification_info'], '</p>
+			<div class="content">
 				<dl>';
 
 	// Allow notification on announcements to be disabled?
@@ -885,12 +909,12 @@ function template_action_notification()
 	{
 		echo '
 					<dt>
-						<label for="notify_send_body">', $txt['notify_send_body' . (empty($modSettings['maillist_enabled']) ? '' : '_pbe')], '</label>
+						<label for="notify_send_body">', $txt['notify_send_body'], '</label>
 					</dt>
 					<dd>
 						<input type="hidden" name="notify_send_body" value="0" />
 						<input type="checkbox" id="notify_send_body" name="notify_send_body"', empty($context['member']['notify_send_body']) ? '' : ' checked="checked"', ' />
-						', (empty($modSettings['maillist_enabled']) ? '' : $txt['notify_send_body_pbe_post']), '
+						', $txt['notify_send_body_pbe_post'], '
 					</dd>';
 	}
 
@@ -901,11 +925,12 @@ function template_action_notification()
 					</dt>
 					<dd>
 						<select name="notify_regularity" id="notify_regularity">
+							<option value="99"', $context['member']['notify_regularity'] == 99 ? ' selected="selected"' : '', '>', $txt['notify_regularity_none'], '</option>
+							<option value="4"', $context['member']['notify_regularity'] == 4 ? ' selected="selected"' : '', '>', $txt['notify_regularity_onsite'], '</option>
 							<option value="0"', $context['member']['notify_regularity'] == 0 ? ' selected="selected"' : '', '>', $txt['notify_regularity_instant'], '</option>
 							<option value="1"', $context['member']['notify_regularity'] == 1 ? ' selected="selected"' : '', '>', $txt['notify_regularity_first_only'], '</option>
 							<option value="2"', $context['member']['notify_regularity'] == 2 ? ' selected="selected"' : '', '>', $txt['notify_regularity_daily'], '</option>
 							<option value="3"', $context['member']['notify_regularity'] == 3 ? ' selected="selected"' : '', '>', $txt['notify_regularity_weekly'], '</option>
-							<option value="99"', $context['member']['notify_regularity'] == 99 ? ' selected="selected"' : '', '>', $txt['notify_regularity_none'], '</option>
 						</select>
 					</dd>
 					<dt>
@@ -914,8 +939,8 @@ function template_action_notification()
 					<dd>
 						<select name="notify_types" id="notify_types">';
 
-	// Using the maillist functions, then limit the options so they make sense
-	if (empty($modSettings['maillist_enabled']) || (empty($modSettings['pbe_no_mod_notices']) && !empty($modSettings['maillist_enabled'])))
+	// Using the maillist functions, then limit the options, so they make sense
+	if (empty($modSettings['maillist_enabled']) || (empty($modSettings['pbe_no_mod_notices'])))
 	{
 		echo '
 							<option value="1"', $context['member']['notify_types'] == 1 ? ' selected="selected"' : '', '>', $txt['notify_send_type_everything'], '</option>
@@ -928,6 +953,7 @@ function template_action_notification()
 						</select>
 					</dd>
 				</dl>
+				
 				<div class="submitbutton">
 					<input id="notify_submit" name="notify_submit" type="submit" value="', $txt['notify_save'], '" />
 					<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '" />', empty($context['token_check']) ? '' : '
