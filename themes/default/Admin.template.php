@@ -382,10 +382,10 @@ function template_edit_censored()
 		</form>
 	</div>
 	<script>
-		$(function() {
-			$("#preview_button").on("click", function() {
-				return ajax_getCensorPreview();
-			});
+		document.addEventListener("DOMContentLoaded", function() {
+		    document.getElementById("preview_button").addEventListener("click", function() {
+		        return ajax_getCensorPreview();
+		    });
 		});
 	</script>';
 }
