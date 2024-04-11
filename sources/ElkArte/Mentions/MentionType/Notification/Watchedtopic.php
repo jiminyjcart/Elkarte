@@ -16,7 +16,7 @@ namespace ElkArte\Mentions\MentionType\Notification;
 use ElkArte\Mentions\MentionType\AbstractNotificationMessage;
 
 /**
- * Class watchedtopic
+ * Class WatchedTopic
  *
  * Handles notifying of members whose watched topics have received new posts
  *
@@ -31,25 +31,47 @@ class Watchedtopic extends AbstractNotificationMessage
 	 */
 	public function getNotificationBody($lang_data, $members)
 	{
-		if (empty($lang_data['suffix']))
+		// Email is handled elsewhere, this is only for on-site mentions
+		return $this->_getNotificationStrings('', [
+			'subject' => static::$_type,
+			'body' => static::$_type,
+		], $members, $this->_task);
+	}
+
+	/**
+	 * We only use the mentions interface to allow on-site mention for new posts on watched boards
+	 * Email and digests are handled in a separate process due to all the complications
+	 */
+	public static function isNotAllowed($method)
+	{
+		// Don't let watched be allowed to use email, that is handled by PostNotificaions
+		if (in_array($method, ['email', 'emaildaily', 'emailweekly']))
 		{
-			return $this->_getNotificationStrings('', [
-				'subject' => static::$_type,
-				'body' => static::$_type],
-				$members,	$this->_task);
+			return true;
 		}
 
-		$keys = [
-			'subject' => 'notify_watchedtopic_' . $lang_data['subject'],
-			'body' => 'notify_watchedtopic_' . $lang_data['body']
-		];
+		return false;
+	}
 
-		$replacements = [
-			'ACTIONNAME' => $this->_task['source_data']['notifier_data']['name'],
-			'SUBJECT' => $this->_task['source_data']['subject'],
-			'MSGLINK' => replaceBasicActionUrl('{script_url}?msg=' . $this->_task->id_target),
-		];
+	/**
+	 * There is no interface for this, its always available as an on-site mention and members set
+	 * from profile options notifications
+	 *
+	 * @return true
+	 */
+	public static function hasHiddenInterface()
+	{
+		return true;
+	}
 
-		return $this->_getNotificationStrings('notify_watchedtopic', $keys, $members, $this->_task, [], $replacements);
+	/**
+	 * Only called when hasHiddenInterface is true.  Returns the application settings as if
+	 * they had been selected in the ACP notifications area
+	 *
+	 * @return array Returns an array containing the settings.
+	 */
+	public static function getSettings()
+	{
+		return ['enable' => 1, 'notification' => 1, 'default' => [0 => 'notification']];
 	}
 }

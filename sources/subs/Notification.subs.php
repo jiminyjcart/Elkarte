@@ -587,7 +587,7 @@ function insertLogDigestQueue($digest_insert)
  * Find the members with *board* notifications on.
  *
  * What it does:
- * Finds notifications that meet:
+ * Finds board notifications that meet:
  * 	- Member has watch notifications on for the board
  *  - The notification type of reply and/or moderation notices
  *  - Notification regularity of instantly or first unread
@@ -598,13 +598,17 @@ function insertLogDigestQueue($digest_insert)
  * @param int[] $boards_index list of boards to check
  * @param string $type type of activity, like reply or lock
  * @param int|int[] $members_only returns data only for a list of members
+ * @param string $regularity type of notification 'email' or 'onsite'
  * @return array
  */
-function fetchBoardNotifications($user_id, $boards_index, $type, $members_only)
+function fetchBoardNotifications($user_id, $boards_index, $type, $members_only, $regularity = 'email')
 {
 	$db = database();
 
 	$boardNotifyData = [];
+
+	$notify_types = $type === 'reply' ? 'mem.notify_types < 4' : 'mem.notify_types < 3';
+	$notify_regularity = $regularity === 'email' ? 'mem.notify_regularity < 2' : 'mem.notify_regularity = 4';
 
 	// Find the members (excluding the poster) that have board notification enabled.
 	$db->fetchQuery('
@@ -617,8 +621,8 @@ function fetchBoardNotifications($user_id, $boards_index, $type, $members_only)
 			INNER JOIN {db_prefix}boards AS b ON (b.id_board = ln.id_board)
 			INNER JOIN {db_prefix}members AS mem ON (mem.id_member = ln.id_member)
 		WHERE ln.id_board IN ({array_int:board_list})
-			AND mem.notify_types != {int:notify_types}
-			AND mem.notify_regularity < {int:notify_regularity}
+			AND {raw:notify_types}
+			AND {raw:notify_regularity}
 			AND mem.is_activated = {int:is_activated}
 			AND ln.id_member != {int:current_member}' .
 		(empty($members_only) ? '' : ' AND ln.id_member IN ({array_int:members_only})') . '
@@ -626,8 +630,8 @@ function fetchBoardNotifications($user_id, $boards_index, $type, $members_only)
 		[
 			'current_member' => $user_id,
 			'board_list' => $boards_index,
-			'notify_types' => $type === 'reply' ? 4 : 3,
-			'notify_regularity' => 2,
+			'notify_types' => $notify_types,
+			'notify_regularity' => $notify_regularity,
 			'is_activated' => 1,
 			'members_only' => is_array($members_only) ? $members_only : [$members_only],
 		]
@@ -670,27 +674,41 @@ function fetchBoardNotifications($user_id, $boards_index, $type, $members_only)
  * What it does:
  * Finds notifications that meet:
  * 	- Member has watch notifications on for these topics
- *  - The notification type of reply and/or moderation notices
- *  - Notification regularity of instantly or first unread
+ *  - Member has set notification type of reply and/or moderation notices
+ *      - ALL_MESSAGES = 1;
+ *      - MODERATION_ONLY_IF_STARTED = 2;
+ *      - ONLY_REPLIES = 3;
+ *      - NOTHING_AT_ALL = 4;
+ *  - Member has set notification regularity to 'email' (instantly or first unread) or 'onsite' for onsite
+ *      - NOTHING = 99;
+ *      - EMAIL INSTANTLY = 0;
+ *      - EMAIL FIRST_UNREAD_MSG = 1;
+ *      - DAILY_DIGEST = 2;
+ *      - WEEKLY_DIGEST = 3;
+ *      - ONSITE FIRST_UNREAD_MSG = 4;
  *  - Member is activated
  *  - Member has access to the board where the topic resides
  *
- * @param int $user_id some goon, e.g. the originator of the action who WILL NOT get a notification
+ * @param int $user_id some goon, e.g. the originator of the action who **WILL NOT** get a notification
  * @param int[] $topics array of topic id's that have updates
- * @param string $type type of notification like reply or lock
+ * @param string $type type of notification like reply, lock, sticky
  * @param int|int[] $members_only if not empty, only send notices to these members
+ * @param string $regularity type of notification 'email' or 'onsite'
  * @return array
  */
-function fetchTopicNotifications($user_id, $topics, $type, $members_only)
+function fetchTopicNotifications($user_id, $topics, $type, $members_only, $regularity = 'email')
 {
 	$db = database();
 
 	$topicNotifyData = [];
 
+	$notify_types = $type === 'reply' ? 'mem.notify_types < 4' : 'mem.notify_types < 3';
+	$notify_regularity = $regularity === 'email' ? 'mem.notify_regularity < 2' : 'mem.notify_regularity = 4';
+
 	// Find the members with notification on for this topic.
 	$db->fetchQuery('
 		SELECT
-			mem.id_member, mem.email_address, mem.notify_regularity, mem.notify_types, mem.notify_send_body, 
+			mem.id_member, mem.email_address, mem.notify_regularity, mem.notify_types, mem.notify_send_body, mem.notify_from,
 			mem.lngfile, mem.warning, mem.id_group, mem.additional_groups, mem.id_post_group, mem.password_salt,
 			t.id_member_started, t.id_last_msg,
 			b.member_groups, b.name, b.id_profile, b.id_board,
@@ -700,8 +718,8 @@ function fetchTopicNotifications($user_id, $topics, $type, $members_only)
 			INNER JOIN {db_prefix}topics AS t ON (t.id_topic = ln.id_topic)
 			INNER JOIN {db_prefix}boards AS b ON (b.id_board = t.id_board)
 		WHERE ln.id_topic IN ({array_int:topic_list})
-			AND mem.notify_types < {int:notify_types}
-			AND mem.notify_regularity < {int:notify_regularity}
+			AND {raw:notify_types}
+			AND {raw:notify_regularity}
 			AND mem.is_activated = {int:is_activated}
 			AND ln.id_member != {int:current_member}' .
 		(empty($members_only) ? '' : ' AND ln.id_member IN ({array_int:members_only})') . '
@@ -709,8 +727,8 @@ function fetchTopicNotifications($user_id, $topics, $type, $members_only)
 		[
 			'current_member' => $user_id,
 			'topic_list' => $topics,
-			'notify_types' => $type === 'reply' ? 4 : 3,
-			'notify_regularity' => 2,
+			'notify_types' => $notify_types,
+			'notify_regularity' => $notify_regularity,
 			'is_activated' => 1,
 			'members_only' => is_array($members_only) ? $members_only : [$members_only],
 		]
@@ -723,6 +741,7 @@ function fetchTopicNotifications($user_id, $topics, $type, $members_only)
 				'notify_regularity' => (int) $row['notify_regularity'],
 				'notify_types' => (int) $row['notify_types'],
 				'notify_send_body' => (int) $row['notify_send_body'],
+				'notify_from' => (int) $row['notify_from'],
 				'lngfile' => $row['lngfile'],
 				'warning' => $row['warning'],
 				'id_group' => (int) $row['id_group'],
@@ -799,7 +818,7 @@ function fetchApprovalNotifications($topics)
 	// Find everyone who needs to know about this.
 	$db->fetchQuery('
 		SELECT
-			DISTINCT mem.id_member, mem.email_address, mem.notify_regularity, mem.notify_types, mem.notify_send_body,
+			DISTINCT mem.id_member, mem.email_address, mem.notify_regularity, mem.notify_types, mem.notify_send_body, mem.notify_from,
 			mem.lngfile, mem.warning, mem.id_group, mem.additional_groups, mem.id_post_group, mem.password_salt,
 			t.id_member_started,
 			b.member_groups, b.name, b.id_profile, b.id_board,
@@ -827,6 +846,7 @@ function fetchApprovalNotifications($topics)
 				'notify_regularity' => (int) $row['notify_regularity'],
 				'notify_types' => (int) $row['notify_types'],
 				'notify_send_body' => (int) $row['notify_send_body'],
+				'notify_from' => (int) $row['notify_from'],
 				'lngfile' => $row['lngfile'],
 				'warning' => $row['warning'],
 				'id_group' => (int) $row['id_group'],

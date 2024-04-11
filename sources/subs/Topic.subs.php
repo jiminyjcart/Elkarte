@@ -194,6 +194,10 @@ function removeTopics($topics, $decreasePostCount = true, $ignoreRecycling = fal
 				updateSettings(array('last_mod_report_action' => time()));
 				recountOpenReports();
 
+				// Make in-accessible any topic/message mentions
+				$remover = new MessagesDelete($modSettings['recycle_enable'], $modSettings['recycle_board']);
+				$remover->deleteMessageMentions(messagesInTopics($recycleTopics), true);
+
 				// Topics that were recycled don't need to be deleted, so subtract them.
 				$topics = array_diff($topics, $recycleTopics);
 			}
@@ -966,23 +970,20 @@ function removeDeleteConcurrence()
 
 	$recycled_enabled = !empty($modSettings['recycle_enable']) && !empty($modSettings['recycle_board']);
 
-	if ($recycled_enabled && !empty($board))
+	// Trying to remove from the recycle bin
+	if ($recycled_enabled && !empty($board) && !isset($_GET['confirm_delete']) && $modSettings['recycle_board'] == $board)
 	{
-		// Trying to removed from the recycle bin
-		if (!isset($_GET['confirm_delete']) && $modSettings['recycle_board'] == $board)
+		if (isset($_REQUEST['msg']))
 		{
-			if (isset($_REQUEST['msg']))
-			{
-				$confirm_url = getUrl('action', ['action' => 'deletemsg', 'confirm_delete', 'topic' => $context['current_topic'] . '.0', 'msg' => $_REQUEST['msg'], '{session_data}']);
-			}
-			else
-			{
-				$confirm_url = getUrl('action', ['action' => 'removetopic2', 'confirm_delete', 'topic' => $context['current_topic'] . '.0', '{session_data}']);
-			}
-
-			// Give them a prompt before we remove the message
-			throw new \ElkArte\Exceptions\Exception('post_already_deleted', false, array($confirm_url));
+			$confirm_url = getUrl('action', ['action' => 'deletemsg', 'confirm_delete', 'topic' => $context['current_topic'] . '.0', 'msg' => $_REQUEST['msg'], '{session_data}']);
 		}
+		else
+		{
+			$confirm_url = getUrl('action', ['action' => 'removetopic2', 'confirm_delete', 'topic' => $context['current_topic'] . '.0', '{session_data}']);
+		}
+
+		// Give them a prompt before we remove the message
+		throw new \ElkArte\Exceptions\Exception('post_already_deleted', false, array($confirm_url));
 	}
 }
 
@@ -1009,7 +1010,7 @@ function increaseViewCounter($id_topic)
 /**
  * Mark topic(s) as read by the given member, at the specified message.
  *
- * @param mixed[] $mark_topics array($id_member, $id_topic, $id_msg)
+ * @param array $mark_topics array($id_member, $id_topic, $id_msg)
  * @param bool $was_set = false - whether the topic has been previously read by the user
  */
 function markTopicsRead($mark_topics, $was_set = false)
@@ -2311,7 +2312,7 @@ function getTopicsPostsAndPoster($topic, $limit, $sort)
  * Remove a batch of messages (or topics)
  *
  * @param int[] $messages
- * @param mixed[] $messageDetails
+ * @param array $messageDetails
  * @param string $type = replies
  */
 function removeMessages($messages, $messageDetails, $type = 'replies')
@@ -3156,6 +3157,8 @@ function mergeableTopics($id_board, $id_topic, $approved, $offset)
 function messagesInTopics($topics)
 {
 	$db = database();
+
+	$topics = is_array($topics) ? $topics : [$topics];
 
 	// Obtain all the message ids we are going to affect.
 	$messages = array();

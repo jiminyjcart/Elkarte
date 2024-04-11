@@ -647,6 +647,7 @@ class Register extends AbstractController
 		$possible_ints = array(
 			'pm_email_notify',
 			'notify_types',
+			'notify_from',
 			'id_theme',
 		);
 

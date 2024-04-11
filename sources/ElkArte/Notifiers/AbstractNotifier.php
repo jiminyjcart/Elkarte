@@ -32,7 +32,7 @@ abstract class AbstractNotifier implements NotifierInterface
 	/** @var QueryInterface The database object */
 	protected $db;
 
-	/** @var \ElkArte\UserInfo The current user data */
+	/** @var UserInfo The current user data */
 	protected $user;
 
 	public function __construct(QueryInterface $db, UserInfo $user)

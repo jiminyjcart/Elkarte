@@ -25,7 +25,7 @@ use ElkArte\Menu\Menu;
  *
  * developers don't remove this until 3.0-dev
  *
- * @param mixed[] $menuData the menu array
+ * @param array $menuData the menu array
  *  - Possible indexes:
  *    - Menu name with named indexes as follows:
  *     - string $title       => Section title
@@ -54,7 +54,7 @@ use ElkArte\Menu\Menu;
  *     - array active       => Set the button active for other subsections.
  *     - string url         => Custom url for the subsection
  *
- * @param mixed[] $menuOptions an array of options that can be used to override some default behaviours.
+ * @param array $menuOptions an array of options that can be used to override some default behaviours.
  *  - Possible indexes:
  *     - action                    => overrides the default action
  *     - current_area              => overrides the current area

@@ -19,7 +19,7 @@ use ElkArte\User;
  *
  * @param bool $all : if true counts all the mentions, otherwise only the unread
  * @param string[]|string $type : the type of the mention can be a string or an array of strings.
- * @param string|null $id_member : the id of the member the counts are for, defaults to user_info['id']
+ * @param int|null $id_member : the id of the member the counts are for, defaults to user_info['id']
  *
  * @return mixed
  * @package Mentions
@@ -144,7 +144,7 @@ function removeMentions($id_mentions)
 			'id_mentions' => $id_mentions,
 		)
 	);
-	$success = $request->affected_rows() != 0;
+	$success = $request->affected_rows() !== 0;
 
 	// Update the top level mentions count
 	if ($success)

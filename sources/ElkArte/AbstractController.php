@@ -43,7 +43,7 @@ abstract class AbstractController
 	/**
 	 * Constructor for the class.
 	 *
-	 * @param object $eventManager The event manager object.
+	 * @param EventManager $eventManager The event manager object.
 	 */
 	public function __construct($eventManager)
 	{

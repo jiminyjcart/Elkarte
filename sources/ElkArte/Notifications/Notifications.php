@@ -51,10 +51,7 @@ class Notifications extends AbstractModel
 	/** @var NotificationsTask[] List of notifications to send */
 	protected $_to_send;
 
-	/** @var string[] Available notification frequencies */
-	protected $_notification_frequencies;
-
-	/** @var array Available notification frequencies */
+	/** @var array Available notifications, like buddy, likemsg, quotedmemn */
 	protected $_notifiers;
 
 	/** @var array Only the members that should be notified.
@@ -64,17 +61,16 @@ class Notifications extends AbstractModel
 	/**
 	 * Notifications constructor.
 	 *
-	 * Registers the known notifications to the system, allows for integration to add more
+	 * Registers the known notification methods to the system, allows for integration to add more
 	 *
 	 * @param QueryInterface $db
 	 * @param UserInfo|null $user
-	 * @throws Exception
 	 */
 	public function __construct($db, $user)
 	{
 		parent::__construct($db, $user);
 
-		// Let's register all the notifications we know by default
+		// Let's register all the notification methods we know by default
 		$glob = new GlobIterator(self::NOTIFIERS_PATH . '/*.php', FilesystemIterator::SKIP_DOTS);
 		foreach ($glob as $file)
 		{
@@ -85,13 +81,14 @@ class Notifications extends AbstractModel
 	}
 
 	/**
-	 * Function to register any new notification method.
+	 * Function to register any new notification method, and instantiates it.  The default methods
+	 * are Email, EmailDaily, EmailWeekly, and Notification
 	 *
-	 * @param string $class_name the name of a class.
-	 * @param string $namespace the namespace of the class.
+	 * @param string $class_name the name of a class
+	 * @param string $namespace The namespace of the notifier class (default: self::NOTIFIERS_NAMESPACE)
 	 *
 	 * Used to identify the strings for the subject and body respectively of the notification.
-	 * @throws Exception
+	 * @throws Exception Throws an exception if the notifier is already instantiated
 	 */
 	public function register($class_name, $namespace = null)
 	{

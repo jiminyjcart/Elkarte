@@ -16,6 +16,7 @@ namespace ElkArte\Mentions\MentionType;
 use ElkArte\Database\QueryInterface;
 use ElkArte\Helper\ValuesContainer;
 use ElkArte\Languages\Txt;
+use ElkArte\MembersList;
 use ElkArte\Notifications\NotificationsTask;
 use ElkArte\UserInfo;
 
@@ -30,11 +31,13 @@ abstract class AbstractNotificationMessage implements NotificationInterface
 	/** @var QueryInterface The database object */
 	protected $_db;
 
-	/** @var \ElkArte\Helper\ValuesContainer The current user object */
+	/** @var ValuesContainer The current user object */
 	protected $user;
 
 	/** @var NotificationsTask The \ElkArte\NotificationsTask in use */
 	protected $_task;
+
+	protected $_to_members_data;
 
 	/**
 	 * Constructs a new instance of the class.
@@ -109,6 +112,14 @@ abstract class AbstractNotificationMessage implements NotificationInterface
 	/**
 	 * {@inheritDoc}
 	 */
+	public static function hasHiddenInterface()
+	{
+		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function insert($member_from, $members_to, $target, $time = null, $status = null, $is_accessible = null)
 	{
 		$inserts = [];
@@ -137,11 +148,22 @@ abstract class AbstractNotificationMessage implements NotificationInterface
 
 		// If the member has already been mentioned, it's not necessary to do it again
 		$actually_mentioned = [];
+
+		// If they are using a buddy/ignore list, we need to take that into account
+		$this->getMembersData($members_to);
+
 		foreach ($members_to as $id_member)
 		{
-			if (!in_array((int) $id_member, $existing, true))
+			// If the notification can not be sent, mark it as not accessible and read
+			if (!$this->_validateMemberRelationship($member_from, $id_member))
 			{
-				$inserts[] = array(
+				$is_accessible = 0;
+				$status = 1;
+			}
+
+			if (!in_array($id_member, $existing, true))
+			{
+				$inserts[] = [
 					$id_member,
 					$target,
 					$status ?? 0,
@@ -149,8 +171,13 @@ abstract class AbstractNotificationMessage implements NotificationInterface
 					$member_from,
 					$time ?? time(),
 					static::$_type
-				);
-				$actually_mentioned[] = $id_member;
+				];
+
+				// Don't update the mention counter if they can't really see this
+				if ($is_accessible !== 0)
+				{
+					$actually_mentioned[] = $id_member;
+				}
 			}
 		}
 
@@ -177,6 +204,66 @@ abstract class AbstractNotificationMessage implements NotificationInterface
 	}
 
 	/**
+	 * Returns basic data about the members to be notified.
+	 *
+	 * @return array
+	 */
+	protected function getMembersData($members_to)
+	{
+		if ($this->_to_members_data === null)
+		{
+			require_once(SUBSDIR . '/Members.subs.php');
+			$this->_to_members_data = getBasicMemberData($members_to, ['preferences' => true, 'lists' => 'true']);
+		}
+
+		return $this->_to_members_data;
+	}
+
+	/**
+	 * Validates the relationship between two members.
+	 *
+	 * @param int $fromMember The ID of the member sending the notification.
+	 * @param int $toMember The ID of the member receiving the notification.
+	 * @return bool Returns true if the notification can be sent, false otherwise.
+	 */
+	protected function _validateMemberRelationship($fromMember, $toMember)
+	{
+		// Everyone
+		if (empty($this->_to_members_data[$toMember]['notify_from']))
+		{
+			return true;
+		}
+
+		$ignoreUsers = array_map('intval', explode(',', $this->_to_members_data[$toMember]['pm_ignore_list']));
+		$buddyList = array_map('intval', explode(',', $this->_to_members_data[$toMember]['buddy_list']));
+
+		// Not those on my ignore list
+		if ($this->_to_members_data[$toMember]['notify_from'] === 1 && in_array($fromMember, $ignoreUsers, true))
+		{
+			return false;
+		}
+
+		// Only friends and pesky admins/global mods
+		if ($this->_to_members_data[$toMember]['notify_from'] === 2)
+		{
+			if (in_array($fromMember, $buddyList, true))
+			{
+				return true;
+			}
+
+			MembersList::load($fromMember, false, 'profile');
+			$fromProfile = MembersList::get($fromMember);
+			$groups = array_map('intval', array_merge([$fromProfile['id_group'], $fromProfile['id_post_group']], (empty($fromProfile['additional_groups']) ? [] : explode(',', $fromProfile['additional_groups']))));
+			if (in_array(1, $groups, true) || in_array(2, $groups, true))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Returns an array of notification strings based on template and replacements.
 	 *
 	 * @param string $template The email notification template to use.
@@ -187,38 +274,41 @@ abstract class AbstractNotificationMessage implements NotificationInterface
 	 * @param array $replacements Additional replacements for the loadEmailTemplate function (optional)
 	 * @return array The array of generated notification strings.
 	 */
-	protected function _getNotificationStrings($template, $keys, $members, NotificationsTask $task, $lang_files = array(), $replacements = array())
+	protected function _getNotificationStrings($template, $keys, $members, NotificationsTask $task, $lang_files = [], $replacements = [])
 	{
-		$members_data = $task->getMembersData();
+		$recipientData = $task->getMembersData();
 
 		$return = [];
+
+		// Templates are for outbound emails
 		if (!empty($template))
 		{
 			require_once(SUBSDIR . '/Notification.subs.php');
 
 			foreach ($members as $member)
 			{
-				$replacements['REALNAME'] = $members_data[$member]['real_name'];
+				$replacements['REALNAME'] = $recipientData[$member]['real_name'];
 				$replacements['UNSUBSCRIBELINK'] = replaceBasicActionUrl('{script_url}?action=notify;sa=unsubscribe;token=' .
-					getNotifierToken($member, $members_data[$member]['email_address'], $members_data[$member]['password_salt'], $task->notification_type, $task->id_target));
-				$langStrings = $this->_loadStringsByTemplate($template, $members, $members_data, $lang_files, $replacements);
+					getNotifierToken($member, $recipientData[$member]['email_address'], $recipientData[$member]['password_salt'], $task->notification_type, $task->id_target));
+				$langStrings = $this->_loadStringsByTemplate($template, $members, $recipientData, $lang_files, $replacements);
 
 				$return[] = [
 					'id_member_to' => $member,
-					'email_address' => $members_data[$member]['email_address'],
-					'subject' => $langStrings[$members_data[$member]['lngfile']]['subject'],
-					'body' => $langStrings[$members_data[$member]['lngfile']]['body'],
+					'email_address' => $recipientData[$member]['email_address'],
+					'subject' => $langStrings[$recipientData[$member]['lngfile']]['subject'],
+					'body' => $langStrings[$recipientData[$member]['lngfile']]['body'],
 					'last_id' => 0
 				];
 			}
 		}
+		// No template, must be an on-site notification
 		else
 		{
 			foreach ($members as $member)
 			{
 				$return[] = [
 					'id_member_to' => $member,
-					'email_address' => $members_data[$member]['email_address'],
+					'email_address' => $recipientData[$member]['email_address'],
 					'subject' => $keys['subject'],
 					'body' => $keys['body'] ?? '',
 					'last_id' => 0

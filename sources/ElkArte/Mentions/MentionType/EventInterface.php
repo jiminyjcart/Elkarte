@@ -14,7 +14,9 @@
 namespace ElkArte\Mentions\MentionType;
 
 /**
- * Interface \ElkArte\Mentions\MentionType\EventInterface
+ * Interface EventInterface
+ *
+ * This interface defines the contract for event handling in a controller.
  */
 interface EventInterface
 {

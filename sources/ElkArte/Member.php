@@ -14,6 +14,7 @@
 
 namespace ElkArte;
 
+use BBC\ParserWrapper;
 use ElkArte\Helper\Util;
 use ElkArte\Helper\ValuesContainer;
 
@@ -22,31 +23,21 @@ use ElkArte\Helper\ValuesContainer;
  */
 class Member extends ValuesContainer
 {
-	/**
-	 * If context has been loaded or not
-	 *
-	 * @var bool
-	 */
+	/** @var bool If context has been loaded or not */
 	protected $loaded = false;
 
-	/**
-	 * Basically the content of $modSettings['displayFields']
-	 *
-	 * @var mixed[]
-	 */
+	/** @var array Basically the content of $modSettings['displayFields'] */
 	protected $display_fields = [];
 
 	/**
 	 * Constructor
 	 *
-	 * @param mixed[] $data
-	 * @param string $set
-	 * @param \BBC\ParserWrapper $bbc_parser
+	 * @param array $data
+	 * @param string $set The set of data loaded
+	 * @param ParserWrapper $bbc_parser
+	 *
 	 */
-	public function __construct($data, /**
-  * The set of data loaded
-  */
- protected $set, protected $bbc_parser)
+	public function __construct($data, protected $set, protected $bbc_parser)
 	{
 		parent::__construct($data);
 	}
@@ -55,8 +46,8 @@ class Member extends ValuesContainer
 	 * Adds data to a member
 	 *
 	 * @param string $type
-	 * @param mixed[] $data
-	 * @param mixed[] $display_fields Basically the content of $modSettings['displayFields']
+	 * @param array $data
+	 * @param array $display_fields Basically the content of $modSettings['displayFields']
 	 */
 	public function append($type, $data, $display_fields)
 	{
@@ -71,7 +62,7 @@ class Member extends ValuesContainer
 	 * Returns a certain data
 	 *
 	 * @param string $item
-	 * @return mixed[] Anything set for that index
+	 * @return array Anything set for that index
 	 */
 	public function get($item)
 	{
@@ -143,7 +134,6 @@ class Member extends ValuesContainer
 		$this->data['username'] = $this->data['member_name'];
 		$this->data['name'] = $this->data['real_name'];
 		$this->data['id'] = $this->data['id_member'];
-
 		$this->data['href'] = getUrl('profile', ['action' => 'profile', 'u' => $this->data['id_member'], 'name' => $this->data['real_name']]);
 		$this->data['link'] = '<a href="' . $this->data['href'] . '" title="' . $txt['profile_of'] . ' ' . trim($this->data['real_name']) . '">' . $this->data['real_name'] . '</a>';
 		$this->data['email'] = $this->data['email_address'];
@@ -271,7 +261,7 @@ class Member extends ValuesContainer
 				$value = $this->bbc_parser->parseCustomFields($value);
 			}
 			// ... or checkbox?
-			elseif (isset($custom['type']) && $custom['type'] == 'check')
+			elseif (isset($custom['type']) && $custom['type'] === 'check')
 			{
 				$value = $value ? $txt['yes'] : $txt['no'];
 			}
@@ -306,7 +296,7 @@ class Member extends ValuesContainer
 	/**
 	 * Stores the data of the user into an array
 	 *
-	 * @return mixed[]
+	 * @return array
 	 */
 	public function toArray()
 	{

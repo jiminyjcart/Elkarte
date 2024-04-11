@@ -117,8 +117,8 @@ function calculateNextTrigger($tasks = array(), $forceUpdate = false)
 /**
  * Returns a time stamp of the next instance of these time parameters.
  *
- * @param int $regularity
- * @param string $unit
+ * @param int $regularity number of $unit units
+ * @param string $unit time units, m, h, d, w
  * @param int $offset
  * @param bool $immediate
  * @return int
@@ -127,7 +127,7 @@ function calculateNextTrigger($tasks = array(), $forceUpdate = false)
 function next_time($regularity, $unit, $offset, $immediate = false)
 {
 	// Just in case!
-	if ($regularity == 0)
+	if ((int) $regularity === 0)
 	{
 		$regularity = 2;
 	}
@@ -178,13 +178,13 @@ function next_time($regularity, $unit, $offset, $immediate = false)
 		$applyOffset = 3600;
 
 		// 24 hours = 1 day.
-		if ($unit == 'd')
+		if ($unit === 'd')
 		{
 			$applyOffset = 86400;
 		}
 
 		// Otherwise a week.
-		if ($unit == 'w')
+		if ($unit === 'w')
 		{
 			$applyOffset = 604800;
 		}

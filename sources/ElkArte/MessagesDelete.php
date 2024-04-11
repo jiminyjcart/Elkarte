@@ -17,6 +17,7 @@
 
 namespace ElkArte;
 
+use ElkArte\Exceptions\Exception;
 use ElkArte\Helper\ValuesContainer;
 
 /**
@@ -585,20 +586,16 @@ class MessagesDelete
 	}
 
 	/**
-	 * Remove a specific message.
-	 * This may include permission checks.
+	 * Remove a message from the forum.
 	 *
-	 * - normally, local and global should be the localCookies and globalCookies settings, respectively.
-	 * - uses boardurl to determine these two things.
+	 * - If $check_permissions is true, and it is the first and only message in a topic, removes the topic
 	 *
-	 * @param int $message The message id
-	 * @param bool $decreasePostCount if true users' post count will be reduced
-	 * @param bool $check_permissions if true the method will also check
-	 *              permissions to delete the message/topic (may result in fatal
-	 *              errors or login screens)
+	 * @param int $message The ID of the message to be removed
+	 * @param bool $decreasePostCount Whether to decrease the post count or not (default: true)
+	 * @param bool $check_permissions Whether to check permissions or not (default: true) (may result in fatal
+	 *             errors or login screens)
 	 *
-	 * @return bool
-	 * @throws \ElkArte\Exceptions\Exception recycle_no_valid_board
+	 * @return bool Whether the message was successfully removed or not
 	 */
 	public function removeMessage($message, $decreasePostCount = true, $check_permissions = true)
 	{
@@ -613,7 +610,7 @@ class MessagesDelete
 			return false;
 		}
 
-		$request = $db->query('', '
+		$row = $db->fetchQuery('
 			SELECT
 				m.id_msg, m.id_member, m.icon, m.poster_time, m.subject,' . (empty($modSettings['search_custom_index_config']) ? '' : ' m.body,') . '
 				m.approved, t.id_topic, t.id_first_msg, t.id_last_msg, t.num_replies, t.id_board,
@@ -627,25 +624,25 @@ class MessagesDelete
 			array(
 				'id_msg' => $message,
 			)
-		);
-		if ($request->num_rows() === 0)
+		)->fetch_assoc();
+
+		if (empty($row))
 		{
 			return false;
 		}
 
-		$row = $request->fetch_assoc();
-		$request->free_result();
-
 		if ($check_permissions)
 		{
 			$check = $this->_checkDeletePermissions($row, $board);
-			if ($check === true)
+			if ($check === 'topic')
 			{
 				// This needs to be included for topic functions
 				require_once(SUBSDIR . '/Topic.subs.php');
 				removeTopics($row['id_topic']);
+
 				return true;
 			}
+
 			if ($check === 'exit')
 			{
 				return false;
@@ -659,7 +656,7 @@ class MessagesDelete
 		}
 
 		// This is the last post, update the last post on the board.
-		if ($row['id_last_msg'] == $message)
+		if ((int) $row['id_last_msg'] === $message)
 		{
 			// Find the last message, set it, and decrease the post count.
 			$row2 = $db->fetchQuery('
@@ -685,11 +682,11 @@ class MessagesDelete
 					unapproved_posts = CASE WHEN unapproved_posts = {int:no_unapproved} THEN 0 ELSE unapproved_posts - 1 END') . '
 				WHERE id_topic = {int:id_topic}',
 				array(
-					'id_last_msg' => $row2['id_msg'],
-					'id_member_updated' => $row2['id_member'],
+					'id_last_msg' => (int) $row2['id_msg'],
+					'id_member_updated' => (int) $row2['id_member'],
 					'no_replies' => 0,
 					'no_unapproved' => 0,
-					'id_topic' => $row['id_topic'],
+					'id_topic' => (int) $row['id_topic'],
 				)
 			);
 		}
@@ -705,7 +702,7 @@ class MessagesDelete
 				array(
 					'no_replies' => 0,
 					'no_unapproved' => 0,
-					'id_topic' => $row['id_topic'],
+					'id_topic' => (int) $row['id_topic'],
 				)
 			);
 		}
@@ -715,7 +712,7 @@ class MessagesDelete
 
 		// If recycle topics has been set, make a copy of this message in the recycle board.
 		// Make sure we're not recycling messages that are already on the recycle board.
-		if (!empty($this->_recycle_board) && $row['id_board'] != $this->_recycle_board && $row['icon'] != 'recycled')
+		if (!empty($this->_recycle_board) && $row['id_board'] != $this->_recycle_board && $row['icon'] !== 'recycled')
 		{
 			// Check if the recycle board exists and if so get the read status.
 			$request = $db->query('', '
@@ -729,6 +726,7 @@ class MessagesDelete
 					'recycle_board' => $this->_recycle_board,
 				)
 			);
+
 			if ($request->num_rows() === 0)
 			{
 				throw new Exceptions\Exception('recycle_no_valid_board');
@@ -855,6 +853,9 @@ class MessagesDelete
 						)
 					);
 				}
+
+				// Update mentions accessibility
+				$this->deleteMessageMentions(messagesInTopics($topicID), true);
 
 				// Make sure this message isn't getting deleted later on.
 				$recycle = true;
@@ -1018,44 +1019,61 @@ class MessagesDelete
 	 * mention count for anyone was mentioned in that message (like, quote, @, etc)
 	 *
 	 * @param int|int[] $messages
+	 * @param bool $recycle If recycle board is enabled, sets mentions as in_accessible, otherwise hard delete
 	 */
-	public function deleteMessageMentions($messages)
+	public function deleteMessageMentions($messages, $recycle = false)
 	{
 		$db = database();
 
-		$mentionTypes = array('mentionmem', 'likemsg', 'rlikemsg', 'quotedmem');
-		$messages = is_array($messages) ? $messages : array($messages);
+		$mentionTypes = ['mentionmem', 'likemsg', 'rlikemsg', 'quotedmem', 'watchedtopic', 'watchedboard'];
+		$messages = is_array($messages) ? $messages : [$messages];
+		$changeMe = [];
 
 		// Who was mentioned in these messages
-		$request = $db->query('', '
+		$db->fetchQuery('
 			SELECT 
 				DISTINCT(id_member) as id_member
 			FROM {db_prefix}log_mentions
 			WHERE id_target IN ({array_int:messages})
 				AND mention_type IN ({array_string:mention_types})',
-			array(
+			[
 				'messages' => $messages,
 				'mention_types' => $mentionTypes,
-			)
+			]
+		)->fetch_callback(
+			function ($row) use (&$changeMe) {
+				$changeMe[] = (int) $row['id_member'];
+			}
 		);
-		$changeMe = array();
-		while ($row = $request->fetch_assoc())
+
+		if ($recycle === true)
 		{
-			$changeMe[] = $row['id_member'];
+			// Set them as not accessible when they are going to the trashcan
+			$db->query('', '
+				UPDATE {db_prefix}log_mentions
+				SET
+					is_accessible = 0
+				WHERE id_target IN ({array_int:messages})
+					AND is_accessible = 1',
+				[
+					'messages' => $messages,
+					'mention_types' => $mentionTypes,
+				]
+			);
 		}
-
-		$request->free_result();
-
-		// Remove the mentions!
-		$db->query('', '
-			DELETE FROM {db_prefix}log_mentions
-			WHERE id_target IN ({array_int:messages})
-				AND mention_type IN ({array_string:mention_types})',
-			array(
-				'messages' => $messages,
-				'mention_types' => $mentionTypes,
-			)
-		);
+		else
+		{
+			// This message is really gone, so remove the mentions!
+			$db->query('', '
+				DELETE FROM {db_prefix}log_mentions
+				WHERE id_target IN ({array_int:messages})
+					AND mention_type IN ({array_string:mention_types})',
+				[
+					'messages' => $messages,
+					'mention_types' => $mentionTypes,
+				]
+			);
+		}
 
 		// Update the mention count for this group
 		require_once(SUBSDIR . '/Mentions.subs.php');
@@ -1066,20 +1084,29 @@ class MessagesDelete
 	}
 
 	/**
-	 * Performs all the permission checks to see if the current user can
-	 * delete the topic/message he would like to delete
+	 * Check if the user has the necessary permissions to delete a post.
 	 *
 	 * @param array $row Details on the message
-	 * @param array $board The the user is in (?)
+	 * @param int $board The board ID
 	 *
-	 * @return bool|string
-	 * @throws \ElkArte\Exceptions\Exception cannot_delete_replies, cannot_delete_own, modify_post_time_passed
+	 * @return bool|string 'topic' if the user has the necessary permissions and this is the only message in a topic
+	 *                     'exit' if the user cannot delete an unapproved message,
+	 *                      true if they have permission,
+	 *                      exception otherwise.
+	 * @throws Exception cannot_delete_replies, cannot_delete_own, modify_post_time_passed, cannot_delete_any, delFirstPost
 	 */
 	protected function _checkDeletePermissions($row, $board)
 	{
 		global $modSettings;
 
-		if (empty($board) || $row['id_board'] != $board)
+		$row['id_board'] = (int) $row['id_board'];
+		$row['id_member_poster'] = (int) $row['id_member_poster'];
+		$row['id_member'] = (int) $row['id_member'];
+		$row['id_first_msg'] = (int) $row['id_first_msg'];
+		$row['id_msg'] = (int) $row['id_msg'];
+		$board = (int) $board;
+
+		if (empty($board) || $row['id_board'] !== $board)
 		{
 			$delete_any = boardsAllowedTo('delete_any');
 
@@ -1090,11 +1117,12 @@ class MessagesDelete
 				$delete_replies = boardsAllowedTo('delete_replies');
 				$delete_replies = in_array(0, $delete_replies) || in_array($row['id_board'], $delete_replies);
 
-				if ($row['id_member'] == $this->user->id)
+				// Their own checks
+				if ($row['id_member'] === $this->user->id)
 				{
 					if (!$delete_own)
 					{
-						if ($row['id_member_poster'] == $this->user->id)
+						if ($row['id_member_poster'] === $this->user->id)
 						{
 							if (!$delete_replies)
 							{
@@ -1106,12 +1134,12 @@ class MessagesDelete
 							throw new Exceptions\Exception('cannot_delete_own', 'permission');
 						}
 					}
-					elseif (($row['id_member_poster'] != $this->user->id || !$delete_replies) && !empty($modSettings['edit_disable_time']) && $row['poster_time'] + $modSettings['edit_disable_time'] * 60 < time())
+					elseif (($row['id_member_poster'] !== $this->user->id || !$delete_replies) && !empty($modSettings['edit_disable_time']) && $row['poster_time'] + $modSettings['edit_disable_time'] * 60 < time())
 					{
 						throw new Exceptions\Exception('modify_post_time_passed', false);
 					}
 				}
-				elseif ($row['id_member_poster'] == $this->user->id)
+				elseif ($row['id_member_poster'] === $this->user->id)
 				{
 					if (!$delete_replies)
 					{
@@ -1128,7 +1156,7 @@ class MessagesDelete
 			if ($modSettings['postmod_active'] && !$row['approved'] && $row['id_member'] != $this->user->id && (!in_array(0, $delete_any) && !in_array($row['id_board'], $delete_any)))
 			{
 				$approve_posts = empty($this->user->mod_cache['ap']) ? boardsAllowedTo('approve_posts') : $this->user->mod_cache['ap'];
-				if (!in_array(0, $approve_posts) && !in_array($row['id_board'], $approve_posts))
+				if (!in_array(0, $approve_posts, true) && !in_array($row['id_board'], $approve_posts, true))
 				{
 					return 'exit';
 				}
@@ -1137,11 +1165,11 @@ class MessagesDelete
 		else
 		{
 			// Check permissions to delete this message.
-			if ($row['id_member'] == $this->user->id)
+			if ($row['id_member'] === $this->user->id)
 			{
 				if (!allowedTo('delete_own'))
 				{
-					if ($row['id_member_poster'] == $this->user->id && !allowedTo('delete_any'))
+					if ($row['id_member_poster'] === $this->user->id && !allowedTo('delete_any'))
 					{
 						isAllowedTo('delete_replies');
 					}
@@ -1150,12 +1178,12 @@ class MessagesDelete
 						isAllowedTo('delete_own');
 					}
 				}
-				elseif (!allowedTo('delete_any') && ($row['id_member_poster'] != $this->user->id || !allowedTo('delete_replies')) && !empty($modSettings['edit_disable_time']) && $row['poster_time'] + $modSettings['edit_disable_time'] * 60 < time())
+				elseif (!allowedTo('delete_any') && ($row['id_member_poster'] !== $this->user->id || !allowedTo('delete_replies')) && !empty($modSettings['edit_disable_time']) && $row['poster_time'] + $modSettings['edit_disable_time'] * 60 < time())
 				{
 					throw new Exceptions\Exception('modify_post_time_passed', false);
 				}
 			}
-			elseif ($row['id_member_poster'] == $this->user->id && !allowedTo('delete_any'))
+			elseif ($row['id_member_poster'] === $this->user->id && !allowedTo('delete_any'))
 			{
 				isAllowedTo('delete_replies');
 			}
@@ -1164,27 +1192,28 @@ class MessagesDelete
 				isAllowedTo('delete_any');
 			}
 
-			if ($modSettings['postmod_active'] && !$row['approved'] && $row['id_member'] != $this->user->id && !allowedTo('delete_own'))
+			if ($modSettings['postmod_active'] && !$row['approved'] && $row['id_member'] !== $this->user->id && !allowedTo('delete_own'))
 			{
 				isAllowedTo('approve_posts');
 			}
 		}
 
 		// Delete the *whole* topic, but only if the topic consists of one message.
-		if ($row['id_first_msg'] == $row['id_msg'])
+		if ($row['id_first_msg'] === $row['id_msg'])
 		{
-			if (empty($board) || $row['id_board'] != $board)
+			if (empty($board) || $row['id_board'] !== $board)
 			{
 				$remove_own = false;
 				$remove_any = boardsAllowedTo('remove_any');
-				$remove_any = in_array(0, $remove_any) || in_array($row['id_board'], $remove_any);
+				$remove_any = in_array(0, $remove_any) || in_array($row['id_board'], $remove_any, true);
 
 				if (!$remove_any)
 				{
 					$remove_own = boardsAllowedTo('remove_own');
-					$remove_own = in_array(0, $remove_own) || in_array($row['id_board'], $remove_own);
+					$remove_own = in_array(0, $remove_own) || in_array($row['id_board'], $remove_own, true);
 				}
-				if ($row['id_member'] != $this->user->id && !$remove_any)
+
+				if ($row['id_member'] !== $this->user->id && !$remove_any)
 				{
 					throw new Exceptions\Exception('cannot_remove_any', 'permission');
 				}
@@ -1194,7 +1223,7 @@ class MessagesDelete
 					throw new Exceptions\Exception('cannot_remove_own', 'permission');
 				}
 			}
-			elseif ($row['id_member'] != $this->user->id)
+			elseif ($row['id_member'] !== $this->user->id)
 			{
 				// Check permissions to delete a whole topic.
 				isAllowedTo('remove_any');
@@ -1210,7 +1239,9 @@ class MessagesDelete
 				throw new Exceptions\Exception('delFirstPost', false);
 			}
 
-			return true;
+			return 'topic';
 		}
+
+		return true;
 	}
 }

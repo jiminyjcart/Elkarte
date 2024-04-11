@@ -30,6 +30,8 @@ $txt['mention_rlikemsg'] = 'Unliked your message {msg_link}';
 $txt['mention_buddy'] = 'Added you to their buddy list.';
 $txt['mention_quotedmem'] = 'Quoted a message of yours in {msg_link}';
 $txt['mention_mailfail'] = 'Disabled email notification due to delivery failure';
+$txt['mention_watchedtopic'] = 'Posted a new message in {msg_link}';
+$txt['mention_watchedboard'] = 'Started a new topic "{topic_link}" on the "{board}" board.';
 
 $txt['mentions_type_all'] = 'All Mentions';
 $txt['mentions_type_mentionmem'] = 'Mentioned';
@@ -38,7 +40,8 @@ $txt['mentions_type_rlikemsg'] = 'Unlikes';
 $txt['mentions_type_buddy'] = 'Buddy';
 $txt['mentions_type_quotedmem'] = 'Quoted';
 $txt['mentions_type_mailfail'] = 'Delivery Failure';
-$txt['mentions_type_watchedtopic'] = 'Watching';
+$txt['mentions_type_watchedtopic'] = 'Topics';
+$txt['mentions_type_watchedboard'] = 'Boards';
 
 $txt['mentions_mark_all_read'] = 'Mark these mentions as read';
 
@@ -50,4 +53,3 @@ $txt['setting_rlikemsg'] = 'Removed likes';
 $txt['setting_mentionmem'] = '@mentions';
 $txt['setting_quotedmem'] = 'Quoting';
 $txt['setting_mailfail'] = 'Delivery Failures';
-$txt['setting_watchedtopic'] = 'Watched Topics';

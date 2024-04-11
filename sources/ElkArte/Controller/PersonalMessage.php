@@ -1526,7 +1526,7 @@ class PersonalMessage extends AbstractController
 			if ((int) $action === -1 || (int) $action === 0 || (int) $action > 0)
 			{
 				$to_label[(int) $pm] = (int) $action;
-				$label_type[(int) $pm] = $type;
+				$label_type[(int) $pm] = $type ?? '';
 			}
 		}
 

@@ -274,6 +274,15 @@ class BoardsTree
 		return isset($this->boards[$id]);
 	}
 
+	/**
+	 * Retrieves a board object by its id.
+	 *
+	 * @param int $id The id of the board.
+	 *
+	 * @return Board The board object with the specified id.
+	 *
+	 * @throws \Exception When the board id doesn't exist.
+	 */
 	public function getBoardById($id)
 	{
 		if (isset($this->boards[$id]))

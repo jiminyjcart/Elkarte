@@ -1195,8 +1195,8 @@ function onTopicSplitReceived (XMLDoc)
 		newItem,
 		sInsertBeforeId,
 		oListItems,
-		right_arrow = '<i class="icon icon-lg i-chevron-circle-right"></i>',
-		left_arrow = '<i class="icon icon-lg i-chevron-circle-left"></i>';
+		right_arrow = '<i class="icon icon-big i-chevron-circle-right"></i>',
+		left_arrow = '<i class="icon icon-big i-chevron-circle-left"></i>';
 
 	// Loop through all changes ajax returned
 	for (i = 0; i < numChanges; i++)
@@ -1391,14 +1391,18 @@ InTopicListModeration.prototype.handleClick = function(oCheckbox) {
 
 	if (this.opt.bCanRestore)
 	{
-		oButtonStrip.querySelector('#restore_button_text').innerHTML = this.opt.sRestoreButtonLabel + ' [' + this.iNumSelected + ']';
-		if (this.iNumSelected < 1)
+		let restore = oButtonStrip.querySelector('#restore_button_text');
+		if (restore)
 		{
-			oButtonStrip.querySelector('#restore_button').classList.add('hide');
-		}
-		else
-		{
-			oButtonStrip.querySelector('#restore_button').classList.remove('hide');
+			restore.innerHTML = this.opt.sRestoreButtonLabel + ' [' + this.iNumSelected + ']';
+			if (this.iNumSelected < 1)
+			{
+				oButtonStrip.querySelector('#restore_button').classList.add('hide');
+			}
+			else
+			{
+				oButtonStrip.querySelector('#restore_button').classList.remove('hide');
+			}
 		}
 	}
 

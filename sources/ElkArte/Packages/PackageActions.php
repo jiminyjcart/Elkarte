@@ -69,7 +69,7 @@ class PackageActions extends AbstractController
 	/** @var array Passed array of theme paths */
 	protected $_theme_paths;
 
-	/** @var \ElkArte\Helper\FileFunctions */
+	/** @var FileFunctions */
 	protected $fileFunc;
 
 	/** @var int Failed counter */

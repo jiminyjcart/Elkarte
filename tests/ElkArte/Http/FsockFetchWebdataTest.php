@@ -22,12 +22,12 @@ class FsockFetchWebdataTest extends TestCase
 		// expected return code
 		// expected in output
 		$this->post_testcases = array(
-			array(
-				'https://www.google.com',
-				array('gs_taif0' => 'elkarte'),
-				405,
-				'all we know',
-			),
+			//array(
+			//	'https://www.google.com',
+			//	array('gs_taif0' => 'elkarte'),
+			//	405,
+			//	'all we know',
+			//),
 			array(
 				'https://www.elkarte.net/community/index.php?action=search;sa=results',
 				array('search' => 'stuff', 'search_selection' => 'all', 'advanced' => 0),

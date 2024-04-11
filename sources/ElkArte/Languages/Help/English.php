@@ -351,7 +351,7 @@ $helptxt['time_offset'] = 'Not all forum administrators want their forum to use 
 $helptxt['default_timezone'] = 'The server timezone tells PHP where your server is located. You should ensure this is set correctly, preferably to the country/city in which the server is located. You can find out more information on the <a href="https://www.php.net/manual/en/timezones.php" target="_blank">PHP Site</a>.';
 $helptxt['spamWaitTime'] = 'Here you can select the amount of time that must pass between postings. This can be used to stop people from "spamming" your forum by limiting how often they can post.';
 
-$helptxt['enablePostHTML'] = 'This will allow the posting of some basic HTML tags:
+$helptxt['enablePostHTML'] = 'This will allow the use of some basic HTML tags when posting:
 	<ul class="normallist enablePostHTML">
 		<li>&lt;b&gt;, &lt;u&gt;, &lt;i&gt;, &lt;s&gt;, &lt;em&gt;, &lt;ins&gt;, &lt;del&gt;</li>
 		<li>&lt;a href=&quot;&quot;&gt;</li>
@@ -360,7 +360,7 @@ $helptxt['enablePostHTML'] = 'This will allow the posting of some basic HTML tag
 		<li>&lt;pre&gt;, &lt;blockquote&gt;</li>
 	</ul>';
 
-$helptxt['enablePostMarkdown'] = 'This will allow the posting of some basic Markdown tags:
+$helptxt['enablePostMarkdown'] = 'This will allow the use of some basic Markdown tags when posting:
 	<ul class="normallist enablePostMarkdown">
 		<li>**Text** or __Text__ => [b]Text[/b]</li>
 		<li>*Text* or _Text_ => [i]Text[/i]</li>

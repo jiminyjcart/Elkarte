@@ -68,10 +68,10 @@ function AddMailQueue($flush = false, $to_array = [], $subject = '', $message = 
 
 	$db = database();
 
-	static $cur_insert = array();
+	static $cur_insert = [];
 	static $cur_insert_len = 0;
 
-	if ($cur_insert_len == 0)
+	if ($cur_insert_len === 0)
 	{
 		$cur_insert = [];
 	}
@@ -85,12 +85,12 @@ function AddMailQueue($flush = false, $to_array = [], $subject = '', $message = 
 		// Dump the data...
 		$db->insert('',
 			'{db_prefix}mail_queue',
-			array(
+			[
 				'time_sent' => 'int', 'recipient' => 'string-255', 'body' => 'string', 'subject' => 'string-255',
 				'headers' => 'string-65534', 'send_html' => 'int', 'priority' => 'int', 'private' => 'int', 'message_id' => 'string-255',
-			),
+			],
 			$cur_insert,
-			array('id_mail')
+			['id_mail']
 		);
 
 		$cur_insert = [];
@@ -108,11 +108,11 @@ function AddMailQueue($flush = false, $to_array = [], $subject = '', $message = 
 				value = {string:nextSendTime}
 			WHERE variable = {string:mail_next_send}
 				AND value = {string:no_outstanding}',
-			array(
+			[
 				'nextSendTime' => $nextSendTime,
 				'mail_next_send' => 'mail_next_send',
 				'no_outstanding' => '0',
-			)
+			]
 		);
 
 		return true;
@@ -132,12 +132,12 @@ function AddMailQueue($flush = false, $to_array = [], $subject = '', $message = 
 			// Flush out what we have so far.
 			$db->insert('',
 				'{db_prefix}mail_queue',
-				array(
+				[
 					'time_sent' => 'int', 'recipient' => 'string-255', 'body' => 'string', 'subject' => 'string-255',
 					'headers' => 'string-65534', 'send_html' => 'int', 'priority' => 'int', 'private' => 'int', 'message_id' => 'string-255',
-				),
+				],
 				$cur_insert,
-				array('id_mail')
+				['id_mail']
 			);
 
 			// Clear this out.
@@ -167,7 +167,7 @@ function AddMailQueue($flush = false, $to_array = [], $subject = '', $message = 
  * - Character codes U+0080 <> U+00A0 range (control) are dropped
  * - Callback function of preg_replace_callback
  *
- * @param mixed[] $match
+ * @param array $match
  *
  * @return string
  * @package Mail
@@ -246,7 +246,7 @@ function mail_insert_key($message, $unq_head, $line_break)
 	// Find the sections, decode, add in the new key, and encode the new message
 	if (preg_match($regex['base64'], $message, $match))
 	{
-		// un-chunk, add in our encoded key header, and re chunk, all so we match RFC 2045 semantics.
+		// un-chunk, add in our encoded key header, and re chunk.  Done so we match RFC 2045 semantics.
 		$encoded_message = base64_decode(str_replace($line_break, '', $match[2]));
 		$encoded_message .= $line_break . $line_break . '[' . $unq_head . ']' . $line_break;
 		$encoded_message = base64_encode($encoded_message);
@@ -261,7 +261,7 @@ function mail_insert_key($message, $unq_head, $line_break)
  * Load a template from EmailTemplates language file.
  *
  * @param string $template
- * @param mixed[] $replacements
+ * @param array $replacements
  * @param string $lang = ''
  * @param bool $html = false - If to prepare the template for HTML output (newlines to BR, <a></a> links)
  * @param bool $loadLang = true
@@ -272,7 +272,7 @@ function mail_insert_key($message, $unq_head, $line_break)
  * @throws \ElkArte\Exceptions\Exception email_no_template
  * @package Mail
  */
-function loadEmailTemplate($template, $replacements = [], $lang = '', $html = false, $loadLang = true, $suffixes = [], $additional_files = array())
+function loadEmailTemplate($template, $replacements = [], $lang = '', $html = false, $loadLang = true, $suffixes = [], $additional_files = [])
 {
 	global $txt, $mbname, $scripturl, $settings, $boardurl, $modSettings;
 
@@ -280,11 +280,7 @@ function loadEmailTemplate($template, $replacements = [], $lang = '', $html = fa
 	if ($loadLang)
 	{
 		$lang_loader = new LangLoader($lang, $txt, database());
-		$lang_loader->load('EmailTemplates');
-		if (!empty($modSettings['maillist_enabled']))
-		{
-			$lang_loader->load('MaillistTemplates');
-		}
+		$lang_loader->load('EmailTemplates+MaillistTemplates');
 
 		if (!empty($additional_files))
 		{
@@ -295,14 +291,21 @@ function loadEmailTemplate($template, $replacements = [], $lang = '', $html = fa
 		}
 	}
 
-	if (!isset($txt[$template . '_subject']) || !isset($txt[$template . '_body']))
+	$templateSubject = $template . '_subject';
+	$templateBody = $template . '_body';
+	if (!isset($txt[$templateSubject]))
 	{
-		throw new \ElkArte\Exceptions\Exception('email_no_template', 'template', array($template));
+		throw new \ElkArte\Exceptions\Exception('email_no_template', 'template', [$templateSubject]);
+	}
+
+	if (!isset($txt[$templateBody]))
+	{
+		throw new \ElkArte\Exceptions\Exception('email_no_template', 'template', [$templateBody]);
 	}
 
 	$ret = [
-		'subject' => $txt[$template . '_subject'],
-		'body' => $txt[$template . '_body'],
+		'subject' => $txt[$templateSubject],
+		'body' => $txt[$templateBody],
 	];
 
 	if (!empty($suffixes))
@@ -381,21 +384,21 @@ function prepareMailingForPreview()
 	Txt::load('Errors');
 	require_once(SUBSDIR . '/Post.subs.php');
 
-	$processing = array(
+	$processing = [
 		'preview_subject' => 'subject',
 		'preview_message' => 'message'
-	);
+	];
 
 	// Use the default time format.
 	User::$info->time_format = $modSettings['time_format'];
 
-	$variables = array(
+	$variables = [
 		'{$board_url}',
 		'{$current_time}',
 		'{$latest_member.link}',
 		'{$latest_member.id}',
 		'{$latest_member.name}'
-	);
+	];
 
 	$html = $context['send_html'];
 
@@ -430,13 +433,13 @@ function prepareMailingForPreview()
 
 		// Replace in all the standard things.
 		$context[$key] = str_replace($variables,
-			array(
+			[
 				!empty($context['send_html']) ? '<a href="' . $scripturl . '">' . $scripturl . '</a>' : $scripturl,
 				standardTime(forum_time(), false),
 				!empty($context['send_html']) ? '<a href="' . $scripturl . '?action=profile;u=' . $modSettings['latestMember'] . '">' . $cleanLatestMember . '</a>' : ($context['send_pm'] ? '[url=' . $scripturl . '?action=profile;u=' . $modSettings['latestMember'] . ']' . $cleanLatestMember . '[/url]' : $cleanLatestMember),
 				$modSettings['latestMember'],
 				$cleanLatestMember
-			), $context[$key]);
+			], $context[$key]);
 	}
 }
 
@@ -444,7 +447,7 @@ function prepareMailingForPreview()
  * Callback function for load email template on subject and body
  * Uses capture group 1 in array
  *
- * @param mixed[] $matches
+ * @param array $matches
  * @return string
  * @package Mail
  */
@@ -495,11 +498,11 @@ function list_getMailQueue($start, $items_per_page, $sort)
 		FROM {db_prefix}mail_queue
 		ORDER BY {raw:sort}
 		LIMIT {int:start}, {int:items_per_page}',
-		array(
+		[
 			'start' => $start,
 			'sort' => $sort,
 			'items_per_page' => $items_per_page,
-		)
+		]
 	)->fetch_callback(
 		function ($row) use ($txt) {
 			// Private PM/email subjects and similar shouldn't be shown in the mailbox area.
@@ -528,7 +531,7 @@ function list_getMailQueueSize()
 		SELECT 
 			COUNT(*) AS queue_size
 		FROM {db_prefix}mail_queue',
-		array()
+		[]
 	);
 	list ($mailQueueSize) = $request->fetch_row();
 	$request->free_result();
@@ -549,9 +552,9 @@ function deleteMailQueueItems($items)
 	$db->query('', '
 		DELETE FROM {db_prefix}mail_queue
 		WHERE id_mail IN ({array_int:mail_ids})',
-		array(
+		[
 			'mail_ids' => $items,
-		)
+		]
 	);
 }
 
@@ -564,14 +567,14 @@ function list_MailQueueStatus()
 {
 	$db = database();
 
-	$items = array();
+	$items = [];
 
 	// How many items do we have?
 	$request = $db->query('', '
 		SELECT 
 		    COUNT(*) AS queue_size, MIN(time_sent) AS oldest
 		FROM {db_prefix}mail_queue',
-		array()
+		[]
 	);
 	list ($items['mailQueueSize'], $items['mailOldest']) = $request->fetch_row();
 	$request->free_result();
@@ -584,7 +587,7 @@ function list_MailQueueStatus()
  *
  * - It is used to keep track of failed emails attempts and next try.
  *
- * @param mixed[] $failed_emails
+ * @param array $failed_emails
  * @package Mail
  */
 function updateFailedQueue($failed_emails)
@@ -596,9 +599,9 @@ function updateFailedQueue($failed_emails)
 	// Update the failed attempts check.
 	$db->replace(
 		'{db_prefix}settings',
-		array('variable' => 'string', 'value' => 'string'),
-		array('mail_failed_attempts', empty($modSettings['mail_failed_attempts']) ? 1 : ++$modSettings['mail_failed_attempts']),
-		array('variable')
+		['variable' => 'string', 'value' => 'string'],
+		['mail_failed_attempts', empty($modSettings['mail_failed_attempts']) ? 1 : ++$modSettings['mail_failed_attempts']],
+		['variable']
 	);
 
 	// If we have failed to many times, tell mail to wait a bit and try again.
@@ -609,20 +612,20 @@ function updateFailedQueue($failed_emails)
 			SET value = {string:next_mail_send}
 			WHERE variable = {string:mail_next_send}
 				AND value = {string:last_send}',
-			array(
+			[
 				'next_mail_send' => time() + 60,
 				'mail_next_send' => 'mail_next_send',
 				'last_send' => $modSettings['mail_next_send'],
-			)
+			]
 		);
 	}
 
 	// Add our email back to the queue, manually.
 	$db->insert('insert',
 		'{db_prefix}mail_queue',
-		array('time_sent' => 'int', 'recipient' => 'string', 'body' => 'string', 'subject' => 'string', 'headers' => 'string', 'send_html' => 'int', 'priority' => 'int', 'private' => 'int', 'message_id' => 'string-255'),
+		['time_sent' => 'int', 'recipient' => 'string', 'body' => 'string', 'subject' => 'string', 'headers' => 'string', 'send_html' => 'int', 'priority' => 'int', 'private' => 'int', 'message_id' => 'string-255'],
 		$failed_emails,
-		array('id_mail')
+		['id_mail']
 	);
 }
 
@@ -641,10 +644,10 @@ function updateSuccessQueue()
 		UPDATE {db_prefix}settings
 		SET value = {string:zero}
 		WHERE variable = {string:mail_failed_attempts}',
-		array(
+		[
 			'zero' => '0',
 			'mail_failed_attempts' => 'mail_failed_attempts',
-		)
+		]
 	);
 }
 
@@ -664,11 +667,11 @@ function resetNextSendTime()
 		SET value = {string:no_send}
 		WHERE variable = {string:mail_next_send}
 			AND value = {string:last_mail_send}',
-		array(
+		[
 			'no_send' => '0',
 			'mail_next_send' => 'mail_next_send',
 			'last_mail_send' => $modSettings['mail_next_send'],
-		)
+		]
 	);
 }
 
@@ -698,11 +701,11 @@ function updateNextSendTime()
 		SET value = {string:next_mail_send}
 		WHERE variable = {string:mail_next_send}
 			AND value = {string:last_send}',
-		array(
+		[
 			'next_mail_send' => time() + $delay,
 			'mail_next_send' => 'mail_next_send',
 			'last_send' => $modSettings['mail_next_send'],
-		)
+		]
 	);
 	if ($request->affected_rows() === 0)
 	{
@@ -734,12 +737,12 @@ function emailsInfo($number)
 		FROM {db_prefix}mail_queue
 		ORDER BY priority ASC, id_mail ASC
 		LIMIT ' . $number,
-		array()
+		[]
 	)->fetch_callback(
 		function ($row) use (&$ids, &$emails) {
 			// Just get the data and go.
 			$ids[] = $row['id_mail'];
-			$emails[] = array(
+			$emails[] = [
 				'to' => $row['recipient'],
 				'body' => $row['body'],
 				'subject' => $row['subject'],
@@ -749,7 +752,7 @@ function emailsInfo($number)
 				'priority' => $row['priority'],
 				'private' => $row['private'],
 				'message_id' => $row['message_id'],
-			);
+			];
 		}
 	);
 
@@ -779,7 +782,7 @@ function reduceMailQueue($batch_size = false, $override_limit = false, $force_se
  *
  * @param int $id_msg the id of a message
  * @param int $topic_id the topic the message belongs to
- * @return mixed[] the poster's details
+ * @return array the poster's details
  * @todo very similar to mailFromMessage
  * @package Mail
  */
@@ -795,10 +798,10 @@ function posterDetails($id_msg, $topic_id)
 		WHERE m.id_msg = {int:id_msg}
 			AND m.id_topic = {int:current_topic}
 		LIMIT 1',
-		array(
+		[
 			'current_topic' => $topic_id,
 			'id_msg' => $id_msg,
-		)
+		]
 	);
 	$message = $request->fetch_assoc();
 	$request->free_result();
@@ -827,7 +830,7 @@ function time_since($time_diff)
 	{
 		$days = round($time_diff / 86400, 1);
 
-		return sprintf($days == 1 ? $txt['mq_day'] : $txt['mq_days'], $time_diff / 86400);
+		return sprintf($days === 1.0 ? $txt['mq_day'] : $txt['mq_days'], $time_diff / 86400);
 	}
 
 	// Hours?
@@ -835,7 +838,7 @@ function time_since($time_diff)
 	{
 		$hours = round($time_diff / 3600, 1);
 
-		return sprintf($hours == 1 ? $txt['mq_hour'] : $txt['mq_hours'], $hours);
+		return sprintf($hours === 1.0 ? $txt['mq_hour'] : $txt['mq_hours'], $hours);
 	}
 
 	// Minutes?
@@ -847,5 +850,5 @@ function time_since($time_diff)
 	}
 
 	// Otherwise must be second
-	return sprintf($time_diff == 1 ? $txt['mq_second'] : $txt['mq_seconds'], $time_diff);
+	return sprintf($time_diff === 1 ? $txt['mq_second'] : $txt['mq_seconds'], $time_diff);
 }

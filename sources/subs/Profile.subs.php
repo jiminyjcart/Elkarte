@@ -229,6 +229,7 @@ function saveProfileChanges(&$profile_vars, $memID)
 	$profile_ints = array(
 		'notify_regularity',
 		'notify_types',
+		'notify_from',
 	);
 
 	$profile_floats = array();
@@ -464,7 +465,7 @@ function makeNotificationChanges($memID)
 		{
 			if (isset($_POST['notify'][$mention]) && !empty($_POST['notify'][$mention]['status']))
 			{
-				// When is not an array it means => use default => 0 so it's skipped on INSERT
+				// When is not an array it means => use default => 0, so it's skipped on INSERT
 				if (!is_array($_POST['notify'][$mention]['status']))
 				{
 					$to_save[$mention] = 0;
@@ -487,6 +488,15 @@ function makeNotificationChanges($memID)
 			else
 			{
 				$to_save[$mention] = [Notifications::DEFAULT_NONE];
+
+				// Shhh. ... Board/Topic onsite notifications are added as typical mentions on the fly
+				$to_save['watchedtopic'] = 0;
+				$to_save['watchedboard'] = 0;
+				if ((int) $_POST['notify_regularity'] === 4)
+				{
+					$to_save['watchedtopic'] = [0 => 'notification'];
+					$to_save['watchedboard'] = [0 => 'notification'];
+				}
 			}
 		}
 

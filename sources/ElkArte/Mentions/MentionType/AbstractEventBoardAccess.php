@@ -50,9 +50,10 @@ abstract class AbstractEventBoardAccess extends AbstractEventMessage
 			$mentions[$key]['message'] = $this->_replaceMsg($row);
 		}
 
+		// Drop those where they can't actually see the mention
 		if (!empty($boards))
 		{
-			return $this->_validateAccess($boards, $mentions, $unset_keys);
+			$this->_validateAccess($boards, $mentions, $unset_keys);
 		}
 
 		return false;

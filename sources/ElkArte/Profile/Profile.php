@@ -136,7 +136,7 @@ class Profile extends AbstractController
 		// Before we go any further, let's work on the area we've said is valid.
 		// Note this is done here just in case we ever compromise the menu function in error!
 		$context['do_preview'] = isset($this->_req->post->preview_signature);
-		$this->isSaving = $this->_req->getRequest('save', 'trim', null);
+		$this->isSaving = $this->_req->getRequest('save', 'trim');
 
 		// Session validation and/or Token Checks
 		$this->_check_access();

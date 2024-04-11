@@ -29,7 +29,7 @@ use ElkArte\User;
  */
 class Menu
 {
-	/** @var \ElkArte\Helper\HttpReq */
+	/** @var HttpReq */
 	protected $req;
 
 	/** @var array Will hold the created $context */
@@ -380,6 +380,7 @@ class Menu
 	private function parseCounter($obj, $idx)
 	{
 		global $settings;
+
 		if (!empty($this->menuOptions->getCounters()[$obj->getCounter()]))
 		{
 			return sprintf(

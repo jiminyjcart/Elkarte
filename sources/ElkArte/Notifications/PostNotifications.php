@@ -40,10 +40,11 @@ class PostNotifications extends AbstractModel
 
 	/** Notification Regularity, **for reference** */
 	private const REGULARITY_NOTHING = 99;
-	private const REGULARITY_INSTANTLY = 0;
-	private const REGULARITY_FIRST_UNREAD_MSG = 1;
+	private const REGULARITY_EMAIL_INSTANTLY = 0;
+	private const REGULARITY_EMAIL_FIRST_UNREAD_MSG = 1;
 	private const REGULARITY_DAILY_DIGEST = 2;
 	private const REGULARITY_WEEKLY_DIGEST = 3;
+	private const REGULARITY_ONSITE_FIRST_UNREAD_MSG = 4;
 
 	/** @var int how many emails were sent */
 	protected $sent = 0;
@@ -131,13 +132,16 @@ class PostNotifications extends AbstractModel
 
 		insertLogDigestQueue($digest_insert);
 
+		// Find the members with onsite watch notifications for this topic.
+		$this->sendSiteNotifications($user_id, $topicData, $type, $members_only);
+
 		// Using the posting email function then process posts to subscribed boards
 		if ($this->isUsingMailList())
 		{
 			$this->sendBoardTopicNotifications($topicData, $user_id, $boards_index, $type, $members_only);
 		}
 
-		// Find the members with watch notifications set for this topic, it will skip any sent above
+		// Find the members with watch notifications set for this topic, it will skip any sent via board notifications
 		$this->sendTopicNotifications($user_id, $topicData, $type, $members_only);
 
 		if (!empty($this->current_language) && $this->current_language !== $user_language)
@@ -207,9 +211,6 @@ class PostNotifications extends AbstractModel
 	{
 		global $language;
 
-		// Using the posting email function in either group or list mode
-		$maillist = $this->isUsingMailList();
-
 		// Fetch the members with *board* notifications on.
 		$boardNotifyData = fetchBoardNotifications($user_id, $boards_index, $type, $members_only);
 
@@ -234,7 +235,7 @@ class PostNotifications extends AbstractModel
 
 				// Don't if they don't have notification permissions
 				$email_perm = true;
-				if (!validateNotificationAccess($notifyDatum, $maillist, $email_perm))
+				if (!validateNotificationAccess($notifyDatum, true, $email_perm))
 				{
 					continue;
 				}
@@ -413,10 +414,12 @@ class PostNotifications extends AbstractModel
 		{
 			return false;
 		}
+
 		if ($this->isUsingMailList())
 		{
 			return true;
 		}
+
 		return empty($this->_modSettings['disallow_sendBody']);
 	}
 
@@ -470,6 +473,47 @@ class PostNotifications extends AbstractModel
 	}
 
 	/**
+	 * Sends onsite notifications for watched topics with activity
+	 *
+	 * @param int $user_id the poster
+	 * @param array $topicData new replies topic data
+	 * @param string $type see Notify Types
+	 * @param int[] $members_only if only sending to a select list of members
+	 */
+	public function sendSiteNotifications($user_id, $topicData, $type, $members_only)
+	{
+		// Find the members with watch notifications set for these topics.
+		$topics = array_keys($topicData);
+		$topicNotifications = fetchTopicNotifications($user_id, $topics, $type, $members_only, 'onsite');
+		$notifier = Notifications::instance();
+		foreach ($topicNotifications as $notifyDatum)
+		{
+			// Don't do the ones that are interested in only their own topic moderation events when it is not their topic
+			if ($type !== self::NOTIFY_REPLY && $notifyDatum['id_member'] !== $notifyDatum['id_member_started']
+				&& $notifyDatum['notify_types'] === self::NOTIFY_TYPE_MODERATION_ONLY_IF_STARTED)
+			{
+				continue;
+			}
+
+			// Notify just once
+			if (empty($notifyDatum['sent']))
+			{
+				$status = 'new';
+				$topicDetails = $topicData[$notifyDatum['id_topic']];
+
+				$notifier->add(new NotificationsTask(
+					'watchedtopic',
+					$topicDetails['last_id'],
+					$user_id,
+					['id_members' => $notifyDatum['id_member'], 'notifier_data' => $notifyDatum, 'status' => $status, 'subject' => $topicDetails['subject']]
+				));
+
+				$this->sent++;
+			}
+		}
+	}
+
+	/**
 	 * Sends reply notifications to topics with new replies on watched topics
 	 *
 	 * @param int $user_id the poster
@@ -514,11 +558,11 @@ class PostNotifications extends AbstractModel
 			$message_type = $this->setMessageTemplate($type, $notifyDatum);
 			$replacements = $this->setTemplateReplacements($topicData[$notifyDatum['id_topic']], $notifyDatum, $notifyDatum['id_topic'], $type);
 
-			// Send only if once, is off or it's on, and it hasn't been sent.
+			// Send if a moderation notice, or they want everything, or it has not been sent (first new message)
 			if ($type !== self::NOTIFY_REPLY || empty($notifyDatum['notify_regularity']) || empty($notifyDatum['sent']))
 			{
 				// Use the pbe template when appropriate
-				$template = ($email_perm && $type === self::NOTIFY_REPLY && $this->canSendPostBody($notifyDatum) ? 'pbe_' : '') . $message_type;
+				$template = ($maillist && $email_perm && $type === self::NOTIFY_REPLY && $this->canSendPostBody($notifyDatum) ? 'pbe_' : '') . $message_type;
 				$emaildata = loadEmailTemplate($template, $replacements, $needed_language, true);
 
 				$sendMail = new BuildMail();
@@ -555,7 +599,7 @@ class PostNotifications extends AbstractModel
 	 */
 	public function sendBoardNotifications(&$topicData)
 	{
-		global $language, $txt;
+		global $txt;
 
 		// Do we have one or lots of topics?
 		if (isset($topicData['body']))
@@ -590,14 +634,83 @@ class PostNotifications extends AbstractModel
 		{
 			$digest_insert[] = [$data['topic'], $data['msg'], 'topic', User::$info->id];
 		}
-
 		insertLogDigestQueue($digest_insert);
 
-		// Using the post to email functions?
+		// Find the members with onsite watch notifications for this topic.
+		$this->sendSiteBoardNotifications($topicData, $board_index, $boards);
+
+		// Now the ones who want it via Email
+		$this->sendEmailBoardNotifications($topicData,$board_index, $boards);
+
+		$lang_loader = new Loader(null, $txt, database());
+		$lang_loader->load('index', false);
+
+		// Sent!
+		updateLogNotify(User::$info->id, $board_index, true);
+	}
+
+	/**
+	 * @param $topicData
+	 * @param $board_index
+	 * @param $boards
+	 * @return void
+	 */
+	public function sendSiteBoardNotifications($topicData, $board_index, $boards)
+	{
+		// Find the members with onsite notifications set for these boards.
+		$boardNotifyData = fetchBoardNotifications(User::$info->id, $board_index, 'reply', [], 'onsite');
+		$notifier = Notifications::instance();
+
+		foreach ($boardNotifyData as $notifyDatum)
+		{
+			$email_perm = true;
+
+			// Not allowed to see that board?
+			if (!validateNotificationAccess($notifyDatum, false, $email_perm))
+			{
+				continue;
+			}
+
+			// Something to do?
+			if (empty($boards[$notifyDatum['id_board']]))
+			{
+				continue;
+			}
+
+			// For each message we need to send (from this board to this member)
+			foreach ($boards[$notifyDatum['id_board']] as $key)
+			{
+				// Don't notify the guy who started the topic!
+				if ($topicData[$key]['poster'] === $notifyDatum['id_member'])
+				{
+					continue;
+				}
+
+				$status = 'new';
+				$notifier->add(new NotificationsTask(
+					'watchedboard',
+					$topicData[$key]['msg'],
+					$topicData[$key]['poster'],
+					['id_members' => $notifyDatum['id_member'], 'notifier_data' => $notifyDatum, 'status' => $status, 'subject' => $topicData[$key]['subject']]
+				));
+			}
+		}
+	}
+
+	/**
+	 * @param $topicData
+	 * @param $board_index
+	 * @param $boards
+	 * @return void
+	 */
+	public function sendEmailBoardNotifications($topicData, $board_index, $boards)
+	{
+		global $language, $txt;
+
 		$maillist = $this->isUsingMailList();
 
-		// Find the members with notification on for these boards.
-		$boardNotifyData = fetchBoardNotifications(User::$info->id, $board_index, 'reply', []);
+		// Find the members with email notification on for these boards.
+		$boardNotifyData = fetchBoardNotifications(User::$info->id, $board_index, 'reply', [], 'email');
 		foreach ($boardNotifyData as $notifyDatum)
 		{
 			// No access, no notification, easy
@@ -629,7 +742,7 @@ class PostNotifications extends AbstractModel
 					continue;
 				}
 
-				// Setup the string for adding the body to the message, if a user wants it.
+				// Set the string for adding the body to the message, if a user wants it.
 				$replacements = $this->setTemplateReplacements($topicData[$key], $notifyDatum, $topicData[$key]['topic'], 'reply', 'board');
 
 				// Figure out which email to send
@@ -661,12 +774,6 @@ class PostNotifications extends AbstractModel
 				$sentOnceAlready = true;
 			}
 		}
-
-		$lang_loader = new Loader(null, $txt, database());
-		$lang_loader->load('index', false);
-
-		// Sent!
-		updateLogNotify(User::$info->id, $board_index, true);
 	}
 
 	/**
@@ -683,7 +790,6 @@ class PostNotifications extends AbstractModel
 	{
 		$email_type = '';
 
-		// Send only if once is off or it's on and it hasn't been sent.
 		if (!empty($data['notify_regularity']) && !$sentOnceAlready && empty($data['sent']))
 		{
 			$email_type = 'notify_boards_once';

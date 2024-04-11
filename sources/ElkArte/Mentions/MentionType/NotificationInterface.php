@@ -16,7 +16,9 @@ namespace ElkArte\Mentions\MentionType;
 use ElkArte\Notifications\NotificationsTask;
 
 /**
- * Interface \ElkArte\Mentions\MentionType\NotificationInterface
+ * Interface NotificationInterface
+ *
+ * This interface defines the methods that a notification class must implement.
  */
 interface NotificationInterface
 {
@@ -49,7 +51,7 @@ interface NotificationInterface
 	public function getNotificationBody($lang_data, $members);
 
 	/**
-	 * The \ElkArte\NotificationsTask contains few data that may be necessary for the processing
+	 * The \ElkArte\NotificationsTask contains data that may be necessary for the processing
 	 * of the notification.
 	 *
 	 * @param NotificationsTask $task
@@ -73,7 +75,7 @@ interface NotificationInterface
 	 * @param int $target the id of the target involved in the mention
 	 * @param string|null $time optional value to set the time of the mention, defaults to now
 	 * @param int|null $status optional value to set a status, defaults to 0
-	 * @param bool|null $is_accessible optional if the mention is accessible to the user
+	 * @param bool|int|null $is_accessible optional if the mention is accessible to the user
 	 *
 	 * @return int[] An array of members id
 	 * @package Mentions
@@ -95,4 +97,11 @@ interface NotificationInterface
 	 * @return bool
 	 */
 	public static function canUse();
+
+	/**
+	 * Returns if the application should show settings in the admin interface
+	 *
+	 * @return bool
+	 */
+	public static function hasHiddenInterface();
 }

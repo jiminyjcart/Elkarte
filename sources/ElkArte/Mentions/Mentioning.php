@@ -41,7 +41,7 @@ class Mentioning extends AbstractModel
 	/** @var array Will hold all available mention types */
 	protected $_known_mentions = [];
 
-	/** @var array Will hold all available mention status
+	/** @var array Will hold all available mention status constants
 	 * 'new' => 0, 'read' => 1, 'deleted' => 2, 'unapproved' => 3 */
 	protected $_known_status = [];
 
@@ -57,12 +57,12 @@ class Mentioning extends AbstractModel
 	 */
 	public function __construct($db, $user, protected $_validator, $enabled_mentions = '')
 	{
-		$this->_known_status = array(
+		$this->_known_status = [
 			'new' => self::MNEW,
 			'read' => self::READ,
 			'deleted' => self::DELETED,
 			'unapproved' => self::UNAPPROVED,
-		);
+		];
 
 		$this->_known_mentions = array_filter(array_unique(explode(',', $enabled_mentions)));
 
@@ -107,8 +107,7 @@ class Mentioning extends AbstractModel
 	}
 
 	/**
-	 * Prepares the data send through Mentioning::create to be ready for the
-	 * actual insert.
+	 * Prepares the data sent to Mentioning::create to be ready for the actual insert.
 	 *
 	 * @param array $data must contain uid, type and msg at a minimum
 	 *

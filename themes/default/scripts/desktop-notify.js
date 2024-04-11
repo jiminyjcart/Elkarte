@@ -14,8 +14,10 @@
 
 		opt = (opt) ? opt : {};
 
+		let canRun = true;
+
 		const send = function(request) {
-			if (request.desktop_notifications && request.desktop_notifications.new_from_last !== "0")
+			if (canRun && request.desktop_notifications && parseInt(request.desktop_notifications.new_from_last, 10) !== 0)
 			{
 				if (hasPermissions())
 				{
@@ -30,6 +32,12 @@
 					});
 				}
 			}
+
+			// Reset the flag and start the timer again
+			canRun = false;
+			setTimeout(function() {
+				canRun = true;
+			}, 30000);
 		};
 
 		const hasPermissions = function() {

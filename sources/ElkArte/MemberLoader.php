@@ -198,12 +198,12 @@ class MemberLoader
 		switch ($this->set)
 		{
 			case MemberLoader::SET_NORMAL:
-				$select_columns .= ', mem.buddy_list';
+				$select_columns .= ', mem.buddy_list, mem.pm_ignore_list';
 				break;
 			case MemberLoader::SET_PROFILE:
 				$select_columns .= ', mem.id_theme, mem.pm_ignore_list, mem.pm_email_notify, mem.receive_from,
 				mem.time_format, mem.secret_question, mem.additional_groups,
-				mem.total_time_logged_in, mem.notify_announcements, mem.notify_regularity, mem.notify_send_body,
+				mem.total_time_logged_in, mem.notify_announcements, mem.notify_regularity, mem.notify_send_body, mem.notify_from,
 				mem.notify_types, lo.url, mem.ignore_boards, mem.password_salt, mem.pm_prefs, mem.buddy_list, mem.otp_secret, mem.enable_otp';
 				break;
 			case MemberLoader::SET_MINIMAL:

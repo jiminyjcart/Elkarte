@@ -25,6 +25,7 @@ use ElkArte\Helper\DataValidator;
 use ElkArte\Helper\Util;
 use ElkArte\Hooks;
 use ElkArte\Languages\Txt;
+use ElkArte\Mentions\MentionType\AbstractNotificationMessage;
 use ElkArte\MetadataIntegrate;
 use ElkArte\Notifications\Notifications;
 use ElkArte\SettingsForm\SettingsForm;
@@ -667,6 +668,14 @@ class ManageFeatures extends AbstractController
 				disableModules('mentions', array('post', 'display'));
 			}
 
+			if (!empty($modSettings['hidden_notification_methods']))
+			{
+				foreach ($modSettings['hidden_notification_methods'] as $class)
+				{
+					$this->_req->post->notifications[$class::getType()] = $class::getSettings();
+				}
+			}
+
 			if (empty($this->_req->post->notifications))
 			{
 				$notification_methods = serialize(array());
@@ -768,7 +777,7 @@ class ManageFeatures extends AbstractController
 		Txt::load('Profile+UserNotifications');
 		loadJavascriptFile('ext/jquery.multiselect.min.js');
 		theme()->addInlineJavascript('
-			$(\'.select_multiple\').multiselect({\'language_strings\': {\'Select all\': ' . JavascriptEscape($txt['notify_select_all']) . '}});
+			$(\'.select_multiple\').multiselect({\'language_strings\': {\'Select all\': ' . JavaScriptEscape($txt['notify_select_all']) . '}});
 			document.addEventListener("DOMContentLoaded", function() {
                  prepareNotificationOptions();
 			});', true);
@@ -787,8 +796,15 @@ class ManageFeatures extends AbstractController
 		foreach ($notification_classes as $class)
 		{
 			// The canUse can be set by each notifier based on conditions, default is true;
+			/* @var $class AbstractNotificationMessage */
 			if ($class::canUse() === false)
 			{
+				continue;
+			}
+
+			if ($class::hasHiddenInterface() === true)
+			{
+				$modSettings['hidden_notification_methods'][] = $class;
 				continue;
 			}
 
@@ -819,7 +835,7 @@ class ManageFeatures extends AbstractController
 					continue;
 				}
 
-				if ($current_settings[$title][$method_name] != Notifications::DEFAULT_LEVEL)
+				if ((int) $current_settings[$title][$method_name] !== Notifications::DEFAULT_LEVEL)
 				{
 					continue;
 				}
