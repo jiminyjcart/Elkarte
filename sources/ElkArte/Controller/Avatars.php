@@ -34,7 +34,7 @@ use ElkArte\Languages\Txt;
  */
 class Avatars
 {
-	/** @var \ElkArte\Helper\HttpReq */
+	/** @var HttpReq */
 	private $req;
 
 	/** @var FileFunctions */

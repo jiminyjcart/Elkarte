@@ -1002,7 +1002,7 @@ class Display extends AbstractController
 	/**
 	 * In-topic quick moderation.
 	 *
-	 * Accessed by ?action=quickmod2
+	 * Accessed by ?action=quickmod2 from quickModForm
 	 */
 	public function action_quickmod2()
 	{

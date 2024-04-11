@@ -1722,6 +1722,7 @@ class Post extends AbstractController
 				{
 					$query_params = array();
 					$query_params['member_ids'] = array_unique(array_map('intval', $_REQUEST['uid']));
+
 					require_once(SUBSDIR . '/Members.subs.php');
 					$mentioned_members = membersBy('member_ids', $query_params, true);
 					$replacements = 0;

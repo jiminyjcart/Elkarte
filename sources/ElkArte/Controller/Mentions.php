@@ -416,7 +416,7 @@ class Mentions extends AbstractController
 
 	/**
 	 * Callback for createList(),
-	 * Returns the mentions of a give type (like/mention) & (unread or all)
+	 * Returns the mentions of a give type (like/buddy/etc.) & (unread or all)
 	 *
 	 * @param int $start start list number
 	 * @param int $limit how many to show on a page
@@ -434,6 +434,7 @@ class Mentions extends AbstractController
 		$round = 0;
 		Txt::load('Mentions');
 
+		// Register the view_mentions event
 		$this->_registerEvents($type);
 
 		while ($round < 2)
