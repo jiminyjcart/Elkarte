@@ -1252,7 +1252,7 @@ function getFormMsgSubject($editing, $topic, $first_subject = '', $msg_id = 0)
  *
  * - If $all is true, for all messages in the topic, otherwise only the first message.
  *
- * @param mixed[] $topic_info topic information as returned by getTopicInfo()
+ * @param array $topic_info topic information as returned by getTopicInfo()
  * @param string $custom_subject
  * @param string $response_prefix = ''
  * @param bool $all = false

@@ -21,7 +21,6 @@ use ElkArte\Notifications\NotificationsTask;
 use ElkArte\Notifiers\AbstractNotifier;
 use ElkArte\UserInfo;
 
-
 /**
  * Class Notifications
  *
@@ -29,11 +28,7 @@ use ElkArte\UserInfo;
  */
 class Notification extends AbstractNotifier
 {
-	/**
-	 * Hash defining what is needed to build the message
-	 *
-	 * @var string[]
-	 */
+	/** @var string[] Hash defining what is needed to build the message */
 	public $lang_data;
 
 	/**
@@ -69,6 +64,7 @@ class Notification extends AbstractNotifier
 	protected function _send_notification($obj, $task, $bodies)
 	{
 		global $modSettings;
+
 		$mentioning = new Mentioning($this->db, $this->user, new DataValidator(), $modSettings['enabled_mentions']);
 		foreach ($bodies as $body)
 		{

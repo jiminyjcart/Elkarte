@@ -84,7 +84,7 @@ class NotificationsTask extends ValuesContainer
 		if ($this->_members_data === null)
 		{
 			require_once(SUBSDIR . '/Members.subs.php');
-			$this->_members_data = getBasicMemberData($this->getMembers(), ['preferences' => true, 'authentication' => true]);
+			$this->_members_data = getBasicMemberData($this->getMembers(), ['preferences' => true, 'authentication' => true, 'lists' => 'true']);
 		}
 
 		return $this->_members_data;
@@ -101,8 +101,7 @@ class NotificationsTask extends ValuesContainer
 	}
 
 	/**
-	 * Returns the data from getBasicMemberData about the member that
-	 * generated the notification
+	 * Returns the data from getBasicMemberData about the member that generated the notification
 	 *
 	 * @return array
 	 */
@@ -118,9 +117,9 @@ class NotificationsTask extends ValuesContainer
 	}
 
 	/**
-	 * Returns the class name of the MentionType.
+	 * Returns the fully qualified class name for the notification/MentionType type.
 	 *
-	 * @return string
+	 * @return string The fully qualified class name for the notification type.
 	 */
 	public function getClass()
 	{

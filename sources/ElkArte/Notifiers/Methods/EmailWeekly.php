@@ -27,11 +27,7 @@ use ElkArte\UserInfo;
  */
 class EmailWeekly extends AbstractNotifier
 {
-	/**
-	 * Hash defining what is needed to build the message
-	 *
-	 * @var string[]
-	 */
+	/** @var string[] Hash defining what is needed to build the message */
 	public $lang_data;
 
 	/**
