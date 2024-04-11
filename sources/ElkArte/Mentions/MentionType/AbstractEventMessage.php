@@ -13,6 +13,7 @@
 
 namespace ElkArte\Mentions\MentionType;
 
+use ElkArte\BoardsTree;
 use ElkArte\Helper\HttpReq;
 use ElkArte\Helper\ValuesContainer;
 use ElkArte\UserInfo;
@@ -22,7 +23,7 @@ use ElkArte\UserInfo;
  */
 abstract class AbstractEventMessage implements EventInterface
 {
-	/** @var string The identifier of the mention (the name that is stored in the db) */
+	/** @var string The identifier of the mention (the name that is stored in the db, like buddy or likemsg) */
 	protected static $_type = '';
 
 	/** @var HttpReq The post/get object */
@@ -92,17 +93,24 @@ abstract class AbstractEventMessage implements EventInterface
 	{
 		global $txt, $scripturl, $context;
 
+		$boardTree = new BoardsTree(database());
+		$board = $boardTree->getBoardById($row['id_board']);
+
 		return str_replace(
 			[
 				'{msg_link}',
 				'{msg_url}',
 				'{subject}',
+				'{topic_link}',
+				'{board}'
 			],
 			[
 				'<a href="' . $scripturl . '?topic=' . $row['id_topic'] . '.msg' . $row['id_target'] . ';mentionread;mark=read;' . $context['session_var'] . '=' . $context['session_id'] . ';item=' . $row['id_mention'] . '#msg' . $row['id_target'] . '">' . $row['subject'] . '</a>',
 				$scripturl . '?topic=' . $row['id_topic'] . '.msg' . $row['id_target'] . ';mentionread;' . $context['session_var'] . '=' . $context['session_id'] . 'item=' . $row['id_mention'] . '#msg' . $row['id_target'],
 				$row['subject'],
-			],
+				'<a href="' . $scripturl . '?topic=' . $row['id_topic'] . ';mentionread;mark=read;' . $context['session_var'] . '=' . $context['session_id'] . ';item=' . $row['id_mention'] . '#new">' . $row['subject'] . '</a>',
+				$board['name'] ?? '',
+		],
 			$txt['mention_' . $row['mention_type']]);
 	}
 }
