@@ -205,7 +205,6 @@ function loadUserSettings()
  * to add to the $board_info array
  * @event integrate_loaded_board called after board_info is populated, allows to add
  * directly to $board_info
- *
  */
 function loadBoard()
 {
@@ -323,7 +322,7 @@ function loadBoard()
 
 			// Basic operating information. (globals... :/)
 			$board_info = array(
-				'id' => (int) $board,
+				'id' => $board,
 				'moderators' => array(),
 				'cat' => array(
 					'id' => (int) $row['id_cat'],
@@ -420,7 +419,7 @@ function loadBoard()
 
 	if (!empty($topic))
 	{
-		$_GET['board'] = (int) $board;
+		$_GET['board'] = $board;
 	}
 
 	if (!empty($board))
@@ -462,7 +461,7 @@ function loadBoard()
 	$context['current_board'] = $board;
 
 	// Hacker... you can't see this topic, I'll tell you that. (but moderators can!)
-	if (!empty($board_info['error']) && (!empty($modSettings['deny_boards_access']) || $board_info['error'] != 'access' || User::$info->is_moderator === false))
+	if (!empty($board_info['error']) && (!empty($modSettings['deny_boards_access']) || $board_info['error'] !== 'access' || User::$info->is_moderator === false))
 	{
 		// The permissions and theme need loading, just to make sure everything goes smoothly.
 		loadPermissions();
