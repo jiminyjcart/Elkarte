@@ -29,7 +29,7 @@ use ElkArte\SettingsForm\SettingsFormAdapter\DbTable;
  *
  * @package Maillist
  */
-class EmailSettings extends SettingsForm\SettingsForm
+class MaillistSettings extends SettingsForm\SettingsForm
 {
 	/**
 	 * static function saveTableSettings, now part of the Settings Form class
