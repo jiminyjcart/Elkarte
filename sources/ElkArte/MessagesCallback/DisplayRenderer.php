@@ -223,7 +223,7 @@ class DisplayRenderer extends Renderer
 			// What about splitting it off the rest of the topic?
 			'split' => [
 				'text' => 'split_topic',
-				'url' => getUrl('action', ['action' => 'splittopics', 'topic' => $topic . '0', 'at' => $output['id']]),
+				'url' => getUrl('action', ['action' => 'splittopics', 'topic' => $topic . '.0', 'at' => $output['id']]),
 				'icon' => 'split',
 				'enabled' => $context['can_split'] && !empty($context['real_num_replies']) && $context['topic_first_message'] !== $output['id'],
 				'submenu' => true,
