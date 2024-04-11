@@ -276,7 +276,7 @@ class GenericList
 				// A value straight from the database?
 				if (isset($column['data']['db']))
 				{
-					$cur_data['value'] = $list_item[$column['data']['db']];
+					$cur_data['value'] = $list_item[$column['data']['db']] ?? '';
 				}
 				// Take the value from the database and make it HTML safe.
 				elseif (isset($column['data']['db_htmlsafe']))
