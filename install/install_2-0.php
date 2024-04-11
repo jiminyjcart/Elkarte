@@ -1829,6 +1829,7 @@ class InstallInstructions_install_2_0
 				array('name' => 'notify_regularity', 'type' => 'tinyint', 'size' => 4, 'default' => 1),
 				array('name' => 'notify_send_body', 'type' => 'tinyint', 'size' => 4, 'default' => 0),
 				array('name' => 'notify_types', 'type' => 'tinyint', 'size' => 4, 'default' => 2),
+				array('name' => 'notify_from', 'type' => 'tinyint', 'size' => 4, 'default' => 0),
 				array('name' => 'member_ip', 'type' => 'varchar', 'size' => 255, 'default' => ''),
 				array('name' => 'member_ip2', 'type' => 'varchar', 'size' => 255, 'default' => ''),
 				array('name' => 'secret_question', 'type' => 'varchar', 'size' => 255, 'default' => ''),

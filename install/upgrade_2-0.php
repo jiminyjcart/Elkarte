@@ -790,4 +790,30 @@ class UpgradeInstructions_upgrade_2_0
 			)
 		);
 	}
+
+	public function preparing_member_notify_from_title()
+	{
+		return 'Adding notify from to members table...';
+	}
+
+	public function preparing_member_notify_from()
+	{
+		return array(
+			array(
+				'debug_title' => 'Adding new notify_from to members table...',
+				'function' => function () {
+					$this->table->add_column('{db_prefix}members',
+						array(
+							'name' => 'notify_from',
+							'type' => 'tinyint',
+							'size' => 4,
+							'default' => 0
+						),
+						array(),
+						'ignore'
+					);
+				}
+			)
+		);
+	}
 }
