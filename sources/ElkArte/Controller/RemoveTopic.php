@@ -180,7 +180,7 @@ class RemoveTopic extends AbstractController
 		// Ensure they can do this
 		$this->_verifyDeletePermissions();
 
-		// Do the removal, track if we removed the entire topic so we redirect back to the board.
+		// Do the removal, track if we removed the entire topic, so we redirect back to the board.
 		$remover = new MessagesDelete($modSettings['recycle_enable'], $modSettings['recycle_board']);
 		$full_topic = $remover->removeMessage($_msg);
 

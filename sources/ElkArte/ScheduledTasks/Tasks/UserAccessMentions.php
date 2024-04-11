@@ -37,7 +37,7 @@ class UserAccessMentions implements ScheduledTaskInterface
 
 		$db = database();
 
-		$mentionTypes = ['mentionmem', 'likemsg', 'rlikemsg', 'quotedmem'];
+		$mentionTypes = ['mentionmem', 'likemsg', 'rlikemsg', 'quotedmem', 'watchedtopic', 'watchedboard'];
 
 		if (!empty($modSettings['user_access_mentions']))
 		{
@@ -69,7 +69,7 @@ class UserAccessMentions implements ScheduledTaskInterface
 
 				// We need to repeat this twice: once to find the boards the user can access,
 				// once for those he cannot access
-				foreach (array('can', 'cannot') as $can)
+				foreach (['can', 'cannot'] as $can)
 				{
 					// Let's always start from the begin
 					$start = $begin;
@@ -151,18 +151,20 @@ class UserAccessMentions implements ScheduledTaskInterface
 
 			return true;
 		}
-		// Checks 10 users at a time, the scheduled task is set to run once per hour, so 240 users a day
-		// @todo <= I know you like it Spuds! :P It may be necessary to set it to something higher.
-		$limit = 10;
+
+		// Checks 100 users at a time, the scheduled task is set to run once per hour, so 2400 users a day
+		$limit = 100;
 		$current_check = empty($modSettings['mentions_member_check']) ? 0 : $modSettings['mentions_member_check'];
 		require_once(SUBSDIR . '/Members.subs.php');
 		require_once(SUBSDIR . '/Mentions.subs.php');
-		// Grab users with mentions
+
+		// Get the starting point for run
 		$request = $db->query('', '
-				SELECT COUNT(DISTINCT(id_member))
-				FROM {db_prefix}log_mentions
-				WHERE id_member > {int:last_id_member}
-					AND mention_type IN ({array_string:mention_types})',
+			SELECT 
+				COUNT(DISTINCT(id_member))
+			FROM {db_prefix}log_mentions
+			WHERE id_member > {int:last_id_member}
+				AND mention_type IN ({array_string:mention_types})',
 			array(
 				'last_id_member' => $current_check,
 				'mention_types' => $mentionTypes,
@@ -170,25 +172,27 @@ class UserAccessMentions implements ScheduledTaskInterface
 		);
 		[$remaining] = $request->fetch_row();
 		$request->free_result();
-		if ($remaining == 0)
+		if ((int) $remaining === 0)
 		{
 			$current_check = 0;
 		}
-		// Grab users with mentions
+
+		// Grab a batch of users with mentions
 		$request = $db->query('', '
-				SELECT 
-					DISTINCT(id_member) as id_member
-				FROM {db_prefix}log_mentions
-				WHERE id_member > {int:last_id_member}
-					AND mention_type IN ({array_string:mention_types})
-				LIMIT {int:limit}',
+			SELECT 
+				DISTINCT(id_member) as id_member
+			FROM {db_prefix}log_mentions
+			WHERE id_member > {int:last_id_member}
+				AND mention_type IN ({array_string:mention_types})
+			LIMIT {int:limit}',
 			array(
 				'last_id_member' => $current_check,
 				'mention_types' => $mentionTypes,
 				'limit' => $limit,
 			)
 		);
-		// Remember where we are
+
+		// Remember where to start for the next scheduled task run
 		updateSettings(array('mentions_member_check' => $current_check + $limit));
 		while (($row = $request->fetch_assoc()))
 		{
