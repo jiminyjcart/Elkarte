@@ -342,6 +342,13 @@ class ManageSecurity extends AbstractController
 	 */
 	public function moderationSettings_search()
 	{
+		global $modSettings;
+
+		if (empty($modSettings['warning_enable']))
+		{
+			return ['check', 'dummy_enable'];
+		}
+
 		return $this->_moderationSettings();
 	}
 

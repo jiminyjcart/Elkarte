@@ -140,7 +140,6 @@ class ManageTopics extends AbstractController
 			// Hot topics (etc)...
 			array('int', 'hotTopicPosts', 'postinput' => $txt['manageposts_posts']),
 			array('int', 'hotTopicVeryPosts', 'postinput' => $txt['manageposts_posts']),
-			array('check', 'useLikesNotViews'),
 			'',
 			// All, next/prev...
 			array('int', 'enableAllMessages', 'postinput' => $txt['manageposts_posts'], 'subtext' => $txt['enableAllMessages_zero']),

@@ -397,6 +397,11 @@ class ManageCalendarModule extends AbstractController
 	 */
 	public function settings_search()
 	{
+		if (isModuleEnabled('calendar'))
+		{
 			return $this->_settings();
+		}
+
+		return ['check', 'dummy_calendar'];
 	}
 }

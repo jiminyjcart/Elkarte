@@ -80,7 +80,7 @@ abstract class ManageEmojiModule extends AbstractController
 	/**
 	 * Unzips a selected Emoji set if it has not already been extracted
 	 *
-	 * @param \ElkArte\Helper\HttpReq $req
+	 * @param HttpReq $req
 	 */
 	private static function unZipEmoji($req)
 	{
