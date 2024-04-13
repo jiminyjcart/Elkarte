@@ -14,16 +14,13 @@
 use ElkArte\User;
 
 /**
- * Count the mentions of the current user
- * callback for createList in action_list of \ElkArte\Controller\Mentions
+ * Counts the number of mentions for a user.
  *
- * @param bool $all : if true counts all the mentions, otherwise only the unread
- * @param string[]|string $type : the type of the mention can be a string or an array of strings.
- * @param int|null $id_member : the id of the member the counts are for, defaults to user_info['id']
+ * @param bool $all Specifies whether to count all mentions or only unread.
+ * @param string $type Specifies the type of mention to count. Empty string to count all types.
+ * @param int|null $id_member Specifies the ID of the member. If null, the current user's ID will be used.
  *
- * @return mixed
- * @package Mentions
- *
+ * @return int|array The total count of mentions if $type is empty, otherwise an array with counts for each type.
  */
 function countUserMentions($all = false, $type = '', $id_member = null)
 {
@@ -32,38 +29,46 @@ function countUserMentions($all = false, $type = '', $id_member = null)
 	$db = database();
 	$id_member = $id_member === null ? User::$info->id : (int) $id_member;
 
-	if (isset($counts[$id_member . $type]))
+	if (isset($counts[$id_member][$type]))
 	{
-		return $counts[$id_member . $type];
+		return $counts[$id_member][$type];
 	}
 
-	$request = $db->query('', '
+	$allTypes = getMentionTypes($id_member, $all === true ? 'system' : 'user');
+	foreach ($allTypes as $thisType)
+	{
+		$counts[$id_member][$thisType] = 0;
+	}
+	$counts[$id_member]['total'] = 0;
+
+	$db->fetchQuery('
 		SELECT 
-			COUNT(*)
+			mention_type, COUNT(*) AS cnt
 		FROM {db_prefix}log_mentions as mtn
 		WHERE mtn.id_member = {int:current_user}
 			AND mtn.is_accessible = {int:is_accessible}
-			AND mtn.status IN ({array_int:status})' . (empty($type) ? '' : (is_array($type) ? '
-			AND mtn.mention_type IN ({array_string:current_type})' : '
-			AND mtn.mention_type = {string:current_type}')),
-		array(
+			AND mtn.status IN ({array_int:status})
+			AND mtn.mention_type IN ({array_string:all_type})
+		GROUP BY mtn.mention_type',
+		[
 			'current_user' => $id_member,
-			'current_type' => $type,
-			'status' => $all ? array(0, 1) : array(0),
+			'status' => $all ? [0, 1] : [0],
 			'is_accessible' => 1,
-		)
-	);
-	list ($counts[$id_member . $type]) = $request->fetch_row();
-	$request->free_result();
+			'all_type' => empty($allTypes) ? [$type] : $allTypes,
+		]
+	)->fetch_callback(function ($row) use (&$counts, $id_member) {
+		$counts[$id_member][$row['mention_type']] = (int) $row['cnt'];
+		$counts[$id_member]['total'] += $row['cnt'];
+	});
 
 	// Counts as maintenance! :P
-	if ($all === false && empty($type))
+	if ($all === false)
 	{
 		require_once(SUBSDIR . '/Members.subs.php');
-		updateMemberData($id_member, array('mentions' => $counts[$id_member]));
+		updateMemberData($id_member, ['mentions' => $counts[$id_member]['total']]);
 	}
 
-	return $counts[$id_member . $type];
+	return empty($type) ? $counts[$id_member]['total'] : $counts[$id_member][$type] ?? 0;
 }
 
 /**
@@ -262,17 +267,17 @@ function toggleMentionsAccessibility($mentions, $access)
 /**
  * To validate access to read/unread/delete mentions
  *
- * - Called from the validation class
+ * - Called from the validation class via Mentioning.php
  *
  * @param string $field
- * @param mixed[] $input
+ * @param array $input
  * @param string|null $validation_parameters
  *
  * @return array|void
  * @package Mentions
  *
  */
-function validate_ownmention($field, $input, $validation_parameters = null)
+function validate_own_mention($field, $input, $validation_parameters = null)
 {
 	if (!isset($input[$field]))
 	{
@@ -426,4 +431,59 @@ function getNewMentions($id_member, $timestamp)
 	}
 
 	return $result['c'];
+}
+
+/**
+ * Get the available mention types for a user.
+ *
+ * @param int|null $user The user ID. If null, User::$info->id will be used.
+ * @param string $type The type of mentions.  user will return only those that the user has enabled and set
+ * as notification.  If not user, returns the system level enabled mentions.
+ *
+ * By default, will filter out notification types with a method set to none, e.g. the user had disable that
+ * type of mention.  Use type=all to return everything, or type=notification to return only those
+ * that they want on-site notifications.
+ *
+ * @return array The available mention types.
+ */
+function getMentionTypes($user, $type = 'user')
+{
+	require_once(SUBSDIR . '/Notification.subs.php');
+
+	$user = $user ?? User::$info->id;
+
+	$enabled = getEnabledNotifications();
+
+	if ($type !== 'user')
+	{
+		sort($enabled);
+		return $enabled;
+	}
+
+	$userAllEnabled = getUsersNotificationsPreferences($enabled, $user);
+
+	// Drop ones they do not have enabled (primarily used to drop watchedtopic / watched board)
+	foreach ($enabled as $key => $notificationType)
+	{
+		if (!isset($userAllEnabled[$user][$notificationType]))
+		{
+			unset($enabled[$key]);
+		}
+	}
+
+	// Filter the remaining as requested
+	foreach ($userAllEnabled[$user] as $notificationType => $allowedMethods)
+	{
+		if (!in_array('notification', $allowedMethods, true))
+		{
+			$key = array_search($notificationType, $enabled, true);
+			if ($key !== false)
+			{
+				unset($enabled[$key]);
+			}
+		}
+	}
+
+	sort($enabled);
+	return $enabled;
 }

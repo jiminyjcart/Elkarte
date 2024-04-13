@@ -94,7 +94,7 @@ abstract class AbstractEventMessage implements EventInterface
 		global $txt, $scripturl, $context;
 
 		$boardTree = new BoardsTree(database());
-		$board = $boardTree->getBoardById((int) $row['id_board']);
+		$board = !empty($row['id_board']) ? $boardTree->getBoardById((int) $row['id_board']) : [];
 
 		return str_replace(
 			[
