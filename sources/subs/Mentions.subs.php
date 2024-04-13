@@ -11,7 +11,6 @@
  *
  */
 
-use ElkArte\MembersList;
 use ElkArte\User;
 
 /**
@@ -44,17 +43,18 @@ function countUserMentions($all = false, $type = '', $id_member = null)
 
 	$db->fetchQuery('
 		SELECT 
-			mention_type, COUNT(*) as cnt
+			mention_type, COUNT(*) AS cnt
 		FROM {db_prefix}log_mentions as mtn
 		WHERE mtn.id_member = {int:current_user}
 			AND mtn.is_accessible = {int:is_accessible}
 			AND mtn.status IN ({array_int:status})
-			AND mtn.mention_type IN ({array_string:all_type})',
+			AND mtn.mention_type IN ({array_string:all_type})
+		GROUP BY mtn.mention_type',
 		[
 			'current_user' => $id_member,
 			'status' => $all ? [0, 1] : [0],
 			'is_accessible' => 1,
-			'all_type' => $allTypes,
+			'all_type' => empty($allTypes) ? [$type] : $allTypes,
 		]
 	)->fetch_callback(function ($row) use (&$counts, $id_member) {
 		$counts[$id_member][$row['mention_type']] = (int) $row['cnt'];
@@ -465,14 +465,14 @@ function getMentionTypes($user, $type = 'user')
 	// Drop ones they do not have enabled (primarily used to drop watchedtopic / watched board)
 	foreach ($enabled as $key => $notificationType)
 	{
-		if (!isset($notificationType, $userAllEnabled[User::$info->id][$notificationType]))
+		if (!isset($userAllEnabled[$user][$notificationType]))
 		{
 			unset($enabled[$key]);
 		}
 	}
 
 	// Filter the remaining as requested
-	foreach ($userAllEnabled[User::$info->id] as $notificationType => $allowedMethods)
+	foreach ($userAllEnabled[$user] as $notificationType => $allowedMethods)
 	{
 		if (!in_array('notification', $allowedMethods, true))
 		{
