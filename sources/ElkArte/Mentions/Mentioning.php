@@ -271,7 +271,7 @@ class Mentioning extends AbstractModel
 			'mark' => 'trim',
 		];
 		$validation = [
-			'id_mention' => 'validate_ownmention',
+			'id_mention' => 'validate_own_mention',
 			'mark' => 'contains[read,unread,delete,readall]',
 		];
 

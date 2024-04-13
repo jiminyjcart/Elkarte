@@ -2414,15 +2414,15 @@ function getMemberNotificationsProfile($member_id)
 
 	if (empty($modSettings['enabled_mentions']))
 	{
-		return array();
+		return [];
 	}
 
 	require_once(SUBSDIR . '/Notification.subs.php');
 
 	$notifiers = Notifications::instance()->getNotifiers();
-	$enabled_mentions = explode(',', $modSettings['enabled_mentions']);
+	$enabled_mentions = getEnabledNotifications();
 	$user_preferences = getUsersNotificationsPreferences($enabled_mentions, $member_id);
-	$mention_types = array();
+	$mention_types = [];
 	$defaults = getConfiguredNotificationMethods('*');
 
 	foreach ($enabled_mentions as $type)
