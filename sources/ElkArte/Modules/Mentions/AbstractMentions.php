@@ -37,7 +37,8 @@ abstract class AbstractMentions extends AbstractModule
 
 		if (!empty($modSettings['mentions_enabled']))
 		{
-			$mentions = explode(',', $modSettings['enabled_mentions']);
+			require_once(SUBSDIR . 'Notification.subs.php');
+			$mentions = getEnabledNotifications();
 
 			foreach ($mentions as $mention)
 			{

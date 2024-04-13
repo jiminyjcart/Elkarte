@@ -245,7 +245,30 @@ function validateNotificationAccess($row, $maillist, &$email_perm = true)
 }
 
 /**
+ * Returns the enabled notifications from the modSettings.
+ *
+ * @return array
+ * @global array $modSettings
+ *
+ */
+function getEnabledNotifications()
+{
+	global $modSettings;
+
+	if (empty($modSettings['enabled_mentions']))
+	{
+		return [];
+	}
+
+	$enabled = array_filter(array_unique(explode(',', $modSettings['enabled_mentions'])));
+	sort($enabled);
+
+	return $enabled;
+}
+
+/**
  * Queries the database for notification preferences of a set of members.
+ *
  *
  * @param string[]|string $notification_types
  * @param int[]|int $members

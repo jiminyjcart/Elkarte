@@ -19,6 +19,7 @@ use ElkArte\Exceptions\Exception;
 use ElkArte\Helper\DataValidator;
 use ElkArte\Languages\Txt;
 use ElkArte\Mentions\Mentioning;
+use ElkArte\User;
 
 /**
  * as liking a post, adding a buddy, @ calling a member in a post
@@ -82,24 +83,7 @@ class Mentions extends AbstractController
 
 		require_once(SUBSDIR . '/Mentions.subs.php');
 
-		$this->_known_mentions = $this->_findMentionTypes();
-	}
-
-	/**
-	 * Determines the enabled mention types.
-	 *
-	 * @return string[]
-	 */
-	protected function _findMentionTypes()
-	{
-		global $modSettings;
-
-		if (empty($modSettings['enabled_mentions']))
-		{
-			return [];
-		}
-
-		return array_filter(array_unique(explode(',', $modSettings['enabled_mentions'])));
+		$this->_known_mentions = getMentionTypes(User::$info->id, 'system');
 	}
 
 	/**
@@ -311,6 +295,8 @@ class Mentions extends AbstractController
 			],
 		];
 
+		// Build the available mention tabs
+		$this->_known_mentions = $this->_all === true ? getMentionTypes(User::$info->id, 'system') : getMentionTypes(User::$info->id);
 		foreach ($this->_known_mentions as $mention)
 		{
 			$list_options['list_menu']['links'][] = [
@@ -338,7 +324,7 @@ class Mentions extends AbstractController
 	}
 
 	/**
-	 * Builds the link back so you return to the right list of mentions
+	 * Builds the link back, so you return to the right list of mentions
 	 */
 	protected function _buildUrl()
 	{
@@ -468,7 +454,11 @@ class Mentions extends AbstractController
 			$start += $limit;
 		}
 
-		countUserMentions();
+		// Trigger an unread count update when needed
+		if ($all !== false)
+		{
+			countUserMentions();
+		}
 
 		return $mentions;
 	}
