@@ -450,11 +450,6 @@ $txt['send_topic'] = 'Share';
 $txt['unwatch'] = 'Unwatch';
 $txt['watch'] = 'Watch';
 
-$txt['sendtopic_sender_name'] = 'Your name';
-$txt['sendtopic_sender_email'] = 'Your email address';
-$txt['sendtopic_receiver_name'] = 'Recipient\'s name';
-$txt['sendtopic_receiver_email'] = 'Recipient\'s email address';
-
 $txt['allow_user_email'] = 'Allow users to email me';
 
 $txt['check_all'] = 'Check all';

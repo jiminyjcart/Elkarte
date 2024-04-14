@@ -22,6 +22,7 @@ use ElkArte\Helper\Util;
 use ElkArte\Languages\Loader;
 use ElkArte\Languages\Txt;
 use ElkArte\SettingsForm\SettingsForm;
+use ElkArte\User;
 
 /**
  * This class is the administration mailing controller.
@@ -30,6 +31,7 @@ use ElkArte\SettingsForm\SettingsForm;
  *
  * - It handles mail configuration,
  * - It displays and allows to remove items from the mail queue.
+ * - It handles sending a test email
  *
  * @package Mail
  */
@@ -54,12 +56,13 @@ class ManageMail extends AbstractController
 			'browse' => array($this, 'action_browse', 'permission' => 'admin_forum'),
 			'clear' => array($this, 'action_clear', 'permission' => 'admin_forum'),
 			'settings' => array($this, 'action_mailSettings_display', 'permission' => 'admin_forum'),
+			'test' => array($this, 'action_test_email', 'permission' => 'admin_forum'),
 		);
 
 		// Action control
 		$action = new Action('manage_mail');
 
-		// By default we want to browse, call integrate_sa_manage_mail
+		// By default, we want to browse, call integrate_sa_manage_mail
 		$subAction = $action->initialize($subActions, 'browse');
 
 		// Final bits
@@ -71,6 +74,11 @@ class ManageMail extends AbstractController
 			'title' => 'mailqueue_title',
 			'class' => 'i-envelope',
 			'description' => 'mailqueue_desc',
+			'tabs' => [
+				'test' => [
+					'description' => $txt['mail_send_desc'],
+				],
+			]
 		]);
 
 		// Call the right function for this sub-action.
@@ -447,5 +455,47 @@ class ManageMail extends AbstractController
 		);
 
 		createList($listOptions);
+	}
+
+	/**
+	 * Test email action
+	 */
+	public function action_test_email()
+	{
+		global $context, $txt;
+
+		require_once(SUBSDIR . '/Mail.subs.php');
+
+		theme()->getTemplates()->load('ManageMail');
+		$context['page_title'] = $txt['mail_test'];
+		$context['sub_template'] = 'mail_test';
+
+		if (isset($this->_req->post->send))
+		{
+			checkSession();
+			validateToken('admin-mailtest');
+
+			$sendTo = $this->_req->getPost('send_to', 'trim');
+			$subject = $this->_req->getPost('subject', 'Util::htmlspecialchars', '');
+			$message = $this->_req->getPost('message', 'Util::htmlspecialchars', '');
+
+			$sendTo = $sendTo ?: User::$info->email;
+			if (empty($subject) || empty($message))
+			{
+				$result = false;
+			}
+			else
+			{
+				// Let 'er rip!
+				$result = sendmail($sendTo, $subject, $message, null, null, true, 0);
+			}
+
+			redirectexit('action=admin;area=mailqueue;sa=test;result=' . ($result ? 'pass' : 'fail'));
+		}
+
+		createToken('admin-mailtest');
+
+		$result = $this->_req->getQuery('result', 'trim', '');
+		$context['result'] = $result;
 	}
 }

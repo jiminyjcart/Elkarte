@@ -13,6 +13,13 @@ $txt['smtp_starttls'] = 'STARTTLS';
 $txt['smtp_username'] = 'SMTP username';
 $txt['smtp_password'] = 'SMTP password';
 
+$txt['mail_test'] = 'Test Email';
+$txt['mail_test_fail'] = 'Email Failure';
+$txt['mail_test_pass'] = 'Email Sent';
+$txt['mail_test_header'] = 'Test Sending Email';
+$txt['mail_send_to'] = 'Send To';
+$txt['mail_send_desc'] = 'From this area you can send Email, from this site, to ensure your mail settings are valid/correct.<br />The default to email address is yours, but you can email to a testing service (such as www.mail-tester.com) to validate compliance with DMARC, DKIM, SPF, rDNS, etc).';
+
 $txt['mail_queue'] = 'Enable mail queue';
 $txt['mail_period_limit'] = 'Maximum emails to send per minute';
 $txt['mail_period_limit_desc'] = '(Set to 0 to disable)';

@@ -517,6 +517,7 @@ class Admin extends AbstractController
 						'class' => 'i-envelope-blank i-admin',
 						'subsections' => array(
 							'browse' => array($txt['mailqueue_browse'], 'admin_forum'),
+							'test' => array($txt['mailqueue_test'], 'admin_forum'),
 							'settings' => array($txt['mailqueue_settings'], 'admin_forum'),
 						),
 					),
