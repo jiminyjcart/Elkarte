@@ -6,6 +6,11 @@
 set -e
 set -x
 
+# Passed params
+DB=$1
+PHP_VERSION=$2
+CODECOV_TOKEN=$3
+
 # Per actions in the tests.yaml file
 #
 # Current Versions for Ref
@@ -42,6 +47,6 @@ else
     # Agents will merge all coverage data...
     if [[ "${GITHUB_EVENT_NAME}" == "pull_request" ]]
     then
-        bash <(curl -s https://codecov.io/bash) -s "/tmp" -f '*.clover'
+        bash <(curl -s https://codecov.io/bash) -s "/tmp" -f '*.xml' -t "${CODECOV_TOKEN}"
     fi
 fi
