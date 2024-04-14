@@ -188,7 +188,7 @@ class CoreFeatures extends AbstractController
 					global $modSettings;
 
 					require_once(SUBSDIR . '/Mentions.subs.php');
-					require_once(SUBSDIR . 'Notification.subs.php');
+					require_once(SUBSDIR . '/Notification.subs.php');
 
 					// Makes all the like/rlike mentions invisible (or visible)
 					toggleMentionsVisibility('likemsg', !empty($value));

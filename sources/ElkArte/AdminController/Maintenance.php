@@ -28,7 +28,7 @@ use ElkArte\Languages\Txt;
 use ElkArte\User;
 
 /**
- * Entry point class for all of the maintenance ,routine, members, database,
+ * Entry point class for all maintenance, routine, members, database,
  * attachments, topics and hooks
  *
  * @package Maintenance

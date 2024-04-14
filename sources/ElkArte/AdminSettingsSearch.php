@@ -173,6 +173,11 @@ class AdminSettingsSearch
 			return $txt['groups_' . $var[1]];
 		}
 
+		if (!is_array($var) && isset($txt[$var]))
+		{
+			return $txt[$var];
+		}
+
 		return $save ?? $var[1];
 	}
 

@@ -294,6 +294,11 @@ class ManageDraftsModule extends AbstractController
 	 */
 	public function settings_search()
 	{
-		return $this->_settings();
+		if (isModuleEnabled('drafts'))
+		{
+			return $this->_settings();
+		}
+
+		return ['check', 'dummy_drafts'];
 	}
 }

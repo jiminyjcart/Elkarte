@@ -868,7 +868,7 @@ class ManageMembers extends AbstractController
 			{
 				$context['allowed_actions'] = [
 					'reject' => $txt['admin_browse_w_approve_deletion'],
-					'ok' => $txt['admin_browse_w_reject'],
+					'ok' => $txt['admin_browse_w_reject_delete'],
 				];
 			}
 			else

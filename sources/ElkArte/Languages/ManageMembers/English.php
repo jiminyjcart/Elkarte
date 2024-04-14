@@ -108,6 +108,7 @@ $txt['admin_browse_w_remind'] = 'Remind';
 $txt['admin_browse_w_approve_deletion'] = 'Approve (Delete Accounts)';
 $txt['admin_browse_w_email'] = 'and send email';
 $txt['admin_browse_w_approve_require_activate'] = 'Approve and require activation';
+$txt['admin_browse_w_reject_delete'] = 'Reject (Keep Accounts)';
 
 $txt['admin_browse_filter_by'] = 'Filter By';
 $txt['admin_browse_filter_show'] = 'Displaying';

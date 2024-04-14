@@ -96,7 +96,8 @@ jobs:
         env:
           DB: ${{ matrix.db }}
           PHP_VERSION: ${{ matrix.php }}
-        run: .github/setup-selenium.sh $DB $PHP_VERSION
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: .github/setup-selenium.sh $DB $PHP_VERSION $CODECOV_TOKEN
         working-directory: ./elkarte
         continue-on-error: true
 
@@ -244,7 +245,8 @@ jobs:
         env:
           DB: ${{steps.database-type.outputs.db}}
           PHP_VERSION: ${{ matrix.php }}
-        run: .github/setup-results.sh $DB $PHP_VERSION
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: .github/setup-results.sh $DB $PHP_VERSION $CODECOV_TOKEN
         working-directory: ./elkarte
   # END MySQL and MariaDB Job
 
@@ -323,6 +325,7 @@ jobs:
         env:
           DB: ${{steps.database-type.outputs.db}}
           PHP_VERSION: ${{ matrix.php }}
-        run: .github/setup-results.sh $DB $PHP_VERSION
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: .github/setup-results.sh $DB $PHP_VERSION $CODECOV_TOKEN
         working-directory: ./elkarte
   # END Postgres Job

@@ -517,6 +517,7 @@ class Admin extends AbstractController
 						'class' => 'i-envelope-blank i-admin',
 						'subsections' => array(
 							'browse' => array($txt['mailqueue_browse'], 'admin_forum'),
+							'test' => array($txt['mailqueue_test'], 'admin_forum'),
 							'settings' => array($txt['mailqueue_settings'], 'admin_forum'),
 						),
 					),
@@ -792,7 +793,7 @@ class Admin extends AbstractController
 		// Load a lot of language files.
 		$language_files = [
 			'Help', 'ManageMail', 'ManageSettings', 'ManageBoards', 'ManagePaid', 'ManagePermissions', 'Search',
-			'Login', 'ManageSmileys', 'Maillist', 'Mentions'
+			'Login', 'ManageSmileys', 'Maillist', 'Mentions', 'Addons'
 		];
 
 		// All the files we need to include to search for settings
@@ -818,6 +819,8 @@ class Admin extends AbstractController
 			['settings_search', 'area=languages;sa=settings', ManageLanguages::class],
 			['settings_search', 'area=mailqueue;sa=settings', ManageMail::class],
 			['settings_search', 'area=maillist;sa=emailsettings', ManageMaillist::class],
+			['filter_search', 'area=maillist;sa=emailsettings', ManageMaillist::class],
+			['parser_search', 'area=maillist;sa=emailsettings', ManageMaillist::class],
 			['settings_search', 'area=membergroups;sa=settings', ManageMembergroups::class],
 			['settings_search', 'area=news;sa=settings', ManageNews::class],
 			['settings_search', 'area=paidsubscribe;sa=settings', ManagePaid::class],
@@ -885,8 +888,7 @@ class Admin extends AbstractController
 	 * This file allows the user to search the wiki documentation for a little help.
 	 *
 	 * What it does:
-	 *
-	 * - Creates an exception since GitHub does not yet support API wiki searches so the connection
+	 *   - Creates an exception since GitHub does not yet support API wiki searches so the connection
 	 * will fail.
 	 */
 	public function action_search_doc()

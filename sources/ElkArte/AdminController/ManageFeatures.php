@@ -620,6 +620,7 @@ class ManageFeatures extends AbstractController
 			array('int', 'likeWaitCount', 6),
 			array('check', 'likeRestrictAdmins'),
 			array('check', 'likeAllowSelf'),
+			array('check', 'useLikesNotViews'),
 			'',
 			array('int', 'likeDisplayLimit', 6)
 		);
@@ -1796,6 +1797,14 @@ class ManageFeatures extends AbstractController
 	 */
 	public function karmaSettings_search()
 	{
+		global $modSettings;
+
+		// Karma - On or off?
+		if (empty($modSettings['karmaMode']))
+		{
+			return ['check', 'dummy_karma'];
+		}
+
 		return $this->_karmaSettings();
 	}
 
@@ -1804,6 +1813,14 @@ class ManageFeatures extends AbstractController
 	 */
 	public function likesSettings_search()
 	{
+		global $modSettings;
+
+		// Likes - On or off?
+		if (empty($modSettings['enable_likes']))
+		{
+			return ['check', 'dummy_likes'];
+		}
+
 		return $this->_likesSettings();
 	}
 

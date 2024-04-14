@@ -1065,6 +1065,21 @@ class ManageMaillist extends AbstractController
 	}
 
 	/**
+	 * Return the form settings for use in admin search
+	 */
+	public function filter_search()
+	{
+		global $modSettings;
+
+		if (empty($modSettings['maillist_enabled']))
+		{
+			return ['check', 'filter_name'];
+		}
+
+		return $this->_filtersSettings();
+	}
+
+	/**
 	 * Deletes a filter from the system / database
 	 */
 	public function action_delete_filters()
@@ -1457,6 +1472,21 @@ class ManageMaillist extends AbstractController
 	}
 
 	/**
+	 * Return the form settings for use in admin search
+	 */
+	public function parser_search()
+	{
+		global $modSettings;
+
+		if (empty($modSettings['maillist_enabled']))
+		{
+			return ['check', 'filter_name'];
+		}
+
+		return $this->_parsersSettings();
+	}
+
+	/**
 	 * Removes a parser from the system and database
 	 */
 	public function action_delete_parsers()
@@ -1714,6 +1744,13 @@ class ManageMaillist extends AbstractController
 	 */
 	public function settings_search()
 	{
+		global $modSettings;
+
+		if (empty($modSettings['maillist_enabled']))
+		{
+			return ['check', 'maillist_enabled'];
+		}
+
 		return $this->_settings();
 	}
 
