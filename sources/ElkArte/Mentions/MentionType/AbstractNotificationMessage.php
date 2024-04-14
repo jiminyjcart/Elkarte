@@ -234,30 +234,73 @@ abstract class AbstractNotificationMessage implements NotificationInterface
 			return true;
 		}
 
-		$ignoreUsers = array_map('intval', explode(',', $this->_to_members_data[$toMember]['pm_ignore_list']));
-		$buddyList = array_map('intval', explode(',', $this->_to_members_data[$toMember]['buddy_list']));
-
 		// Not those on my ignore list
-		if ($this->_to_members_data[$toMember]['notify_from'] === 1 && in_array($fromMember, $ignoreUsers, true))
+		if ($this->_to_members_data[$toMember]['notify_from'] === 1)
+		{
+			return $this->notOnIgnoreList($toMember, $fromMember);
+		}
+
+		// Only friends and pesky admins
+		if ($this->_to_members_data[$toMember]['notify_from'] === 2)
+		{
+			return $this->isBuddyNotificationAllowed($fromMember, $toMember);
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check if a member is not on the ignore list of another member
+	 *
+	 * @param int $toMember The ID of the member to check if they are on the ignore list
+	 * @param int $fromMember The ID of the member who is being checked against the ignore list
+	 * @return bool Returns true if the fromMember is not on the ignore list of the toMember, false otherwise
+	 */
+	public function notOnIgnoreList(int $toMember, int $fromMember): bool
+	{
+		if (empty($this->_to_members_data[$toMember]['pm_ignore_list']))
+		{
+			return true;
+		}
+
+		$ignoreUsers = array_map('intval', explode(',', $this->_to_members_data[$toMember]['pm_ignore_list']));
+		if (in_array($fromMember, $ignoreUsers, true))
 		{
 			return false;
 		}
 
-		// Only friends and pesky admins/global mods
-		if ($this->_to_members_data[$toMember]['notify_from'] === 2)
-		{
-			if (in_array($fromMember, $buddyList, true))
-			{
-				return true;
-			}
+		return true;
+	}
 
-			MembersList::load($fromMember, false, 'profile');
-			$fromProfile = MembersList::get($fromMember);
-			$groups = array_map('intval', array_merge([$fromProfile['id_group'], $fromProfile['id_post_group']], (empty($fromProfile['additional_groups']) ? [] : explode(',', $fromProfile['additional_groups']))));
-			if (in_array(1, $groups, true) || in_array(2, $groups, true))
-			{
-				return true;
-			}
+	/**
+	 * Determines if buddy notification is allowed between two members.
+	 *
+	 * @param int $fromMember The member ID of the sender.
+	 * @param int $toMember The member ID of the recipient.
+	 *
+	 * @return bool True if buddy notification is allowed, false otherwise.
+	 */
+	public function isBuddyNotificationAllowed(int $fromMember, int $toMember): bool
+	{
+		// Admins/Global mods get a pass
+		MembersList::load($fromMember, false, 'profile');
+		$fromProfile = MembersList::get($fromMember);
+		$groups = array_map('intval', array_merge([$fromProfile['id_group'], $fromProfile['id_post_group']], (empty($fromProfile['additional_groups']) ? [] : explode(',', $fromProfile['additional_groups']))));
+		if (in_array(1, $groups, true) || in_array(2, $groups, true))
+		{
+			return true;
+		}
+
+		// No buddies, no notification either
+		if (empty($this->_to_members_data[$toMember]['buddy_list']))
+		{
+			return false;
+		}
+
+		$buddyList = array_map('intval', explode(',', $this->_to_members_data[$toMember]['buddy_list']));
+		if (in_array($fromMember, $buddyList, true))
+		{
+			return true;
 		}
 
 		return false;
