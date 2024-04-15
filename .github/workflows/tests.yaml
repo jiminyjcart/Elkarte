@@ -75,24 +75,24 @@ jobs:
           DB: ${{ matrix.db }}
           PHP_VERSION: ${{ matrix.php }}
           WEBSERVER: 'nginx'
-        run: .github/setup-elkarte.sh $DB $PHP_VERSION
+        run: .github/setup-elkarte.sh
         working-directory: ./elkarte
 
       - name: Run Unit Tests
         env:
           DB: ${{ matrix.db }}
           PHP_VERSION: ${{ matrix.php }}
-        run: .github/setup-selenium.sh $DB $PHP_VERSION
+        run: .github/setup-selenium.sh
         working-directory: ./elkarte
         continue-on-error: true
 
-      - name: Code Coverage
-        env:
-          DB: ${{ matrix.db }}
-          PHP_VERSION: ${{ matrix.php }}
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        run: .github/setup-failure.sh $DB $PHP_VERSION $CODECOV_TOKEN
-        working-directory: ./elkarte
+      - name: Send Coverage Reports
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: codecov/codecov-action@v4
+        with:
+          files: /home/runner/work/Elkarte/Elkarte/elkarte/tmp/web.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: false
 
       - name: Server Error Log
         env:
@@ -138,7 +138,7 @@ jobs:
         env:
           DB: ${{ matrix.db }}
           PHP_VERSION: ${{ matrix.php }}
-        run: .github/setup-elkarte.sh $DB $PHP_VERSION
+        run: .github/setup-elkarte.sh
         working-directory: ./elkarte
 
       - name: Install NodeJS
@@ -223,23 +223,30 @@ jobs:
         env:
           DB: ${{steps.database-type.outputs.db}}
           PHP_VERSION: ${{ matrix.php }}
-        run: .github/setup-elkarte.sh $DB $PHP_VERSION
+        run: .github/setup-elkarte.sh
         working-directory: ./elkarte
 
       - name: Install Database
         env:
           DB: ${{steps.database-type.outputs.db}}
           PHP_VERSION: ${{ matrix.php }}
-        run: .github/setup-database.sh $DB $PHP_VERSION
+        run: .github/setup-database.sh
         working-directory: ./elkarte
 
       - name: Run Unit Tests
         env:
           DB: ${{steps.database-type.outputs.db}}
           PHP_VERSION: ${{ matrix.php }}
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        run: .github/setup-results.sh $DB $PHP_VERSION $CODECOV_TOKEN
+        run: .github/setup-results.sh
         working-directory: ./elkarte
+
+      - name: Send Coverage Reports
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: codecov/codecov-action@v4
+        with:
+          files: /home/runner/work/Elkarte/Elkarte/elkarte/tmp/db.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: false
   # END MySQL and MariaDB Job
 
   # START Postgres Tests
@@ -303,14 +310,14 @@ jobs:
         env:
           DB: ${{steps.database-type.outputs.db}}
           PHP_VERSION: ${{ matrix.php }}
-        run: .github/setup-elkarte.sh $DB $PHP_VERSION
+        run: .github/setup-elkarte.sh
         working-directory: ./elkarte
 
       - name: Install Database
         env:
           DB: ${{steps.database-type.outputs.db}}
           PHP_VERSION: ${{ matrix.php }}
-        run: .github/setup-database.sh $DB $PHP_VERSION
+        run: .github/setup-database.sh
         working-directory: ./elkarte
 
       - name: Run Unit Tests
@@ -318,6 +325,14 @@ jobs:
           DB: ${{steps.database-type.outputs.db}}
           PHP_VERSION: ${{ matrix.php }}
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        run: .github/setup-results.sh $DB $PHP_VERSION $CODECOV_TOKEN
+        run: .github/setup-results.sh
         working-directory: ./elkarte
+
+      - name: Send Coverage Reports
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: codecov/codecov-action@v4
+        with:
+          files: /home/runner/work/Elkarte/Elkarte/elkarte/tmp/db.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: false
   # END Postgres Job

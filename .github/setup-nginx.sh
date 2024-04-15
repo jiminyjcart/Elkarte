@@ -3,9 +3,6 @@
 set -e
 set -x
 
-DB=$1
-PHP_VERSION=$2
-
 DIR=$(dirname "$0")
 USER=$(whoami)
 ELKARTE_ROOT_PATH=$(realpath "$DIR/../elkarte")
@@ -43,11 +40,10 @@ echo "
 	security.limit_extensions = .php
 
 	php_admin_value[memory_limit] = 128M
-" > $PHP_FPM_CONF
+" > "$PHP_FPM_CONF"
 
 # Add our pool config to PHP-FPM
-sudo $PHP_FPM_BIN \
-	--fpm-config "$DIR/php-fpm.conf"
+sudo "$PHP_FPM_BIN" --fpm-config "$DIR/php-fpm.conf"
 
 # Default Nginx conf needs to be updated with correct user
 sudo sed -i "s/user www-data;/user $USER;/g" $NGINX_CONF
