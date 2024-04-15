@@ -6,20 +6,45 @@
 set -e
 set -x
 
-# Passed params
+# Access passed params
 DB=$1
 PHP_VERSION=$2
-CODECOV_TOKEN=$3
 
-# Per actions in the tests.yaml file
-#
-# Current Versions for Ref
-# Selenium 3.141.59 jar
-# Chrome 123.0.6312.58
-# ChromeDriver 123.0.6312.58
-
-echo "Ensuring Selenium Started"
+# Some vars to make this easy to change
 SELENIUM_HUB_URL='http://127.0.0.1:4444'
+SELENIUM_JAR=/usr/share/selenium/selenium-server-standalone.jar
+SELENIUM_DOWNLOAD_URL=https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar
+
+# Location of chromedriver for use as webdriver in xvfb
+CHROMEDRIVER_ZIP=/tmp/chromedriver_linux64.zip
+
+# Download Selenium
+echo "Downloading Selenium"
+sudo mkdir -p $(dirname "$SELENIUM_JAR")
+sudo wget -nv -O "$SELENIUM_JAR" "$SELENIUM_DOWNLOAD_URL"
+sudo chmod 777 "$SELENIUM_JAR"
+
+# Install Chrome
+echo "Installing Browser"
+
+# Available Chrome Versions
+CHROME_VERSION='123.0.6312.58-1'
+wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}_amd64.deb -q
+sudo dpkg -i google-chrome-stable_${CHROME_VERSION}_amd64.deb
+
+# Download Chrome Driver
+# https://storage.googleapis.com/chrome-for-testing-public/123.0.6312.58/linux64/chromedriver-linux64.zip
+echo "Downloading chromedriver"
+CHROME_VERSION=$(google-chrome --version) \
+  && wget -nv -O "$CHROMEDRIVER_ZIP" "https://storage.googleapis.com/chrome-for-testing-public/123.0.6312.58/linux64/chromedriver-linux64.zip" \
+  && unzip "$CHROMEDRIVER_ZIP" \
+  && sudo mv chromedriver-linux64/chromedriver /usr/local/bin/chromedriver \
+  && sudo chmod +x /usr/local/bin/chromedriver \
+  && chromedriver --version
+
+# Start Selenium using default chosen webdriver
+export DISPLAY=:99.0
+xvfb-run --server-args="-screen 0, 2560x1440x24" java -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver -jar "$SELENIUM_JAR" > /tmp/selenium.log &
 wget --retry-connrefused --tries=120 --waitretry=3 --output-file=/dev/null "$SELENIUM_HUB_URL/wd/hub/status" -O /dev/null
 
 # Test to see if the selenium server really did start
@@ -43,10 +68,4 @@ else
 
     # Run the phpunit selenium tests
     vendor/bin/phpunit --verbose --debug --configuration .github/phpunit-webtest.xml
-
-    # Agents will merge all coverage data...
-    if [[ "${GITHUB_EVENT_NAME}" == "pull_request" ]]
-    then
-        bash <(curl -s https://codecov.io/bash) -s "/tmp" -f '*.xml' -t "${CODECOV_TOKEN}"
-    fi
 fi
