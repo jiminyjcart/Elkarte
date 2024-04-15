@@ -3,8 +3,6 @@
 set -e
 set -x
 
-DB=$1
-
 # Setup a Database
 if [[ "$DB" == "postgres" ]]
 then

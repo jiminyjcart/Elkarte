@@ -6,10 +6,6 @@
 set -e
 set -x
 
-# Access passed params
-DB=$1
-PHP_VERSION=$2
-
 # Some vars to make this easy to change
 SELENIUM_HUB_URL='http://127.0.0.1:4444'
 SELENIUM_JAR=/usr/share/selenium/selenium-server-standalone.jar

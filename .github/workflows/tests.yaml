@@ -91,7 +91,7 @@ jobs:
           DB: ${{ matrix.db }}
           PHP_VERSION: ${{ matrix.php }}
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        run: .github/setup-failure.sh $DB $PHP_VERSION $CODECOV_TOKEN
+        run: .github/setup-failure.sh
         working-directory: ./elkarte
 
       - name: Server Error Log
@@ -223,14 +223,14 @@ jobs:
         env:
           DB: ${{steps.database-type.outputs.db}}
           PHP_VERSION: ${{ matrix.php }}
-        run: .github/setup-elkarte.sh $DB $PHP_VERSION
+        run: .github/setup-elkarte.sh
         working-directory: ./elkarte
 
       - name: Install Database
         env:
           DB: ${{steps.database-type.outputs.db}}
           PHP_VERSION: ${{ matrix.php }}
-        run: .github/setup-database.sh $DB $PHP_VERSION
+        run: .github/setup-database.sh
         working-directory: ./elkarte
 
       - name: Run Unit Tests
@@ -238,7 +238,7 @@ jobs:
           DB: ${{steps.database-type.outputs.db}}
           PHP_VERSION: ${{ matrix.php }}
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        run: .github/setup-results.sh $DB $PHP_VERSION $CODECOV_TOKEN
+        run: .github/setup-results.sh
         working-directory: ./elkarte
   # END MySQL and MariaDB Job
 
@@ -303,14 +303,14 @@ jobs:
         env:
           DB: ${{steps.database-type.outputs.db}}
           PHP_VERSION: ${{ matrix.php }}
-        run: .github/setup-elkarte.sh $DB $PHP_VERSION
+        run: .github/setup-elkarte.sh
         working-directory: ./elkarte
 
       - name: Install Database
         env:
           DB: ${{steps.database-type.outputs.db}}
           PHP_VERSION: ${{ matrix.php }}
-        run: .github/setup-database.sh $DB $PHP_VERSION
+        run: .github/setup-database.sh
         working-directory: ./elkarte
 
       - name: Run Unit Tests
@@ -318,6 +318,6 @@ jobs:
           DB: ${{steps.database-type.outputs.db}}
           PHP_VERSION: ${{ matrix.php }}
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        run: .github/setup-results.sh $DB $PHP_VERSION $CODECOV_TOKEN
+        run: .github/setup-results.sh
         working-directory: ./elkarte
   # END Postgres Job
