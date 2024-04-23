@@ -1,40 +1,51 @@
-/* INTRODUCTION
-/* This variant is the standard, beSocial, Elkarte RTL theme.
-/* This is eye candy only. All the layout code is in rtl.css.
-/* ------------------------------------------------------- */
 /*
-/*		$GENERAL.............Global resets, clearfixes, etc.
-/*		$COMMON..............Common classes to drive you bonkers.
-/*		$BBC.................Quotes, code blocks, BBC styles.
-/*		$AJAX................The "loading" bar (quick edit, etc).
-/*
-/*		$MAIN................Forum header, wrapper, and footer.
-/*		$MENUS...............Main and secondary menus.
-/*		$LINKTREE............The breadcrumbs.
-/*		$BUTTONS.............Most button strips.
-/*		$PAGELINKS...........Page navigation links.
-/*
-/*		$TABLES..............Generic tables (memberlist, error log, etc).
-/*		$SETTINGS............Generic lists for settings pages.
-/*		$BOARDS..............Board index, sub-boards, and message index.
-/*
-/*		$TOPICS..............The display template (topic view), including send.
-/*		$EDITOR..............Main editor (posts, events, polls) and topic summary.
-/*		$MODERATE............Move topic, split topic, merge topic.
-/*
-/*		$PROFILE.............The profile areas.
-/*		$PERSONAL............The personal messages (PM) areas.
-/*		$CALENDAR............Wombats (and the calendar).
-/*		$STATISTICS..........The statistics centre.
-/*
-/*		$HELP................Help pages, help icons and pop-ups, tooltips.
-/*		$SEARCH..............Search pages, including memberlist search.
-/*		$LOGIN...............Login and registration, maintenance mode.
-/*
-/*		$ERRORS..............Error messages.
-/*		$PROGRESS............Nifty progress bars.
-/*		$MEDIA...............Experimental media queries.
-/* ------------------------------------------------------- */
+ * ___________.__   __      _____          __
+ * \_   _____/|  | |  | __ /  _  \________/  |_  ____
+ *  |    __)_ |  | |  |/ //  /_\  \_  __ \   __\/ __ \
+ *  |        \|  |_|    </    |    \  | \/|  | \  ___/
+ * /_______  /|____/__|_ \____|__  /__|   |__|  \___  >
+ *         \/           \/       \/                 \/
+ * https://www.elkarte.net
+ * © ElkArte Forum contributors
+ *
+ * INTRODUCTION
+ * This variant is the standard, beSocial, Elkarte RTL theme.
+ *
+ * This is eye candy only. All the layout code is in rtl.css.
+ * -------------------------------------------------------
+ *
+ *		$GENERAL.............Global resets, clearfixes, etc.
+ *		$COMMON..............Common classes to drive you bonkers.
+ *		$BBC.................Quotes, code blocks, BBC styles.
+ *		$AJAX................The "loading" bar (quick edit, etc).
+ *
+ *		$MAIN................Forum header, wrapper, and footer.
+ *		$MENUS...............Main and secondary menus.
+ *		$LINKTREE............The breadcrumbs.
+ *		$BUTTONS.............Most button strips.
+ *		$PAGELINKS...........Page navigation links.
+ *
+ *		$TABLES..............Generic tables (memberlist, error log, etc).
+ *		$SETTINGS............Generic lists for settings pages.
+ *		$BOARDS..............Board index, sub-boards, and message index.
+ *
+ *		$TOPICS..............The display template (topic view), including send.
+ *		$EDITOR..............Main editor (posts, events, polls) and topic summary.
+ *		$MODERATE............Move topic, split topic, merge topic.
+ *
+ *		$PROFILE.............The profile areas.
+ *		$PERSONAL............The personal messages (PM) areas.
+ *		$CALENDAR............Wombats (and the calendar).
+ *		$STATISTICS..........The statistics centre.
+ *
+ *		$HELP................Help pages, help icons and pop-ups, tooltips.
+ *		$SEARCH..............Search pages, including memberlist search.
+ *		$LOGIN...............Login and registration, maintenance mode.
+ *
+ *		$ERRORS..............Error messages.
+ *		$PROGRESS............Nifty progress bars.
+ *		$MEDIA...............Experimental media queries.
+ * ------------------------------------------------------- */
 
 /* ---------------
  *	$CONSTANTS
@@ -66,22 +77,22 @@
 
 /* More little boxes on a hillside. */
 .warningbox {
-	border-right: 5px solid var(--warn);
+	border-right: .5rem solid var(--warn);
 	border-left: 1px solid var(--warn);
 }
 
 .successbox {
-	border-right: 5px solid var(--pure_green);
-	border-left: 1px solid var(--pure_green);
+	border-right: .5rem solid var(--successbox_border);
+	border-left: 1px solid var(--successbox_border);
 }
 
 .infobox {
-	border-right: 5px solid var(--infobox_border);
+	border-right: .5rem solid var(--infobox_border);
 	border-left: 1px solid var(--infobox_border);
 }
 
 .errorbox {
-	border-right: 5px solid var(--attention);
+	border-right: .5rem solid var(--attention);
 	border-left: 1px solid var(--attention);
 }
 
@@ -159,11 +170,11 @@ input[type="submit"]:hover, button[type="submit"]:hover, input[type="button"]:ho
 }
 
 .pm_indicator {
-	box-shadow: -1px 1px 2px var(--primary_background);
+	box-shadow: -1px 1px 2px var(--html_background);
 }
 
 .button_indicator {
-	box-shadow: -1px 1px 2px var(--primary_background);
+	box-shadow: -1px 1px 2px var(--html_background);
 }
 
 /* -------------------------------------------------------
