@@ -1,10 +1,16 @@
-/* INTRODUCTION
- * This variant is the standard, light, Elkarte theme.
- * This is eye candy only. All the layout code is in index.css.
+/*
+ * ___________.__   __      _____          __
+ * \_   _____/|  | |  | __ /  _  \________/  |_  ____
+ *  |    __)_ |  | |  |/ //  /_\  \_  __ \   __\/ __ \
+ *  |        \|  |_|    </    |    \  | \/|  | \  ___/
+ * /_______  /|____/__|_ \____|__  /__|   |__|  \___  >
+ *         \/           \/       \/                 \/
+ * https://www.elkarte.net
+ * © ElkArte Forum contributors
  *
- * All theme variants depend on the layout code for stability.
- * It is better to copy code to a variant CSS file for testing.
- * ---------------
+ * INTRODUCTION
+ * This variant is the standard, light, Elkarte theme.
+ * This is Eye Candy / Colors. All the layout code is in index.css.
  *
  *      $CONSTANTS...........CSS Vars for easy updates
  *		$GENERAL.............Global resets, clearfixes, etc.
@@ -115,7 +121,7 @@
 	--menu_border_hover_left: #BFBFBF; /* menu border color left */
 	--menu_border_hover: #CCCCCC; /* Hover border */
 	--menu_button_hover_background: #F0F0F0; /* A background used on non active menu hovers */
-	--menu_dropdown_indicator: #CFCFCF; /* dropdown menu indicator */
+	--menu_dropdown_indicator: #AFAFAF; /* dropdown menu indicator */
 	--icon_menu_hover: #F4F4F4; /* Icon menu (small screen) hover background */
 	--icon_menu_hover_border: #27A348;
 
@@ -148,6 +154,7 @@
 	/* Generally used in topic display */
 	--me: #5BA048; /* me and footnotes */
 	--topic_name: #3D6E32; /* Subject line, poster name and keyinfo */
+	--poster_name: #3D6E32;
 	--sticky_row: #FFFFE0; /* sticky row background */
 	--locked_row: #F4F4F4; /* locked row background */
 	--icon_online: #B4E391; /* part of icon online gradient */
@@ -591,9 +598,10 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 #ajax_in_progress, .ajax_infobar {
 	color: var(--top_section_top_border);
 	border-bottom-color: var(--top_section_top_border);
+}
+
+#ajax_in_progress {
 	background: var(--content_background);
-	background-position: 6px 50%;
-	background-size: 20px 20px;
 }
 
 #ajax_in_progress a {
@@ -706,7 +714,6 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 	border-top-color: var(--menu_border_top);
 	border-left-color: var(--menu_border_left);
 	background-image: linear-gradient(to bottom, var(--menu_background), var(--menu_background_compliment));
-	box-shadow: 1px 1px 2px var(--box_shadow);
 	box-shadow: var(--shadow-elevation-low);
 }
 
@@ -739,6 +746,16 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 	border-color: var(--transparent);
 	border-bottom-color: var(--primary_border);
 	border-left-color: var(--primary_border);
+}
+
+#main_menu .subsections .linklevel1::after,
+#main_menu .subsections:hover .linklevel1::after {
+	border-color: var(--transparent);
+}
+
+.admin_menu .listlevel1.subsections .linklevel1::after {
+	border-color: var(--transparent);
+	border-top-color: var(--menu_dropdown_indicator);
 }
 
 .poster .linklevel2, .poster .linklevel2:focus,
@@ -1245,11 +1262,11 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 }
 
 .poster .name {
-	color: var(--topic_name);
+	color: var(--poster_name);
 }
 
 /* Drop menu for the poster info. */
-.poster .listlevel1.sfhover .menulevel2, .poster .listlevel1:hover .menulevel2 {
+.poster .listlevel1.sfhover .menulevel2, .poster .listlevel1 .menulevel2 {
 	background: var(--primary_content_background);
 }
 
@@ -1275,6 +1292,10 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 
 .post_subject {
 	color: var(--body_text);
+}
+
+.keyinfo.above {
+	background-image: linear-gradient(to bottom, var(--category_header_grad_1), var(--category_header_grad_4));
 }
 
 .keyinfo h3 a, .keyinfo h3 a strong {
@@ -1306,8 +1327,12 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 	background: var(--menu_button_hover_background);
 }
 
-.messageContent {
+.messageContent:not(.above) {
 	border-top-color: var(--secondary_border);
+}
+
+.messageContent.above {
+	border-top-color: var(--transparent);
 }
 
 .messageContent .bbc_img.ila_pending {
@@ -1738,9 +1763,9 @@ ul.cf_icons {
 	box-shadow: var(--shadow-elevation-high);
 }
 
-/* Overlay needs to account for the max-height: 225px; of #site-tooltip */
+/* Overlay needs to account for the max-height: 22.5rem; of #site-tooltip */
 .tooltip {
-	background: linear-gradient(to bottom, var(--transparent) 190px, var(--primary_content_background) 225px);
+	background: linear-gradient(to bottom, var(--transparent) 19rem, var(--primary_content_background) 22.5rem);
 }
 
 /* The darkened background for help pop-ups. */
@@ -1945,6 +1970,11 @@ ul.cf_icons {
 /* Absolute positioning stops these breaking the bars on narrow screens. */
 .statsbar .righttext {
 	background: var(--primary_content_background);
+}
+
+.statsbar .righttext.voted {
+	background-image: linear-gradient(to bottom, var(--gradient_bar_bottom) 0%, var(--gradient_bar_top) 100%);
+	color: var(--contrast_text);
 }
 
 #like_post_stats_overlay {

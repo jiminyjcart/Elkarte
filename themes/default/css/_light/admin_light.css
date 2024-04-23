@@ -1,5 +1,17 @@
-/* Common admin center classes.
-------------------------------------------------------- */
+/*
+ * ___________.__   __      _____          __
+ * \_   _____/|  | |  | __ /  _  \________/  |_  ____
+ *  |    __)_ |  | |  |/ //  /_\  \_  __ \   __\/ __ \
+ *  |        \|  |_|    </    |    \  | \/|  | \  ___/
+ * /_______  /|____/__|_ \____|__  /__|   |__|  \___  >
+ *         \/           \/       \/                 \/
+ * https://www.elkarte.net
+ * © ElkArte Forum contributors
+ *
+ * Common admin center color classes.
+ * -------------------------------------------------------
+ */
+
 .action_admin .generic_list_wrapper .information {
 	border-color: var(--primary_border);
 	box-shadow: var(--shadow-elevation-medium);
@@ -241,7 +253,7 @@ ul.package_section {
 /* This is the drag/drop placeholder, normally not visible */
 .ui-state-highlight {
 	border-color: var(--event) !important;
-	background-color: var(--content_background) !important;
+	background-color: var(--dark_background) !important;
 }
 
 .sortable_smiley {
