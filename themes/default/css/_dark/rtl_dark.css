@@ -1,41 +1,51 @@
-/* INTRODUCTION
-/* This variant is the standard, light, Elkarte RTL theme.
-/* This is eye candy only. All the layout code is in rtl.css.
 /*
-/* ------------------------------------------------------- */
-/*
-/*		$GENERAL.............Global resets, clearfixes, etc.
-/*		$COMMON..............Common classes to drive you bonkers.
-/*		$BBC.................Quotes, code blocks, BBC styles.
-/*		$AJAX................The "loading" bar (quick edit, etc).
-/*
-/*		$MAIN................Forum header, wrapper, and footer.
-/*		$MENUS...............Main and secondary menus.
-/*		$LINKTREE............The breadcrumbs.
-/*		$BUTTONS.............Most button strips.
-/*		$PAGELINKS...........Page navigation links.
-/*
-/*		$TABLES..............Generic tables (memberlist, error log, etc).
-/*		$SETTINGS............Generic lists for settings pages.
-/*		$BOARDS..............Board index, sub-boards, and message index.
-/*
-/*		$TOPICS..............The display template (topic view), including send.
-/*		$EDITOR..............Main editor (posts, events, polls) and topic summary.
-/*		$MODERATE............Move topic, split topic, merge topic.
-/*
-/*		$PROFILE.............The profile areas.
-/*		$PERSONAL............The personal messages (PM) areas.
-/*		$CALENDAR............Wombats (and the calendar).
-/*		$STATISTICS..........The statistics centre.
-/*
-/*		$HELP................Help pages, help icons and pop-ups, tooltips.
-/*		$SEARCH..............Search pages, including memberlist search.
-/*		$LOGIN...............Login and registration, maintenance mode.
-/*
-/*		$ERRORS..............Error messages.
-/*		$PROGRESS............Nifty progress bars.
-/*		$MEDIA...............Experimental media queries.
-/* ------------------------------------------------------- */
+ * ___________.__   __      _____          __
+ * \_   _____/|  | |  | __ /  _  \________/  |_  ____
+ *  |    __)_ |  | |  |/ //  /_\  \_  __ \   __\/ __ \
+ *  |        \|  |_|    </    |    \  | \/|  | \  ___/
+ * /_______  /|____/__|_ \____|__  /__|   |__|  \___  >
+ *         \/           \/       \/                 \/
+ * https://www.elkarte.net
+ * © ElkArte Forum contributors
+ *
+ * INTRODUCTION
+ * This variant is the standard, light, Elkarte RTL theme.
+ * This is eye candy only. All the layout code is in rtl.css.
+ *
+ * -------------------------------------------------------
+ *
+ *		$GENERAL.............Global resets, clearfixes, etc.
+ *		$COMMON..............Common classes to drive you bonkers.
+ *		$BBC.................Quotes, code blocks, BBC styles.
+ *		$AJAX................The "loading" bar (quick edit, etc).
+ *
+ *		$MAIN................Forum header, wrapper, and footer.
+ *		$MENUS...............Main and secondary menus.
+ *		$LINKTREE............The breadcrumbs.
+ *		$BUTTONS.............Most button strips.
+ *		$PAGELINKS...........Page navigation links.
+ *
+ *		$TABLES..............Generic tables (memberlist, error log, etc).
+ *		$SETTINGS............Generic lists for settings pages.
+ *		$BOARDS..............Board index, sub-boards, and message index.
+ *
+ *		$TOPICS..............The display template (topic view), including send.
+ *		$EDITOR..............Main editor (posts, events, polls) and topic summary.
+ *		$MODERATE............Move topic, split topic, merge topic.
+ *
+ *		$PROFILE.............The profile areas.
+ *		$PERSONAL............The personal messages (PM) areas.
+ *		$CALENDAR............Wombats (and the calendar).
+ *		$STATISTICS..........The statistics centre.
+ *
+ *		$HELP................Help pages, help icons and pop-ups, tooltips.
+ *		$SEARCH..............Search pages, including memberlist search.
+ *		$LOGIN...............Login and registration, maintenance mode.
+ *
+ *		$ERRORS..............Error messages.
+ *		$PROGRESS............Nifty progress bars.
+ *		$MEDIA...............Experimental media queries.
+ * ------------------------------------------------------- */
 
 :root {
 	/* flip right and left colors for RTL */
@@ -315,9 +325,6 @@ input[type="submit"]:hover, button[type="submit"]:hover, input[type="button"]:ho
  * $PROFILE
  * -------------------------------------------------------
  */
-.profile_pie {
-	background: url(../../images/_light/stats_pie_rtl.png);
-}
 
 /* -------------------------------------------------------
  * $PERSONAL

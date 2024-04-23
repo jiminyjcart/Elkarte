@@ -1,4 +1,14 @@
-/* INTRODUCTION
+/*
+ * ___________.__   __      _____          __
+ * \_   _____/|  | |  | __ /  _  \________/  |_  ____
+ *  |    __)_ |  | |  |/ //  /_\  \_  __ \   __\/ __ \
+ *  |        \|  |_|    </    |    \  | \/|  | \  ___/
+ * /_______  /|____/__|_ \____|__  /__|   |__|  \___  >
+ *         \/           \/       \/                 \/
+ * https://www.elkarte.net
+ * © ElkArte Forum contributors
+ *
+ * INTRODUCTION
  * This variant is the standard, light, Elkarte theme.
  * This is eye candy only. All the layout code is in index.css.
  *
@@ -259,7 +269,7 @@ body {
 	background-image: radial-gradient(50% 50% at top center, rgba(0, 0, 0, .7), var(--body_grad_1)), linear-gradient(180deg, var(--body_grad_2), var(--body_grad_1));
 	background-repeat: no-repeat;
 	background-position: top 0 center;
-	background-size: 120% 2000px, 100% 2000px;
+	background-size: 120% 200rem, 100% 200rem;
 }
 
 fieldset {
@@ -577,6 +587,9 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 #ajax_in_progress, .ajax_infobar {
 	color: var(--body_text);
 	border-bottom-color: var(--top_section_top_border);
+}
+
+#ajax_in_progress {
 	background-color: var(--content_background) !important;
 }
 
@@ -634,7 +647,7 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 /* Main forum area.
    Box-shadow only on this one. */
 #wrapper {
-	margin-top: 2em;
+	margin-top: 3.2rem;
 	border-color: var(--transparent);
 	border-top-color: var(--transparent);
 	border-bottom-color: var(--transparent);
@@ -725,6 +738,16 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 	border-left-color: var(--primary_border);
 }
 
+#main_menu .subsections .linklevel1::after,
+#main_menu .subsections:hover .linklevel1::after {
+	border-color: var(--transparent);
+}
+
+.admin_menu .listlevel1.subsections .linklevel1::after {
+	border-color: var(--transparent);
+	border-top-color: var(--menu_dropdown_indicator);
+}
+
 .poster .linklevel2, .poster .linklevel2:focus,
 .poster .listlevel2:hover .linklevel2 {
 	border-color: var(--transparent);
@@ -808,7 +831,7 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 
 /* Poster flyout gets a reverse shadow to hide some background */
 .poster .menulevel2 {
-	box-shadow: 2px 2px 3px var(--opacity20), -5px -5px 1px var(--primary_content_background);
+	box-shadow: 2px 2px 3px var(--opacity20), -.5rem -.5rem 1px var(--primary_content_background);
 }
 
 .poster_div_details {
@@ -819,10 +842,10 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 /* PM and Notification bubble indicator */
 .pm_indicator {
 	/* overriding structure, make this a small circle, no counter (off screen) */
-	top: -4px;
-	right: -2px;
-	width: 1em;
-	height: 1em;
+	top: -.4rem;
+	right: -.2rem;
+	width: 1.6rem;
+	height: 1.6rem;
 	padding: 0;
 	text-indent: -9999px;
 	color: var(--input_background) !important;
@@ -868,7 +891,7 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
  */
 
 .breadcrumb {
-	box-shadow: 0 0 15px 1px var(--opacity30);
+	box-shadow: 0 0 1.5rem 1px var(--opacity30);
 }
 
 .breadcrumb .crumb {
@@ -1041,7 +1064,7 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 }
 
 .board_row {
-	margin-bottom: .5em;
+	margin-bottom: .8rem;
 	border-bottom-color: var(--transparent);
 }
 
@@ -1250,7 +1273,7 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 }
 
 /* Drop menu for the poster info. */
-.poster .listlevel1.sfhover .menulevel2, .poster .listlevel1:hover .menulevel2 {
+.poster .listlevel1.sfhover .menulevel2, .poster .listlevel1 .menulevel2 {
 	background: var(--primary_content_background);
 }
 
@@ -1276,6 +1299,10 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 
 .post_subject {
 	color: var(--body_text);
+}
+
+.keyinfo.above {
+	background-image: linear-gradient(to bottom, var(--category_header_grad_1), var(--category_header_grad_4));
 }
 
 .keyinfo h3 a, .keyinfo h3 a strong {
@@ -1304,11 +1331,15 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 
 #iconList > .messageIcon:hover {
 	border-color: var(--menu_border_hover);
-	background: var(--menu_hover_background);
+	background: var(--menu_button_hover_background);
 }
 
-.messageContent {
+.messageContent:not(.above) {
 	border-top-color: var(--secondary_border);
+}
+
+.messageContent.above {
+	border-top-color: var(--transparent);
 }
 
 .messageContent .bbc_img.ila_pending {
@@ -1364,11 +1395,11 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 
 /* A couple of structure tweaks on the new separator */
 .new_post_separator {
-	margin: -1px 0 -8px 0;
+	margin: -.1rem 0 -.8rem 0;
 }
 
 .new_post_separator:after {
-	top: -16px;
+	top: -1.6rem;
 	border-color: var(--mid_grey_background) var(--transparent);
 }
 
@@ -1752,7 +1783,7 @@ ul.cf_icons {
 }
 
 .tooltip {
-	background: linear-gradient(to bottom, var(--transparent) 160px, var(--primary_content_background) 200px);
+	background: linear-gradient(to bottom, var(--transparent) 16rem, var(--primary_content_background) 20rem);
 }
 
 /* The darkened background for help pop-ups. */
@@ -1765,7 +1796,7 @@ ul.cf_icons {
 	border-color: var(--secondary_border);
 	background: var(--content_background);
 	background-clip: padding-box;
-	box-shadow: 0 5px 15px var(--opacity50);
+	box-shadow: 0 .5rem 1.5rem var(--opacity50);
 }
 
 /* The text content, hopefully helpful. */
@@ -1787,7 +1818,7 @@ ul.cf_icons {
 
 #search_form_menu {
 	background: var(--menu_nav_grad_1);
-	box-shadow: 0 0 15px 1px var(--opacity30);
+	box-shadow: 0 0 1.5rem 1px var(--opacity30);
 }
 
 #search_form_menu input, #search_form_menu select, #search_form_menu button {
@@ -1925,7 +1956,7 @@ ul.cf_icons {
 .progress_bar {
 	border-color: var(--contrast_border);
 	background: var(--primary_content_background);
-	box-shadow: inset 0 2px 5px var(--opacity10);
+	box-shadow: inset 0 2px .5rem var(--opacity10);
 }
 
 .progress_bar > .green_percent {
@@ -2037,7 +2068,7 @@ ul.cf_icons {
 	#menu_sidebar {
 		border-color: var(--secondary_border);
 		background: var(--primary_content_background);
-		box-shadow: .2em .2em .2em var(--opacity30);
+		box-shadow: 3px 3px 3px var(--opacity30);
 	}
 
 	.icon-menu {

@@ -45,7 +45,7 @@
 	display: flex;
 	flex-basis: 100%;
 	margin: 0 0 2em;
-	padding: 0 5px;
+	padding: 0 .5rem;
 	resize: none;
 	color: #9d9d9d;
 	border: 0;
@@ -117,7 +117,7 @@
 }
 
 .sceditor-inserttable, .sceditor-insertimage, .sceditor-pastetext, .sceditor-insertlink, .sceditor-insertemail {
-	padding: 5px;
+	padding: .5rem;
 }
 
 #sceditor-smileycontainer {
@@ -197,7 +197,7 @@
 
 .sceditor-toolbar {
 	overflow: hidden;
-	padding: 5px 5px 0 5px;
+	padding: .5rem .5rem 0 .5rem;
 	border-bottom: 1px solid #AAAAAA;
 	border-radius: 0;
 	background: #FAFAFA;
@@ -218,7 +218,7 @@
 
 .sceditor-button {
 	float: left;
-	margin-bottom: 5px;
+	margin-bottom: .5rem;
 	padding: 0;
 	cursor: pointer;
 	color: #222222;
