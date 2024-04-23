@@ -251,6 +251,10 @@ function template_settings()
 			'id' => 'additional_options_collapsible',
 			'label' => $txt['additional_options_collapsible'],
 		),
+		array(
+			'id' => 'show_keyinfo_above',
+			'label' => $txt['show_keyinfo_above'],
+		),
 	);
 
 	// This is a special case as theme settings will trigger new ThemeLoader() which essentially clears inline JS
