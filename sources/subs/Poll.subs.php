@@ -714,7 +714,7 @@ function increaseGuestVote($id_poll)
 function determineVote($id_member, $id_poll)
 {
 	$db = database();
-	$pollOptions = array();
+	$pollOptions = [];
 
 	$db->fetchQuery('
 		SELECT 
@@ -728,7 +728,10 @@ function determineVote($id_member, $id_poll)
 		)
 	)->fetch_callback(
 		function ($row) use (&$pollOptions) {
-			$pollOptions[] = $row[0];
+			if (isset($row['id_choice']))
+			{
+				$pollOptions[] = $row['id_choice'];
+			}
 		}
 	);
 
