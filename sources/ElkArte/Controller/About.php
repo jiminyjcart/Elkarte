@@ -181,7 +181,7 @@ class About extends AbstractController
 
 		if (isset($this->_req->query->form))
 		{
-			$this->handleContactForm();
+			$this->handleContactForm($member);
 		}
 		else
 		{
@@ -190,14 +190,14 @@ class About extends AbstractController
 	}
 
 	/**
-	 * Handle the contact form for the forum.
+	 * Handle the contact form for member registration.
 	 *
-	 * This method allows for the viewing or downloading of the COPPA form.
-	 * Accessed by action=about;sa=coppa;form;dl;member= and action=about;sa=coppa;form;member=
+	 * This method sets the necessary variables in the global $context for displaying the contact form.
+	 * If the query parameter `dl` is set, the method outputs a file for download, otherwise it shows the contact form template.
 	 *
-	 * @return void
+	 * @param array $member The member data from getBasicMemberData())
 	 */
-	private function handleContactForm()
+	private function handleContactForm($member)
 	{
 		global $context, $modSettings, $txt;
 
