@@ -1,4 +1,13 @@
-/***************************************************************************
+/*
+ * ___________.__   __      _____          __
+ * \_   _____/|  | |  | __ /  _  \________/  |_  ____
+ *  |    __)_ |  | |  |/ //  /_\  \_  __ \   __\/ __ \
+ *  |        \|  |_|    </    |    \  | \/|  | \  ___/
+ * /_______  /|____/__|_ \____|__  /__|   |__|  \___  >
+ *         \/           \/       \/                 \/
+ * https://www.elkarte.net
+ * © ElkArte Forum contributors
+ *
  * These icons, unless otherwise indicated are from IcoMoon Free (CC BY 4.0)
  * the remaining, as indicated, are from Font Awesome (SIL OFL 1.1)
  *
@@ -7,7 +16,8 @@
  * These icons are all black, color is done with filter() callouts in the
  * variant files, with the exception of some icons which use a gradient
  * and filters will not work as expected.
- **************************************************************************/
+ *
+ */
 
 /* Menu Icons, pulled out with separate names to allow easier modification */
 /* Admin button .. Gear */
@@ -104,10 +114,10 @@
    i-chevron-up/down, not used with a filter as we need dark stroke and light fill so it can be used
    on both light and dark backgrounds */
 .i-chevron-up::before {
-	content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' stroke='grey' stroke-width='1px' fill='white' viewBox='0 0 36 36'%3E%3Cpath d='m33.81 26.739-3.335 3.315a1.274 1.274 0 0 1-1.808 0L18 19.387 7.333 30.054a1.274 1.274 0 0 1-1.808 0L2.19 26.739a1.298 1.298 0 0 1 0-1.828l14.906-14.886a1.274 1.274 0 0 1 1.808 0L33.81 24.911a1.298 1.298 0 0 1 0 1.828z'/%3E%3C/svg%3E");
+	content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' stroke='grey' stroke-width='2px' fill='white' viewBox='0 0 36 36'%3E%3Cpath d='m33.81 26.739-3.335 3.315a1.274 1.274 0 0 1-1.808 0L18 19.387 7.333 30.054a1.274 1.274 0 0 1-1.808 0L2.19 26.739a1.298 1.298 0 0 1 0-1.828l14.906-14.886a1.274 1.274 0 0 1 1.808 0L33.81 24.911a1.298 1.298 0 0 1 0 1.828z'/%3E%3C/svg%3E");
 }
 .i-chevron-down::before {
-	content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' stroke='grey' stroke-width='1px' fill='white' viewBox='0 0 36 36'%3E%3Cpath d='M33.81 16.232 18.904 31.118a1.274 1.274 0 0 1-1.808 0L2.19 16.232a1.298 1.298 0 0 1 0-1.828l3.335-3.315a1.274 1.274 0 0 1 1.808 0L18 21.756l10.667-10.667a1.274 1.274 0 0 1 1.808 0l3.335 3.315a1.298 1.298 0 0 1 0 1.828z'/%3E%3C/svg%3E");
+	content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' stroke='grey' stroke-width='2px' fill='white' viewBox='0 0 36 36'%3E%3Cpath d='M33.81 16.232 18.904 31.118a1.274 1.274 0 0 1-1.808 0L2.19 16.232a1.298 1.298 0 0 1 0-1.828l3.335-3.315a1.274 1.274 0 0 1 1.808 0L18 21.756l10.667-10.667a1.274 1.274 0 0 1 1.808 0l3.335 3.315a1.298 1.298 0 0 1 0 1.828z'/%3E%3C/svg%3E");
 }
 .i-chevron-circle-right::before {
 	content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='black' viewBox='0 0 32 32'%3E%3Cpath d='M16 0C7.163 0 0 7.163 0 16s7.163 16 16 16 16-7.163 16-16S24.837 0 16 0zm0 29C8.82 29 3 23.18 3 16S8.82 3 16 3s13 5.82 13 13-5.82 13-13 13z'/%3E%3Cpath d='M11.086 22.086l2.83 2.83L22.828 16l-8.915-8.913-2.828 2.828L17.173 16z'/%3E%3C/svg%3E");
@@ -659,14 +669,14 @@ legend::before, .i-caret-down::before {
 	--hexcode: #000000;
 }
 
-.i-last::before, .i-last_post::before, .i-reply::before {
+.i-last::before, .i-reply::before {
 	filter: invert(69%) sepia(77%) saturate(363%) hue-rotate(170deg) brightness(89%) contrast(91%);
 	--hexcode: #72B7D9;
 }
 
 .i-envelope::before, .i-envelope-o::before,
 .i-comment::before, .i-profile::before,
-.i-bell::before, .i-user::before,
+.i-bell::before, .i-user::before, .i-last_post::before,
 .i-mark_read::before, .i-switch-on::before, .i-recycle::before {
 	filter: invert(46%) sepia(84%) saturate(405%) hue-rotate(83deg) brightness(93%) contrast(93%);
 	--hexcode: #27A348;
