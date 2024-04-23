@@ -349,7 +349,7 @@ elk_Popup.prototype.show = function() {
 
 	// Show it
 	this.popup_body = document.querySelector('#' + this.popup_id + ' .popup_window');
-	this.popup_body.parentElement.fadeIn(100, () => {this.popup_body.classList.add('in')});
+	this.popup_body.parentElement.fadeIn(100, () => {this.popup_body.classList.add('in');});
 
 	// Trigger hide on escape key or mouse click
 	this.popup_instance = this;

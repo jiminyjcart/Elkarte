@@ -190,7 +190,7 @@ function template_messages()
 
 		// Show the post itself, finally!
 		echo '
-						<section id="msg_', $message['id'], '" data-msgid="', $message['id'], '" class="messageContent', $ignoring ? ' hide' : '', $settings['show_keyinfo_above'] ? ' above' : '', '">',
+						<section id="msg_', $message['id'], '" data-msgid="', $message['id'], '" class="messageContent', $ignoring ? ' hide' : '', !empty($settings['show_keyinfo_above']) ? ' above' : '', '">',
 							$message['body'], '
 						</section>
 						<footer class="post_footer">';
