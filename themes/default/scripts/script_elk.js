@@ -1153,8 +1153,8 @@ HTMLElement.prototype.slideDown = function(duration, callback) {
 	_s(this, duration, callback, true);
 };
 
-HTMLElement.prototype.fadeIn = function(duration) {
-	_s2(this, duration);
+HTMLElement.prototype.fadeIn = function(duration, callback) {
+	_s2(this, duration, callback);
 };
 
 HTMLElement.prototype.fadeOut = function(duration, callback) {
