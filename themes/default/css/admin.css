@@ -1,15 +1,26 @@
-/* Common admin center classes.
-------------------------------------------------------- */
+/*
+ * ___________.__   __      _____          __
+ * \_   _____/|  | |  | __ /  _  \________/  |_  ____
+ *  |    __)_ |  | |  |/ //  /_\  \_  __ \   __\/ __ \
+ *  |        \|  |_|    </    |    \  | \/|  | \  ___/
+ * /_______  /|____/__|_ \____|__  /__|   |__|  \___  >
+ *         \/           \/       \/                 \/
+ * https://www.elkarte.net
+ * © ElkArte Forum contributors
+ *
+ * Common admin center classes.
+ * -------------------------------------------------------
+ */
 
 /* Special styling for admin descriptions. */
 .action_admin .generic_list_wrapper .information {
-	margin: 0 0 .5em 0;
+	margin: 0 0 .8rem 0;
 	border: 1px solid;
-	border-radius: 0 0 2px 2px;
+	border-radius: 0 0 .4rem .4rem;
 }
 
 .action_admin .generic_list_wrapper .information .additional_row {
-	padding: .75em;
+	padding: 1rem;
 }
 
 .information a {
@@ -21,11 +32,11 @@
 }
 
 #adm_submenus {
-	margin-top: 5px;
+	margin-top: .4rem;
 }
 
 #admin_content .content {
-	margin-bottom: .4em;
+	margin-bottom: .4rem;
 	border: none;
 }
 
@@ -34,21 +45,21 @@
 }
 
 .admincenter .content {
-	padding: .8em 0;
+	padding: 1.2rem 0;
 }
 
 .admincenter .content .settings {
-	padding: .25em 2.75em 0 2.75em;
+	padding: .4rem 4.4rem 0 4.4rem;
 }
 
 /* pull the help icon to the gutter so text remains aligned */
 .admincenter .content .settings a.helpicon {
-	margin-left: -1.75em;
+	margin-left: -2.8rem;
 	vertical-align: text-bottom;
 }
 
 .admincenter .content hr.clear {
-	margin-left: .8em;
+	margin-left: 1rem;
 }
 
 /* @todo - A general admin wrapper class. */
@@ -58,10 +69,10 @@
 #groupForm, #mailqueue_stats, #manage_maintenance,
 #new_group, #view_group, #admin_form_wrapper, .action_admin .generic_list_wrapper {
 	overflow: auto;
-	margin: .8em 0 0 0;
-	padding: .5em;
+	margin: 1.2rem 0 0 0;
+	padding: .8rem;
 	border: 1px solid;
-	border-radius: 6px;
+	border-radius: .4rem;
 }
 
 #new_group .content, #view_group .content, #admin_newsletters .content {
@@ -78,15 +89,15 @@
 }
 
 .listaction img {
-	width: 16px;
-	height: 16px;
+	width: 1rem;
+	height: 1rem;
 }
 
 /* News and newsletters screen. */
 #admin_newsletters .information {
-	margin: .5em 0;
+	margin: .8rem 0;
 	border: 1px solid;
-	border-radius: 2px;
+	border-radius: .4rem;
 }
 
 #news_lists .newsarea {
@@ -95,8 +106,8 @@
 
 #news_lists .newsarea textarea {
 	width: 100%;
-	min-height: 8em;
-	padding: 0 2px;
+	min-height: 13rem;
+	padding: 0 .2rem;
 }
 
 td.newspreview {
@@ -105,22 +116,22 @@ td.newspreview {
 
 #news_lists .newspreview div {
 	overflow: auto;
-	min-height: 8em;
+	min-height: 13rem;
 	resize: vertical;
 	border: 1px solid;
 }
 
 /*-------------------------------------------*/
 .action_admin .generic_list .flow_auto {
-	padding: 4px 2px;
+	padding: .4rem .2rem;
 }
 
 h3.category_header form {
-	font-size: .786em;
+	font-size: var(--font13);
 }
 
 .content.nopadding {
-	margin: 4px 0 0 0;
+	margin: .4rem 0 0 0;
 	padding: 0;
 }
 
@@ -134,16 +145,12 @@ h3.category_header form {
 }
 
 .additional_row div.floatleft {
-	padding: 0 10px;
+	padding: 0 1rem;
 }
 
 /* Styles for the admin home screen. */
 #quick_search {
-	margin-top: -2px;
-}
-
-#quick_search .icon {
-	margin: 4px 0 0 0;
+	margin-top: -.2rem;
 }
 
 .admincenter .well, #modcenter .well {
@@ -156,18 +163,18 @@ h3.category_header form {
 }
 
 .search_results {
-	margin: 0 -6px;
+	margin: 0 -.6rem;
 }
 
 .search_results li {
 	overflow: auto;
-	padding: .4em 0;
+	padding: .4rem 0;
 	border-bottom: double;
 }
 
 .search_results li p {
 	line-height: 1.7;
-	padding: 0 1.5em;
+	padding: 0 2.4rem;
 }
 
 #installedVersion, #latestVersion {
@@ -175,15 +182,15 @@ h3.category_header form {
 }
 
 .censorWords {
-	margin: 1em 0 0 1em;
+	margin: 1.6rem 0 0 1.6rem;
 }
 
 /* Cleaned this up a bit for less clutter.
    Admin and moderation could generally do with a clean up everywhere.
    Live news from elkarte.net and support information. */
 #admin_main_section {
-	margin: 12px 0 20px 0;
-	padding: 8px 8px 4px 8px;
+	margin: 1.2rem 0 2rem 0;
+	padding: .8rem .8rem .4rem .8rem;
 }
 
 #live_news {
@@ -192,23 +199,23 @@ h3.category_header form {
 
 #supportVersionsTable {
 	width: 35%;
-	padding-left: 6px;
+	padding-left: .6rem;
 }
 
 #admin_main_section .content {
 	overflow: auto;
-	height: 12em;
-	padding: 6px 0;
+	height: 27rem;
+	padding: .6rem 0;
 	border: 1px solid;
 	border-radius: 0;
 }
 
 #admin_search_box {
-	padding: 0.5em 0;
+	padding: .8rem 0;
 }
 
 #live_news .content, #supportVersionsTable .content {
-	padding: 0 .5em;
+	padding: 0 .8rem;
 }
 
 #ourAnnouncements dt {
@@ -217,19 +224,19 @@ h3.category_header form {
 }
 
 #ourAnnouncements dt a {
+	font-size: var(--font15);
 	font-weight: bold;
-	font-size: 1.1em;
 }
 
 #ourAnnouncements dd {
 	margin: 0;
-	padding: 0 .8em;
+	padding: 0 1.2rem;
 	border-top: double;
 }
 
 /* The update warning. */
 #update_section {
-	margin: 6px 0;
+	margin: .6rem 0;
 }
 
 /* Links to handy sections of admin.
@@ -237,13 +244,13 @@ h3.category_header form {
 
 #quick_tasks {
 	column-count: 2;
-	column-gap: 10px;
+	column-gap: 1rem;
 }
 
 #quick_tasks li {
 	overflow: auto;
-	min-height: 8em;
-	padding: 10px 0;
+	min-height: 12rem;
+	padding: 1rem 0;
 	list-style: none;
 	border-top: 1px solid;
 	border-bottom: 1px solid;
@@ -256,13 +263,13 @@ h3.category_header form {
 
 .home_image {
 	float: left;
-	margin: 2px 10px;
-	max-height: 48px;
+	max-height: 5rem;
+	margin: .2rem .8rem;
 }
 
 #quick_tasks li span {
 	display: block;
-	margin: 0 0 0 80px;
+	margin: 0 0 0 8rem;
 }
 
 /* Styles for the support and credits page.
@@ -272,40 +279,40 @@ h3.category_header form {
    Nobody ever themes admin anyway. That's why it looked like crap. */
 #support_credits {
 	position: relative;
-	padding: .5em .8em .8em .8em;
+	padding: .8rem 1.2rem 1.2rem 1.2rem;
 }
 
 #credits_logo {
 	position: absolute;
-	top: 12px;
-	right: 16px;
-	max-height: 30px;
+	top: 1.2rem;
+	right: 1.6rem;
+	max-height: 3rem;
 }
 
 #support_credits .content p {
-	margin: .8em 0 0 0;
+	margin: 1.2rem 0 0 0;
 }
 
 #support_credits dl {
-	padding: 0 .5em;
+	padding: 0 .8rem;
 }
 
 #support_credits dt {
 	float: left;
-	padding: .5em 0.8em 0 0;
+	padding: .8rem 1.2rem 0 0;
 }
 
 #support_credits dd {
-	padding: 6px 0;
+	padding: .6rem 0;
 }
 
 /* Styles for the core features screen. */
 #core_features {
-	padding: 1.5em 0;
+	padding: 2.4rem 0;
 }
 
 #core_features hr {
-	margin: .25em 0 .8em 0;
+	margin: .4rem  0 1.2rem 0;
 	padding: 0;
 }
 
@@ -313,23 +320,23 @@ h3.category_header form {
 	float: left;
 	overflow: auto;
 	width: 50%;
-	padding: 0 .8em;
+	padding: 0 1.2rem;
 }
 
 .core_features_status_box {
-	margin-left: .4em;
+	margin-left: .4rem;
 	vertical-align: middle;
 }
 
 .core_features_img {
-	width: 2.5em;
-	height: 2.5em;
+	width: 3rem;
+	height: 3rem;
 }
 
 /* Keep your enemies close, and your submit buttons if your screen is huge. */
 .features_image {
 	float: left;
-	margin: 0 .4em;
+	margin: 0 .4rem;
 }
 
 .features_switch {
@@ -338,9 +345,9 @@ h3.category_header form {
 
 .features h3 {
 	overflow: hidden;
-	min-height: 1.6em;
-	max-height: 1.6em;
-	margin: 0 .5em 0 6em;
+	min-height: 2.4rem;
+	max-height: 2.4rem;
+	margin: 0 .8rem 0 8rem;
 	padding: 0;
 	white-space: pre;
 	text-overflow: ellipsis;
@@ -348,8 +355,8 @@ h3.category_header form {
 
 .features p {
 	overflow: auto;
-	height: 9em;
-	margin: 0 4em 0 6em;
+	height: 14rem;
+	margin: 0 6rem 0 9rem;
 	padding: 0;
 }
 
@@ -359,7 +366,7 @@ h3.category_header form {
 
 /* Styles for the package manager. */
 #package_list ol {
-	margin-left: 1.25em;
+	margin-left: 2rem;
 	list-style: decimal;
 	border: none;
 }
@@ -369,7 +376,7 @@ h3.category_header form {
 }
 
 .package_section > ul {
-	margin-left: 5em;
+	margin-left: 8rem;
 }
 
 ul.package_section {
@@ -378,41 +385,41 @@ ul.package_section {
 
 #package_list li {
 	font-weight: 600;
-	padding: 0.2em;
+	padding: 0.2rem;
 	border: 1px solid;
 }
 
 #package_list > li {
-	margin-bottom: 1em;
-	border-radius: 6px;
+	margin-bottom: 1.6rem;
+	border-radius: .4rem;
 }
 
 .package_id {
 	font-weight: bold;
 	display: inline-block;
 	width: 35%;
-	min-width: 20em;
+	min-width: 32rem;
 }
 
 .package_id.details_show > i::before, .package_id.details_hide > i::before {
-	vertical-align: middle;
-	width: 1.25em;
-	height: auto;
 	display: inline-block;
+	width: 2rem;
+	height: auto;
+	padding: 0 .2rem;
 	content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='black' fill-opacity='.7' viewBox='0 0 32 32'%3E%3Cpolygon points='16 0, 16 32, 32 16'/%3E%3C/svg%3E");
-	padding: 0 2px;
+	vertical-align: middle;
 }
 
 .package_id.details_hide > i::before {
-	vertical-align: bottom;
 	content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='black' fill-opacity='.7' viewBox='0 0 32 32'%3E%3Cpolygon points='0 16, 32 16, 16 32'/%3E%3C/svg%3E");
+	vertical-align: bottom;
 }
 
 .description, .information {
 	overflow: auto;
-	max-height: 16em;
-	margin-bottom: .4em;
-	padding-bottom: .5em;
+	max-height: 25rem;
+	margin-bottom: .4rem;
+	padding-bottom: .8rem;
 }
 
 #find_code, #replace_code {
@@ -420,9 +427,9 @@ ul.package_section {
 	font-size: var(--font14);
 	display: block;
 	overflow: auto;
-	height: 10em;
-	margin: .1em 0 .4em 0;
-	padding: .25em .8em;
+	height: 14rem;
+	margin: .1rem 0 .4rem 0;
+	padding: .4rem  1.2rem;
 	/* Show a scrollbar after about 6 lines. */
 	/* This is much better than the old max-height css. */
 	resize: vertical;
@@ -447,7 +454,7 @@ ul.package_servers li {
 }
 
 .operation {
-	padding: 0 1em;
+	padding: 0 1.6rem;
 }
 
 /* Styles for the language edit strings page. */
@@ -492,9 +499,9 @@ ul.package_servers li {
 
 /* Styles for the manage boards section. */
 #manage_boards .content > ul {
-	padding: .5em;
+	padding: .8rem;
 	border: 1px solid;
-	border-radius: 4px;
+	border-radius: .4rem;
 }
 
 #manage_boards ul li:nth-child(n+2) {
@@ -502,18 +509,18 @@ ul.package_servers li {
 }
 
 #manage_boards .content > ul > li {
-	padding: 0 .5em;
+	padding: 0;
 }
 
 #manage_boards ul:nth-child(n+2) li {
-	padding-left: 2em;
+	padding-left: .2rem;
 	border: none;
 }
 
 /* This is the UL drop zone, normally not visible */
 #manage_boards ul.elk_droppings:nth-child(n+1) {
 	min-height: 1em;
-	padding-left: 2em !important;
+	padding-left: 4rem !important;
 }
 
 #manage_boards li, #manage_boards li.content {
@@ -526,20 +533,20 @@ ul.package_servers li {
 }
 
 #manage_boards li .floatleft {
-	font-size: var(--font15);
+	font-size: var(--font14);
 	font-weight: bold;
 	width: 60%;
-	margin: .5em 0 0 0;
+	margin: .4rem 0 0 0;
 	padding: 0 .4em;
 	cursor: move;
 }
 
 #manage_boards li .floatright {
-	margin: .5em 0 0 0;
+	margin: .4rem 0 0 0;
 }
 
 .move_links {
-	padding: 0 1em 0 0;
+	padding: 0 2rem 0 0;
 }
 
 /* Move, Permissions, etc buttons */
@@ -549,11 +556,11 @@ ul.package_servers li {
 }
 
 #manage_boards dl {
-	padding: 8px 6px 0 6px;
+	padding: .8rem .6rem 0 .6rem;
 }
 
 #manage_boards dl textarea, #manage_boards dl table {
-	margin: 0 0 8px 0;
+	margin: 0 0 .8rem 0;
 }
 
 #manage_boards .post_group, #manage_boards .regular_members {
@@ -562,8 +569,8 @@ ul.package_servers li {
 }
 
 .select_all_box {
-	margin-top: 0.5em;
-	padding: 2px 2px 5px 2px;
+	margin-top: .8rem;
+	padding: .2rem .2rem .6rem .2rem;
 }
 
 .visible_boards .board label,
@@ -597,11 +604,11 @@ ul.package_servers li {
 
 /* Styles for the manage smiley section. */
 #smiley_list .imagecolumn {
-	padding: .5em .8em;
+	padding: .8rem 1.2rem;
 }
 
 #smiley_list .imagecolumn img {
-	max-height: 24px;
+	max-height: 2.4rem;
 }
 
 /* Styles for the manage members section. */
@@ -611,7 +618,7 @@ ul.package_servers li {
 }
 
 .right dt {
-	padding-right: .8em;
+	padding-right: 1.2rem;
 }
 
 /* Styles for the manage maintenance section. */
@@ -619,29 +626,17 @@ ul.package_servers li {
 	font-weight: bold;
 }
 
-/* Styles for the bad behaviour section. */
-.bbfilter {
-	display: table-cell;
-	width: 20px;
-	padding: 4px 0;
-	vertical-align: top;
-}
-
-.bbrequest_uri {
-	display: table-cell;
-}
-
 /* Stop the submit buttons running away on wide screens.*/
 #manage_maintenance form {
-	margin: 0 .8em;
+	margin: 0 1.2rem;
 }
 
 #manage_maintenance .settings {
-	margin: 1em 0 0 0;
+	margin: 1.6rem 0 0 0;
 }
 
 #manage_maintenance h3 a.help .icon {
-	padding: .25em 0 0;
+	padding: .4rem 0 0;
 }
 
 #manage_maintenance .content {
@@ -662,7 +657,7 @@ ul.package_servers li {
 }
 
 #verification_image {
-	max-height: 60px;
+	max-height: 6rem;
 }
 
 /* Styles for the manage permissions section. */
@@ -671,7 +666,7 @@ ul.package_servers li {
 }
 
 #permissionForm .table_grid img.icon {
-	width: 16px;
+	width: 1rem;
 	vertical-align: top;
 }
 
@@ -694,8 +689,8 @@ ul.package_servers li {
 }
 
 .search_weight {
-	width: 40px;
-	padding: 0 0.5em;
+	width: 4rem;
+	padding: 0 .8rem;
 	text-align: right;
 }
 
@@ -703,29 +698,28 @@ ul.package_servers li {
 	float: left;
 	overflow: auto;
 	width: 49%;
-	margin: 0 0.5em 1em 0.5em;
+	margin: 0 .8rem 1.6rem .8rem;
 }
 
 /* Styles for the manage bans section. */
-/* @todo this is as far as I can go without loosing my mind */
 .ban_restriction {
-	margin: 0.2em 0 0.2em 2.2em;
+	margin: 0.2rem 0 0.2rem 3rem;
 }
 
 .ban_settings {
-	width: 45%;
-	margin: 0 1em 0 0;
+	width: 44%;
+	margin: 0 1.6rem 0 0;
 }
 
 .ban_text {
 	min-width: 50%;
 	max-width: 99%;
-	min-height: 64px;
-	max-height: 64px;
+	min-height: 6.4rem;
+	max-height: 6.4rem;
 }
 
 #manage_bans dl {
-	margin-bottom: 1em;
+	margin-bottom: 1.6rem;
 }
 
 #manage_bans fieldset dl.settings {
@@ -742,7 +736,7 @@ ul.package_servers li {
 }
 
 .pending_payments {
-	line-height: 2em;
+	line-height: 2;
 	margin: 0;
 	padding: 0;
 }
@@ -754,19 +748,19 @@ ul.package_servers li {
 }
 
 .perm_boards {
-	margin: 0 0 0.6em 0;
+	margin: 0 0 0.8rem 0;
 	padding: 0;
 }
 
 .perm_boards li {
-	margin: 1px;
-	padding: 0.3em 0.5em;
+	margin: .1rem;
+	padding: 0.4rem .8rem;
 	border: 1px solid;
 }
 
 .perm_classic {
 	width: 49%;
-	margin: 0.2em;
+	margin: 0.2rem;
 }
 
 .permission_groups {
@@ -775,7 +769,7 @@ ul.package_servers li {
 }
 
 #manage_boards .permission_groups li {
-	padding-top: 1px;
+	padding-top: .1rem;
 	list-style-type: none;
 }
 
@@ -784,12 +778,12 @@ ul.package_servers li {
 }
 
 #manage_boards ul.nolist:not(:first-child) {
-	margin-left: 2em;
+	margin-left: 4rem;
 }
 
 .perms {
 	display: inline-block;
-	width: 20px;
+	width: 2rem;
 	text-align: center;
 }
 
@@ -804,14 +798,14 @@ ul.theme_options, ul.basic_options {
 }
 
 ul.theme_options li, ul.basic_options li {
-	padding: 0.4em;
+	padding: 0.8rem;
 	list-style: none;
 }
 
 .edit_file {
 	font-family: monospace;
 	width: 100%;
-	margin-top: 1ex;
+	margin-top: 1rem;
 	white-space: pre;
 }
 
@@ -820,13 +814,13 @@ dl.themes_list {
 }
 
 dl.themes_list dt {
-	margin-top: 5px;
-	margin-bottom: 3px;
+	margin-top: .4rem;
+	margin-bottom: .4rem;
 }
 
 dl.themes_list dd {
 	font-style: italic;
-	margin-top: 5px;
+	margin-top: .4rem;
 	white-space: nowrap;
 }
 
@@ -844,7 +838,7 @@ dl.themes_list dd {
 	float: left;
 	clear: both;
 	width: 55%;
-	margin: 0 0 10px 0;
+	margin: 0 0 1rem 0;
 	padding: 0;
 }
 
@@ -852,13 +846,13 @@ dl.themes_list dd {
 	float: right;
 	overflow: auto;
 	width: 45%;
-	min-height: 2em;
-	margin: 0 0 3px 0;
+	min-height: 3.2rem;
+	margin: 0 0 .2rem 0;
 	padding: 0;
 }
 
 #admin_form_wrapper .input_check, .input_radio {
-	margin: 0 2px 4px 4px;
+	margin: 0 .2rem .4rem .4rem;
 	vertical-align: top;
 	border: none;
 	background: none;
@@ -871,15 +865,15 @@ dl.themes_list dd {
 }
 
 .theme_settings .input_text {
-	width: 30em;
+	width: 48rem;
 	max-width: 100%;
 }
 
 #css_preview_box {
 	display: none;
 	width: 99%;
-	height: 300px;
-	margin-bottom: 2ex;
+	height: 30rem;
+	margin-bottom: 1.4rem;
 	border: 1px solid;
 }
 
@@ -890,7 +884,7 @@ dl.themes_list dd {
 
 #agreement, #reserved {
 	width: 99%;
-	padding: 0 .25em;
+	padding: 0 .4rem ;
 }
 
 #admin_register_form dt span {
@@ -902,23 +896,23 @@ dl.themes_list dd {
 #modcenter {
 	display: block;
 	width: 100%;
-	border-radius: 5px 5px 0 0;
+	border-radius: .4rem .4rem 0 0;
 }
 
 #modcenter .content, #modcenter .generic_list_wrapper {
 	overflow: visible;
-	margin: 2px 0 0 0;
+	margin: .2rem 0 0 0;
 	border: 1px solid;
 }
 
 #modcenter .content {
-	padding: 12px;
+	padding: 1.2rem;
 }
 
 #mod_main_section .content {
 	overflow: auto;
-	height: 14em;
-	padding: 6px;
+	height: 22rem;
+	padding: .6rem;
 	border: 1px solid;
 	border-radius: 0;
 }
@@ -927,22 +921,22 @@ dl.themes_list dd {
 	float: left;
 	clear: right;
 	width: 50%;
-	padding: 0 5px 0 0;
+	padding: 0 .4rem 0 0;
 }
 
 .modblock_right {
 	float: right;
 	width: 50%;
-	margin: 0 0 5px 0;
+	margin: 0 0 .4rem 0;
 }
 
 .modblock_left #ourAnnouncements {
 	overflow: visible;
-	height: 15em;
+	height: 24rem;
 }
 
 .modbox img.icon {
-	margin: 3px 5px 0 0;
+	margin: .2rem .4rem 0 0;
 	vertical-align: text-top;
 }
 
@@ -956,7 +950,7 @@ dl.themes_list dd {
 }
 
 .moderation_notes li {
-	padding: 0.2em;
+	padding: 0.4rem;
 	border-bottom: 1px solid;
 }
 
@@ -970,7 +964,7 @@ dl.themes_list dd {
 
 /* Styles for the error log. */
 .grid_header {
-	height: 25px;
+	height: 2.4rem;
 }
 
 #error_log {
@@ -980,24 +974,24 @@ dl.themes_list dd {
 
 #error_log tr {
 	line-height: 160%;
-	padding: 8px;
+	padding: .8rem;
 }
 
 #error_log .checkbox_column {
-	width: 15px;
+	width: 1.4rem;
 	text-align: center;
 	vertical-align: top;
 }
 
 .listlevel2 .linklevel2 > .icon {
-	margin: 0 .5em 0 0;
+	margin: 0 .8rem 0 0;
 }
 
 /* Styles for the Report generation */
 #report_buttons {
 	display: flex;
 	align-items: center;
-	padding: .5em 0 0 0;
+	padding: .8rem 0 0 0;
 }
 
 .report_results th {
@@ -1008,16 +1002,16 @@ dl.themes_list dd {
 
 .sortable_smiley li {
 	display: inline;
-	padding: 0 6px;
+	padding: 0 .6rem;
 }
 
 .sortable_smiley {
-	margin-top: 3px;
+	margin-top: .2rem;
 	border-bottom: 1px solid;
 }
 
 .sortable_smiley img {
-	max-height: 24px;
+	max-height: 2.4rem;
 }
 
 .pagelink, .current_page, .expand_pages {
@@ -1039,15 +1033,15 @@ dl.themes_list dd {
 #custom_profile_fields td:nth-child(2):before,
 #message_icon_list td:nth-child(1):before,
 #manage_boards li .floatleft:before {
-	font-size: 1.071em;
-	margin-top: 1px;
-	padding-right: 5px;
+	font-size: var(--font16);
+	margin-top: .1rem;
+	padding-right: .4rem;
 	content: "\2195";
 }
 
 #custom_profile_fields td:nth-child(2):before {
 	float: left;
-	margin-top: 0.3em;
+	margin-top: 0.4rem;
 }
 
 /* jQuery Dialog Box */
@@ -1072,7 +1066,7 @@ dl.themes_list dd {
 }
 
 .ui-state-highlight {
-	height: 2em;
+	height: 3.2rem;
 	cursor: move;
 	border: 2px dashed;
 }
@@ -1082,14 +1076,14 @@ dl.themes_list dd {
 	z-index: 100;
 	padding: 0;
 	border: 1px solid;
-	border-radius: 4px 4px 0 0;
+	border-radius: .4rem .4rem 0 0;
 }
 
 .ui-dialog .ui-dialog-title {
 	float: left;
 	overflow: hidden;
 	width: 90%;
-	margin: 0.5em 0;
+	margin: .8rem 0;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 }
@@ -1097,26 +1091,26 @@ dl.themes_list dd {
 .ui-dialog .ui-dialog-titlebar {
 	font-size: 1.071em;
 	font-weight: bold;
-	padding: 0 1em;
-	border-radius: 4px 4px 0 0;
+	padding: 0 1.6rem;
+	border-radius: .4rem .4rem 0 0;
 }
 
 .ui-dialog .ui-dialog-content {
-	padding: 4px;
+	padding: .4rem;
 }
 
 .ui-dialog .ui-dialog-titlebar-close {
 	float: right;
-	width: 22px;
-	height: 22px;
-	margin: 0.5em 0;
+	width: 2.2rem;
+	height: 2.2rem;
+	margin: .8rem 0;
 	cursor: pointer;
 	border: 0;
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='black' viewBox='-4 -4 40 40'%3E%3Cpath d='M31.708 25.708L22 16l9.708-9.708c.105-.105.18-.227.23-.357.132-.356.056-.77-.23-1.057L27.122.292c-.286-.286-.702-.36-1.057-.23-.13.05-.252.125-.357.23L16 9.998 6.292.29C6.187.188 6.065.11 5.935.064c-.356-.133-.77-.057-1.057.23L.292 4.877c-.286.286-.36.702-.23 1.057.05.13.125.252.23.357L10 16 .292 25.708c-.104.105-.18.227-.23.357-.132.355-.056.77.23 1.057l4.586 4.586c.286.286.702.36 1.057.23.13-.05.252-.125.357-.23L16 22l9.708 9.708c.105.105.227.18.357.23.356.132.77.056 1.057-.23l4.586-4.586c.286-.286.362-.702.23-1.057-.05-.13-.125-.252-.23-.357z'/%3E%3C/svg%3E");
 }
 
 .ui-button-icon-only {
-	width: 2em;
+	width: 3.2rem;
 	white-space: nowrap;
 	text-indent: -9999px;
 }
@@ -1137,7 +1131,7 @@ dl.themes_list dd {
    -------------------------------------------------------------------------------------------*/
 @media screen and (max-width: 50em) {
 	#quick_tasks li {
-		height: 12em;
+		height: 19rem;
 	}
 }
 
@@ -1158,11 +1152,12 @@ dl.themes_list dd {
 	}
 
 	#quick_search .input_text {
-		max-width: 11em;
+		max-width: 17rem;
 	}
 
 	#adm_submenus {
 		flex-wrap: wrap;
+		row-gap: .4rem;
 	}
 
 	#quick_tasks li {
@@ -1171,25 +1166,33 @@ dl.themes_list dd {
 		height: auto;
 	}
 
+	#admin_main_section .content {
+		height: 20rem;
+	}
+
 	#wrapper, #footer_section .frame {
 		min-width: 100%;
 	}
 
+	#quick_tasks .task {
+		display: none;
+	}
+
 	#main_content_section {
-		padding: 0 10px;
+		padding: 0 1rem;
 	}
 
 	/* Level 1 button background. */
 	.dropmenu li {
-		line-height: 3.2em;
+		line-height: 3;
 	}
 
 	.dropmenu li ul {
-		top: 3.45em;
+		top: 5.5rem;
 	}
 
 	.dropmenu li li a {
-		line-height: 3.2em;
+		line-height: 4;
 	}
 
 	#live_news, #supportVersionsTable {
@@ -1197,7 +1200,7 @@ dl.themes_list dd {
 	}
 
 	#live_news {
-		margin: 0 0 6px 0;
+		margin: 0 0 .4rem 0;
 	}
 
 	#supportVersionsTable {
@@ -1206,7 +1209,7 @@ dl.themes_list dd {
 
 	#quick_tasks ul li span {
 		display: block;
-		margin: 0 0 0 50px;
+		margin: 0 0 0 4rem;
 	}
 
 	.description, .information {
@@ -1214,40 +1217,49 @@ dl.themes_list dd {
 	}
 
 	#credits_page {
-		padding-top: 35px;
+		padding-top: 3rem;
 	}
 
 	#credits_page img {
-		right: 6px;
+		right: .5rem;
 	}
 
 	#core_features .features_image {
 		display: none;
 	}
 
+	#core_features .features {
+		width: 100%;
+		float: none;
+	}
+
 	#core_features .features_switch {
-		margin: -24px 0 0 5px;
+		margin: 2rem 0 0 .4rem;
+	}
+
+	#core_features .features h3 {
+		margin: 0;
 	}
 
 	#core_features .features h4 {
-		padding: 0 0 10px 0;
+		padding: 0 0 1rem 0;
 	}
 
 	#core_features .features p {
 		overflow: auto;
 		min-height: 0;
-		max-height: 5em;
+		max-height: 8rem;
 		margin: 0;
 		padding: 0;
 	}
 
 	#manage_boards .content {
-		line-height: 3.2em;
+		line-height: 5rem;
 	}
 
 	#manage_boards ul {
-		max-height: 120em;
-		padding: 0 0 10px 0;
+		max-height: 192rem;
+		padding: 0 0 1rem 0;
 	}
 
 	#manage_boards dd, #manage_boards dt {
@@ -1255,10 +1267,22 @@ dl.themes_list dd {
 	}
 
 	#manage_boards dt {
-		line-height: 1.6em;
+		line-height: 2.4rem;
 	}
 
 	.perm_classic {
 		width: 100%;
+	}
+
+	.admincenter .content .settings {
+		padding: 1rem 1rem 0 3rem;
+	}
+
+	#admin_form_wrapper .settings dt {
+		width: 60% !important;
+	}
+
+	#admin_form_wrapper .settings dd {
+		width: 40% !important;
 	}
 }

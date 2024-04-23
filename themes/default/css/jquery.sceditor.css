@@ -12,10 +12,10 @@
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	margin: 0 0 6px 0;
+	margin: 0 0 .6rem 0;
 	border: 1px solid var(--primary_border);
 	border-top: 0;
-	border-radius: 0 0 4px 4px;
+	border-radius: 0 0 .4rem .4rem;
 	background: var(--content_background);
 }
 
@@ -29,7 +29,7 @@
 	width: 100%;
 	border: 1px solid var(--primary_border);;
 	border-bottom: 0;
-	border-radius: 4px 4px 0 0;
+	border-radius: .4rem .4rem 0 0;
 }
 
 #quickReplyOptions #editor_toolbar_container {
@@ -47,8 +47,8 @@
 .sceditor-container iframe, .sceditor-container textarea {
 	display: flex;
 	flex-basis: 100%;
-	margin: 0 0 2em;
-	padding: 0 5px;
+	margin: 0 0 3rem;
+	padding: 0 .6rem;
 	resize: none;
 	color: var(--body_text);
 	border-radius: 0;
@@ -59,12 +59,11 @@
 }
 
 [contenteditable=true] {
-	padding: 0 5px;
+	padding: 0 .6rem;
 }
 
-/* Necessary for stabilising font-size in source mode! */
+/* Necessary for source mode! */
 .sceditor-container textarea, .sceditor-container textarea:focus {
-	font-size: 1em;
 	box-shadow: none;
 }
 
@@ -86,24 +85,42 @@
 	bottom: 0;
 	left: 0;
 	overflow: hidden;
-	height: 2em;
+	height: 3rem;
 	cursor: n-resize;
 	border-top: 1px solid var(--primary_border_top);
-	border-radius: 0 0 4px 4px;
+	border-radius: 0 0 .4rem .4rem;
 	background: #FAFAFA url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-8 -8 36 36'%3E%3Ccircle cx='12' cy='24' r='1.5' class='clr-i-outline clr-i-outline-path-1'/%3E%3Ccircle cx='18' cy='24' r='1.5' class='clr-i-outline clr-i-outline-path-2'/%3E%3Ccircle cx='18' cy='18' r='1.5' class='clr-i-outline clr-i-outline-path-3'/%3E%3Ccircle cx='24' cy='12' r='1.5' class='clr-i-outline clr-i-outline-path-4'/%3E%3Ccircle cx='24' cy='24' r='1.5' class='clr-i-outline clr-i-outline-path-5'/%3E%3Ccircle cx='24' cy='18' r='1.5' class='clr-i-outline clr-i-outline-path-6'/%3E%3Cpath fill='none' d='M0 0h36v36H0z'/%3E%3C/svg%3E") 100% 100% no-repeat;;
 	box-shadow: -1px -2px 4px var(--opacity10) inset;
 }
 
 .sceditor-dropdown {
-	line-height: 1.3em;
+	line-height: 2;
 	position: absolute;
 	z-index: 6;
-	margin: 22px 0 0 0;
 	color: var(--body_text);
 	border: 1px solid var(--secondary_border);
-	border-radius: 0 0 2px 2px;
+	border-radius: 0 0 .2rem .2rem;
 	background: var(--content_background);
 	box-shadow: var(--shadow-elevation-high);
+}
+
+.sceditor-dropdown::after {
+	position: absolute;
+	z-index: 6;
+	/* 1/2 the diagonal length of this box) */
+	bottom: calc(100% - (1.4142 * var(--pointersize)) / 2 + .1rem);
+	left: 5%;
+	display: block;
+	width: var(--pointersize);
+	height: var(--pointersize);
+	content: '';
+	transform: rotate(-45deg);
+	border: 1px solid var(--transparent);
+	border-top-color: var(--secondary_border);
+	border-right-color: var(--secondary_border);
+	background: var(--content_background);
+	/* Simple variable to change if you want to change the size */
+	--pointersize: 1.2rem;
 }
 
 .sceditor-dropdown form {
@@ -111,23 +128,23 @@
 }
 
 .sceditor-dropdown label {
-	font-size: .929em;
+	font-size: var(--font14);
 	font-weight: bold;
 	display: block;
-	margin: .65em 0 .15em;
+	margin: .8rem 0 .1rem;
 }
 
 .sceditor-dropdown .button {
-	margin: .5em 0 0;
+	margin: .8rem 0 0;
 }
 
 .sceditor-pastetext textarea {
-	width: 20em;
+	width: 30rem;
 	border: 1px solid var(--primary_border);;
 }
 
 .sceditor-inserttable, .sceditor-insertimage, .sceditor-pastetext, .sceditor-insertlink, .sceditor-insertemail {
-	padding: 5px;
+	padding: .6rem;
 }
 
 #sceditor-smileycontainer {
@@ -138,8 +155,8 @@
 }
 
 .sceditor-insertemoticon img, .sceditor-smileyPopup img {
-	max-width: 20px;
-	margin: 2px 6px 6px 6px;
+	max-width: 2rem;
+	margin: .6rem .6rem .2rem .6rem;
 	cursor: pointer;
 }
 
@@ -162,23 +179,24 @@
 }
 
 #sceditor-popup-close {
-	font-size: 0.857em;
-	line-height: 1.85em;
+	font-size: var(--font13);
+	line-height: 2;
 	display: inline-block;
-	padding: 0 4px;
+	padding: 0 .4rem;
+	margin-bottom: .6rem;
 	color: var(--input_text);
 	border: 1px solid var(--input_submit_border);
 	border-top-color: var(--input_submit_border_top);
 	border-left-color: var(--input_submit_border_left);
-	border-radius: 2px;
+	border-radius: .4rem;
 	background-image: linear-gradient(to bottom, var(--input_submit_background), var(--input_submit_background_compliment));
 	box-shadow: var(--shadow-elevation-low);
 }
 
 .sceditor-fontsize-option, .sceditor-font-option {
-	font-size: 1em;
+	font-size: var(--font15);
 	display: block;
-	padding: 4px 6px;
+	padding: .4rem .6rem;
 	cursor: pointer;
 	text-decoration: none;
 	color: var(--emphasize_text);
@@ -195,9 +213,9 @@
 .sceditor-color-option {
 	display: block;
 	overflow: hidden;
-	width: 100px;
-	height: 20px;
-	margin: 4px;
+	width: 10rem;
+	height: 2rem;
+	margin: .4rem;
 	border: 2px solid transparent;
 }
 
@@ -207,9 +225,9 @@
 
 .sceditor-toolbar {
 	overflow: hidden;
-	padding: 5px 5px 0 5px;
+	padding: .4rem;
 	border-bottom: 1px solid var(--secondary_border);
-	border-radius: 4px 4px 0 0;
+	border-radius: .4rem .4rem 0 0;
 	background: var(--mid_grey_background);
 	box-shadow: 0 -1px 2px var(--opacity10) inset;
 }
@@ -228,7 +246,7 @@
 
 .sceditor-button {
 	float: left;
-	margin-bottom: 5px;
+	margin-bottom: .4rem;
 	padding: 0;
 	cursor: pointer;
 	border: 1px solid transparent;
@@ -248,8 +266,8 @@
 .sceditor-button div, .sceditor-button {
 	position: relative;
 	display: block;
-	width: 32px;
-	height: 32px;
+	width: 3.2rem;
+	height: 3.2rem;
 	background-repeat: no-repeat !important;
 	background-position: center center !important;
 	scale: 1.05;
@@ -260,7 +278,7 @@
 }
 
 .sceditor-button:hover, .sceditor-button-source.active:hover {
-	border-radius: 4px;
+	border-radius: .4rem;
 	background: var(--input_background_hover);
 	box-shadow: 1px 1px 1px var(--opacity30)  inset;
 }
@@ -272,7 +290,7 @@ a.sceditor-button-space:hover, .sceditor-button-space div:hover {
 }
 
 .sceditor-button.active {
-	border-radius: 4px;
+	border-radius: .4rem;
 	background: var(--valid);
 	box-shadow: 1px 1px 1px var(--opacity30) inset;
 }
@@ -283,14 +301,14 @@ a.sceditor-button-space:hover, .sceditor-button-space div:hover {
 
 .sceditor-popup-grip {
 	display: block;
-	height: 1.5em;
+	height: 2rem;
 	cursor: move;
 }
 
 /* ElkArte BBC buttons styles */
 a.sceditor-button-space, .sceditor-button-space div {
-	width: 16px;
-	padding: 4px 0;
+	width: 1.6rem;
+	padding: .4rem 0;
 	border: none;
 	border-left: 1px solid transparent;
 	background: transparent;
@@ -299,18 +317,18 @@ a.sceditor-button-space, .sceditor-button-space div {
 
 /* Show source button as active when in wizzy and off when in source */
 .sceditor-button-source {
-	border-radius: 4px;
+	border-radius: .4rem;
 	background: var(--valid);;
 	box-shadow: 1px 1px 1px var(--opacity30) inset;
 }
 
 .sceditor-button-source.active {
-	border-radius: 4px;
+	border-radius: .4rem;
 	background: transparent;
 	box-shadow: none;
 }
 
-/* The button images, most are MIT License (MIT) from Bootstrap */
+/* The button images are MIT License (MIT) from Bootstrap */
 .sceditor-button-source div, .sceditor-button-toggle div {
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-vector-pen' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M10.646.646a.5.5 0 0 1 .708 0l4 4a.5.5 0 0 1 0 .708l-1.902 1.902-.829 3.313a1.5 1.5 0 0 1-1.024 1.073L1.254 14.746 4.358 4.4A1.5 1.5 0 0 1 5.43 3.377l3.313-.828zm-1.8 2.908-3.173.793a.5.5 0 0 0-.358.342l-2.57 8.565 8.567-2.57a.5.5 0 0 0 .34-.357l.794-3.174-3.6-3.6z'/%3E%3Cpath fill-rule='evenodd' d='M2.832 13.228 8 9a1 1 0 1 0-1-1l-4.228 5.168-.026.086z'/%3E%3C/svg%3E");
 }
@@ -439,11 +457,12 @@ a.sceditor-button-space, .sceditor-button-space div {
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-sim-slash' viewBox='0 0 16 16'%3E%3Cpath d='m11.646.44.897.896-.707.707-.897-.897A.5.5 0 0 0 10.586 1H3.5a.5.5 0 0 0-.5.5v9.379l-1 1V1.5A1.5 1.5 0 0 1 3.5 0h7.086a1.5 1.5 0 0 1 1.06.44M10.5 3q.175 0 .34.039L9.879 4H8.5v1.379L6.879 7H5v1.879l-1 1V4.5A1.5 1.5 0 0 1 5.5 3zM12 6.121l-1 1V9H9.121L7.5 10.621V12H6.121l-.961.961q.165.039.34.039h5a1.5 1.5 0 0 0 1.5-1.5zM3.5 15a.5.5 0 0 1-.288-.091l-.71.71c.265.237.615.381.998.381h9a1.5 1.5 0 0 0 1.5-1.5V4.121l-1 1V14.5a.5.5 0 0 1-.5.5zm2-11a.5.5 0 0 0-.5.5V6h2.5V4zm5.5 6v1.5a.5.5 0 0 1-.5.5h-2v-2zm3.854-8.146a.5.5 0 0 0-.708-.708l-13 13a.5.5 0 0 0 .708.708z'/%3E%3C/svg%3E");
 }
 
-/* Use larger buttons for targeting on the smaller screens */
+/* Use larger buttons for targeting on the smaller screens
+   -------------------------------------------------------------------------------------------*/
 @media screen and (max-width: 50em) {
 	.sceditor-button div, .sceditor-button {
-		width: 36px;
-		height: 36px;
+		width: 3.6rem;
+		height: 3.6rem;
 	}
 
 	.sceditor-group {
@@ -451,6 +470,20 @@ a.sceditor-button-space, .sceditor-button-space div {
 	}
 
 	.sceditor-insertemoticon img, .sceditor-smileyPopup img {
-		width: 24px;
+		width: 2.4rem;
+	}
+
+	a.sceditor-button-space {
+		width: .8rem;
+	}
+}
+
+/* This one does 540 and smaller screens at default font size.
+   -------------------------------------------------------------------------------------------*/
+
+@media screen and (max-width: 34em) {
+	.sceditor-button div, .sceditor-button {
+		width: 3rem;
+		height: 3rem;
 	}
 }
