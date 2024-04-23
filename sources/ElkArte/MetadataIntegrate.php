@@ -482,6 +482,11 @@ class MetadataIntegrate
 		global $context;
 
 		$total = 0;
+		if (empty($context['likes']))
+		{
+			return $total;
+		}
+
 		foreach($context['likes'] as $item) {
 			$total += $item['count'];
 		}
