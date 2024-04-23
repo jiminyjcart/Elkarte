@@ -349,10 +349,7 @@ elk_Popup.prototype.show = function() {
 
 	// Show it
 	this.popup_body = document.querySelector('#' + this.popup_id + ' .popup_window');
-	this.popup_body.parentElement.style.display = 'block';
-
-	// Let the css know its now available
-	this.popup_body.classList.add('in');
+	this.popup_body.parentElement.fadeIn(100, () => {this.popup_body.classList.add('in')});
 
 	// Trigger hide on escape key or mouse click
 	this.popup_instance = this;
@@ -363,17 +360,16 @@ elk_Popup.prototype.show = function() {
 		}
 	});
 	document.addEventListener('keyup', event => {
-		if (event.which === 27)
+		if (event.key === 'Escape')
 		{
 			this.popup_instance.hide();
 		}
 	});
 
-	// A close button to be complete
+	// Add a close button to be complete
 	const hideButton = document.querySelector('#' + this.popup_id + ' .hide_popup');
 	hideButton.addEventListener('click', () => {
-		this.popup_instance.hide();
-		return false;
+		return this.popup_instance.hide();
 	});
 
 	return false;
@@ -384,8 +380,7 @@ elk_Popup.prototype.hide = function() {
 	const popup = document.querySelector('#' + this.popup_id);
 	if (popup)
 	{
-		popup.style.display = 'none';
-		popup.remove();
+		popup.fadeOut(300, () => {popup.remove();});
 	}
 
 	return false;
