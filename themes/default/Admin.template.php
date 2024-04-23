@@ -626,11 +626,11 @@ function template_show_settings()
 					{
 						if (empty($config_var['multiple']))
 						{
-							$selected = $option[0] === $config_var['value'];
+							$selected = $option[0] == $config_var['value'];
 						}
 						else
 						{
-							$selected = in_array($option[0], $config_var['value'], true);
+							$selected = in_array($option[0], $config_var['value']);
 						}
 
 						echo '
