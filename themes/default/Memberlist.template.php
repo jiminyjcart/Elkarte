@@ -24,7 +24,7 @@ function template_mlsearch_above()
 		<ul>
 			<li>
 				<input id="mlsearch_input" class="input_text" onfocus="toggle_mlsearch_opt();" type="text" name="search" autocomplete="off" value="' . $context['old_search_value'] . '" placeholder="' . $txt['mlist_search'] . '" />
-				<button type="submit" name="search2" class="with_select"><i class="icon i-search icon-shade"></i></button>
+				<button type="submit" name="search2" class="with_select"><i class="icon i-search"></i></button>
 				<ul id="mlsearch_options" class="nojs">';
 
 	foreach ($context['search_fields'] as $id => $title)
