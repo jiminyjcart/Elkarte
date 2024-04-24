@@ -885,8 +885,8 @@ const ElkNotifier = new window.ElkNotifications({});
 			text: '',
 			class: 'ajax_infobar',
 			hide_delay: 4000,
-			error_class: 'error',
-			success_class: 'success'
+			error_class: 'errorbox',
+			success_class: 'successbox'
 		};
 
 		let settings = Object.assign({}, defaults, opt);
