@@ -121,7 +121,7 @@
 	--menu_border_hover_left: #DFCE9B; /* menu border color left */
 	--menu_border_hover: #DFCE9B; /* Hover border */
 	--menu_button_hover_background: #5f4724; /* A hover background used on non active menu hovers */
-	--menu_dropdown_indicator: #989898; /* dropdown menu indicator */
+	--menu_dropdown_indicator: #F4F4F4; /* dropdown menu indicator */
 	--icon_menu_hover: #F4F4F4; /* Icon menu (small screen) hover background */
 	--icon_menu_hover_border: #DFCE9B;
 

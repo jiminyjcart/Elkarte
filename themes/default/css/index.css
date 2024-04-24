@@ -2856,6 +2856,7 @@ button[type="submit"].quick_quote_button.hide {
    items like <pre> from blowing out the grid */
 .post_wrapper {
 	display: grid;
+	padding-top: .6rem;
 	grid-template-columns: [poster] 22.5rem [postarea] minmax(0, auto);
 	grid-template-rows: auto auto;
 	grid-template-areas:
@@ -2863,7 +2864,7 @@ button[type="submit"].quick_quote_button.hide {
 	"poster postarea";
 }
 
-aside.poster {
+aside.poster, #quickreplybox .poster {
 	grid-area: poster;
 }
 
@@ -4173,6 +4174,7 @@ dl.merge_topic dd {
 
 /* Styles for the tooltips. */
 #site_tooltip {
+	font-size: var(--font14);
 	position: absolute;
 	z-index: 999;
 	left: -9999px;
@@ -6878,8 +6880,8 @@ div.labels {
 	}
 
 	.category_boards .board_latest {
-		border-top: 1px solid;
 		padding: 1rem;
+		border-top: 1px solid;
 		grid-area: latest;
 	}
 

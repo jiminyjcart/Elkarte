@@ -51,8 +51,7 @@
     --hexcode: #1AB31A;
 }
 
-/* Was bar-chart */
-.i-poll::before, .i-user::before {
+ .i-user::before {
     filter: invert(66%) sepia(32%) saturate(4068%) hue-rotate(2deg) brightness(107%) contrast(102%);
     --hexcode: #1966B3;
 }
