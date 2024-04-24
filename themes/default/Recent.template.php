@@ -211,7 +211,7 @@ function template_unread()
 						<h2 class="category_header">
 							', $txt['topic_alert_none'], '
 						</h2>
-						<div class="board_row centertext">
+						<div class="board_row infobox centertext">
 							', $context['showing_all_topics'] ? '<strong>' . $txt['find_no_results'] . '</strong>' : $txt['unread_topics_visit_none'], '
 						</div>
 					</div>';

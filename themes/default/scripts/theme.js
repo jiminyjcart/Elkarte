@@ -234,8 +234,7 @@ function stickyMenu ()
 
 	if (menu)
 	{
-		let offset = menu.offsetHeight;
-
+		let offset = menu.getBoundingClientRect().y;
 		window.onscroll = function() {
 			if (window.scrollY > offset - 5)
 			{
