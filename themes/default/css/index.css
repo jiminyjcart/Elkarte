@@ -2852,12 +2852,11 @@ button[type="submit"].quick_quote_button.hide {
 }
 
 /* The MAIN post container, holds one entire post including .poster
-   and all of the postarea data.  The postarea has a min of 0 to prevent
-   items like <pre> from blowing out the grid */
+   and all of the postarea data (which is another grid) */
 .post_wrapper {
 	display: grid;
 	padding-top: .6rem;
-	grid-template-columns: [poster] 22.5rem [postarea] minmax(0, auto);
+	grid-template-columns: [poster] 22.5rem [postarea] 1fr;
 	grid-template-rows: auto auto;
 	grid-template-areas:
 	"keyinfo_header keyinfo_header "
@@ -3074,12 +3073,12 @@ aside.poster, #quickreplybox .poster {
 }
 
 /* ------------------------------------------------------------------------
-   This holds all data related to the post
+   This holds all data related to the post.   The min of 0 prevents items like <pre> from blowing out the grid
    header.keyinfo -> messageContent -> footer > .attachments -> footer >quickbuttons -> footer >signature */
 .postarea {
 	display: grid;
 	padding: 0 1.6rem 0 1.4rem;
-	grid-template-columns: 1fr;
+	grid-template-columns: minmax(0, auto);
 	grid-template-rows: [keyinfo] auto [messageContent] auto [postfooter] auto;
 	grid-template-areas:
 	"keyinfo"
@@ -5539,9 +5538,9 @@ div.labels {
 /* Make room for the little icon */
 .warningbox, .successbox, .infobox, .errorbox {
 	padding-left: 4rem !important;
-	background-repeat: no-repeat;
-	background-position: .4rem 50%;
-	background-size: 2.4rem 2.4rem;
+	background-repeat: no-repeat !important;
+	background-position: .4rem 50% !important;
+	background-size: 2.4rem 2.4rem !important;
 }
 
 .border_error {
