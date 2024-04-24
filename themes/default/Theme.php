@@ -75,6 +75,8 @@ class Theme extends BaseTheme
 				'light',
 				'besocial',
 				'dark',
+				'blue',
+				'gold'
 			],
 
 			/*

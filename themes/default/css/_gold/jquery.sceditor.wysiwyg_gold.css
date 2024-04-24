@@ -2,26 +2,25 @@
 /* This is the ElkArte css used when the editor is in wysiwyg mode.
 /* ------------------------------------------------------- */
 :root {
-	--body_text: #9D9D9D; /* Body text, text areas, editor, inputs, more */
-	--content_background: #0B0B0B; /* background for many divs, input controls, etc */
-	--secondary_border: #232323; /* darker border */
-	--secondary_border_top: #232323; /* complimentary for hover effects */
-	--secondary_border_left: #232323; /* complimentary for hover effects */
-	--secondary_border_bottom: #232323;
+	--body_text: #585858; /* Body text, text areas, editor, inputs, more */
+	--content_background: #FAFAFA; /* background for many divs, input controls, etc */
+	--secondary_border: #AFAFAF; /* darker border */
+	--secondary_border_top: #CFCFCF; /* complimentary for hover effects */
+	--secondary_border_left: #BFBFBF; /* complimentary for hover effects */
+	--secondary_border_bottom: #BBBBBB;
 	--contrast_text: #FEFEFE; /* Used in shadows, backgrounds or text, many places */
 	--contrast_text_compliment: #E4E4E4; /* Used with --contrast_text for gradients */
-	--box_shadow: transparent; /* Used on many box shadows */
-	--me: #30AD55; /* me and footnotes */
+	--box_shadow: #E4E4E4; /* Used on many box shadows */
+	--me: #5BA048; /* me and footnotes */
 }
 
+/* This really should match your site stylesheet */
 html, body {
-	font-size: 1.5rem;
 	font-weight: 400;
 	line-height: 1.5;
 	overflow: auto;
 	margin: 0;
 	padding: 0;
-	background: var(--content_background);
 }
 
 p, code::before, table {
@@ -41,9 +40,9 @@ body {
 }
 
 [contenteditable="true"] {
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Droid Sans", "Helvetica Neue", "Trebuchet MS", Arial, sans-serif;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
 	color: var(--body_text);
-	padding: 0 .5rem;
+	padding: 0 5px;
 }
 
 a, a:link, a:visited {
@@ -82,8 +81,8 @@ code::before {
 }
 
 code {
-	font-family: "DejaVu Sans Mono", Monaco, Consolas, monospace;
-	font-size: 0.8667rem;
+	font-family: SFMono-Regular, ui-monospace, Menlo, Monaco, Consolas, "DejaVu Sans Mono", "Liberation Mono", "Courier New", monospace;
+	font-size: .933em;
 	position: relative;
 	margin-top: 1.5em;
 	padding: .25em;
@@ -92,6 +91,21 @@ code {
 	border-top: 2px solid var(--secondary_border_top);
 	border-bottom: 3px solid var(--secondary_border_bottom);
 	background: var(--content_background);
+	font-variant-numeric: tabular-nums;
+}
+
+icode {
+	font-family: SFMono-Regular, ui-monospace, Menlo, Monaco, Consolas, "DejaVu Sans Mono", "Liberation Mono", "Courier New", monospace;
+	font-size: .933em;
+	margin: 0;
+	padding: 1px 3px;
+	white-space: pre-wrap;
+	border: 1px solid var(--secondary_border);
+	border-radius: 2px;
+	background: var(--content_background);
+	-webkit-box-decoration-break: clone;
+	box-decoration-break: clone;
+	font-variant-numeric: tabular-nums;
 }
 
 blockquote {
@@ -104,7 +118,7 @@ blockquote {
 }
 
 blockquote cite, code cite {
-	font-size: 0.8667rem;
+	font-size: 1em;
 	display: block;
 	padding: 0 0 4px;
 	color: var(--body_text);
@@ -146,7 +160,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 aside::before {
-	font-size: 0.8667rem;
+	font-size: 0.8667em;
 	content: "[*]";
 	vertical-align: super;
 }
@@ -189,7 +203,7 @@ aside {
 }
 
 me::before {
-	font-size: 1.4667rem;
+	font-size: 1.4667em;
 	line-height: 1em;
 	content: "\270c";
 }

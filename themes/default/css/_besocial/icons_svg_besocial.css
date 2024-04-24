@@ -7,7 +7,7 @@
    You can create filters for any hex color using https://codepen.io/sosuke/pen/Pjoqqp
    NOTE --hexcode is not needed, it is simply to show the hex color being applied
 
-   Some areas, for example board icons, are custom content as well */
+   Some areas, for example board icons, are custom content, from font awesome, as well */
 
 /* Top Menu icons */
 .i-menu-pm-on::before, .i-menu-pm-on.enabled::before,
@@ -26,7 +26,8 @@
 .i-menu-register.enabled::before,
 .i-menu-unread::before,
 .i-menu-unreadreplies::before,
-.i-menu-register::before {
+.i-menu-register::before,
+.i-last_post::before {
 	filter: invert(63%) sepia(41%) saturate(641%) hue-rotate(157deg) brightness(86%) contrast(99%);
 	--hexcode: #43A8DA;
 }
@@ -40,12 +41,6 @@
 .i-envelope::before {
 	filter: invert(66%) sepia(32%) saturate(4068%) hue-rotate(2deg) brightness(107%) contrast(102%);
 	--hexcode: #FFA500;
-}
-
-/* Help, info, warning (circular icons) */
-.i-help::before, .i-question::before {
-	filter: invert(31%) sepia(72%) saturate(1247%) hue-rotate(185deg) brightness(90%) contrast(93%);
-	--hexcode: #1966B3;
 }
 
 /* green */

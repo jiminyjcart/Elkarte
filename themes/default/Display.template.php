@@ -133,7 +133,7 @@ function template_messages()
 			$ignoring = false;
 		}
 
-		// Show the message anchor and a "new" anchor if this message is new.
+		// Show the message anchor and a "new" separator if this message is the first new.
 		if (($message['id'] != $context['first_message']) && $message['first_new'])
 		{
 			echo '
@@ -141,56 +141,33 @@ function template_messages()
 				<hr class="new_post_separator" />';
 		}
 
-		echo '
-				<article class="post_wrapper forumposts', $message['classes'], $message['approved'] ? '' : ' approvebg', '">', $message['id'] != $context['first_message'] ? '
+		echo $message['id'] != $context['first_message'] ? '
 					<a class="post_anchor" id="msg' . $message['id'] . '"></a>' : '';
+
+		echo '
+				<article class="post_wrapper forumposts', $message['classes'], $message['approved'] ? '' : ' approvebg', '">';
+
+		if (!empty($settings['show_keyinfo_above']))
+		{
+			template_keyinfo($message, $ignoring, true);
+		}
 
 		// Showing the sidebar poster area?
 		if (empty($options['hide_poster_area']))
 		{
 			echo '
-					<aside>
+					<aside class="poster">
 						<ul class="poster no_js">', template_build_poster_div($message, $ignoring), '</ul>
 					</aside>';
 		}
 
 		echo '
-					<div class="postarea', empty($options['hide_poster_area']) ? '' : '2', '">
-						<header class="keyinfo">
-						', (empty($options['hide_poster_area']) ? '' : '<ul class="poster poster2">' . template_build_poster_div($message, $ignoring) . '</ul>');
+					<div class="postarea', empty($options['hide_poster_area']) ? '' : '2', '">';
 
-		if (!empty($context['follow_ups'][$message['id']]))
+		if (empty($settings['show_keyinfo_above']))
 		{
-			echo '
-							<ul class="quickbuttons follow_ups no_js">
-								<li class="listlevel1 subsections" aria-haspopup="true">
-									<a class="linklevel1">', $txt['follow_ups'], '</a>
-									<ul class="menulevel2">';
-
-			foreach ($context['follow_ups'][$message['id']] as $follow_up)
-			{
-				echo '
-										<li class="listlevel2">
-											<a class="linklevel2" href="', getUrl('topic', ['topic' => $follow_up['follow_up'], 'start' => '0', 'subject' => $follow_up['subject']]), '">', $follow_up['subject'], '</a>
-										</li>';
-			}
-
-			echo '
-									</ul>
-								</li>
-							</ul>';
+			template_keyinfo($message, $ignoring);
 		}
-
-		echo '
-							<h2 id="post_subject_', $message['id'], '" class="post_subject">', $message['subject'], '</h2>
-							<span id="messageicon_', $message['id'], '" class="messageicon', ($message['icon_url'] !== $settings['images_url'] . '/post/xx.png') ? '"' : ' hide"', '>
-								<img src="', $message['icon_url'] . '" alt=""', $message['can_modify'] ? ' id="msg_icon_' . $message['id'] . '"' : '', ' />
-							</span>
-							<h3 id="info_', $message['id'], '">', empty($message['counter']) ? '' : '
-								<a href="' . $message['href'] . '" rel="nofollow">' . sprintf($txt['reply_number'], $message['counter']) . '</a> &ndash; ', $message['html_time'], '
-							</h3>
-							<div id="msg_', $message['id'], '_quick_mod"', $ignoring ? ' class="hide"' : '', '></div>
-						</header>';
 
 		// Ignoring this user? Hide the post.
 		if ($ignoring)
@@ -213,10 +190,10 @@ function template_messages()
 
 		// Show the post itself, finally!
 		echo '
-						<section id="msg_', $message['id'], '" data-msgid="',$message['id'], '" class="messageContent', $ignoring ? ' hide"' : '"', '>',
+						<section id="msg_', $message['id'], '" data-msgid="', $message['id'], '" class="messageContent', $ignoring ? ' hide' : '', !empty($settings['show_keyinfo_above']) ? ' above' : '', '">',
 							$message['body'], '
 						</section>
-						<footer>';
+						<footer class="post_footer">';
 
 		// This is the floating Quick Quote button.
 		echo '
@@ -321,6 +298,49 @@ function template_messages()
 				</article>
 				<hr class="post_separator" />';
 	}
+}
+
+function template_keyinfo($message, $ignoring, $above = false)
+{
+	global $context, $settings, $options, $txt;
+
+	echo '
+						<header class="keyinfo', ($above ? ' above' : ''), '">
+						', (empty($options['hide_poster_area']) ? '' : '<ul class="poster poster2">' . template_build_poster_div($message, $ignoring) . '</ul>');
+
+	if (!empty($context['follow_ups'][$message['id']]))
+	{
+		echo '
+							<ul class="quickbuttons follow_ups no_js">
+								<li class="listlevel1 subsections" aria-haspopup="true">
+									<a class="linklevel1">', $txt['follow_ups'], '</a>
+									<ul class="menulevel2">';
+
+		foreach ($context['follow_ups'][$message['id']] as $follow_up)
+		{
+				echo '
+										<li class="listlevel2">
+											<a class="linklevel2" href="', getUrl('topic', ['topic' => $follow_up['follow_up'], 'start' => '0', 'subject' => $follow_up['subject']]), '">', $follow_up['subject'], '</a>
+										</li>';
+		}
+
+		echo '
+									</ul>
+								</li>
+							</ul>';
+	}
+
+	echo '
+							<h2 id="post_subject_', $message['id'], '" class="post_subject">', $message['subject'], '</h2>
+							<span id="messageicon_', $message['id'], '" class="messageicon', ($message['icon_url'] !== $settings['images_url'] . '/post/xx.png') ? '"' : ' hide"', '>
+								<img src="', $message['icon_url'] . '" alt=""', $message['can_modify'] ? ' id="msg_icon_' . $message['id'] . '"' : '', ' />
+							</span>
+							<h3 id="info_', $message['id'], '">', empty($message['counter']) ? '' : '
+								<a href="' . $message['href'] . '" rel="nofollow">' . sprintf($txt['reply_number'], $message['counter']) . '</a> &ndash; ', $message['html_time'], '
+							</h3>
+							<div id="msg_', $message['id'], '_quick_mod"', $ignoring ? ' class="hide"' : '', '></div>
+						</header>';
+
 }
 
 /**
@@ -596,7 +616,7 @@ function template_display_poll_above()
 			{
 				echo '
 							', $option['bar_ndt'], '
-							<span class="righttext poll-percent">[ ', $option['votes'], ' ] (', $option['percent'], '%)</span>';
+							<span class="righttext poll-percent', !empty($option['votes']) ? ' voted"' : '"', '>[ ', $option['votes'], ' ] (', $option['percent'], '%)</span>';
 			}
 
 			echo '
@@ -609,7 +629,7 @@ function template_display_poll_above()
 		if ($context['allow_poll_view'])
 		{
 			echo '
-					<p>
+					<p class="pollvote">
 						<strong>', $txt['poll_total_voters'], ':</strong> ', $context['poll']['total_votes'], '
 					</p>';
 		}
@@ -639,7 +659,7 @@ function template_display_poll_above()
 
 		echo '
 						</ul>
-						<div class="submitbutton">
+						<div class="pollvote">
 							<input type="submit" value="', $txt['poll_vote'], '" class="left_submit" />
 							<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '" />
 						</div>

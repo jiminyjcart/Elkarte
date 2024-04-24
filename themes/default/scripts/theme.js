@@ -33,6 +33,9 @@ document.addEventListener('DOMContentLoaded', function() {
 		elk_quotefix();
 	}
 
+	// If you want a sticky menu on scroll, add an appropriate .sticky css class to your theme
+	stickyMenu();
+
 	// Smooth scroll to top.
 	document.getElementById('gotop').addEventListener('click', function(e) {
 		e.preventDefault();
@@ -223,4 +226,25 @@ function useClickMenu ()
 	menus.forEach((area) => new elkMenu(area));
 
 	window.removeEventListener('touchstart', onFirstTouch, false);
+}
+
+function stickyMenu ()
+{
+	let menu = document.getElementById('menu_nav');
+
+	if (menu)
+	{
+		let offset = menu.offsetHeight;
+
+		window.onscroll = function() {
+			if (window.scrollY > offset - 5)
+			{
+				menu.classList.add('sticky');
+			}
+			else if (window.scrollY < offset - 20)
+			{
+				menu.classList.remove('sticky');
+			}
+		};
+	}
 }

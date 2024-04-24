@@ -76,6 +76,7 @@ $txt['enable_news_fader_desc'] = 'All the news are displayed sequentially.';
 
 $txt['show_group_key'] = 'Show group key on board index.';
 $txt['additional_options_collapsible'] = 'Enable collapsible additional post options.';
+$txt['show_keyinfo_above'] = 'Show key information (Reply#, Date) above post.';
 $txt['who_display_viewing'] = 'Show who is viewing the board index and posts:';
 $txt['who_display_viewing_off'] = 'Don\'t show';
 $txt['who_display_viewing_numbers'] = 'Show only numbers';
@@ -136,6 +137,8 @@ $txt['themeadmin_selectable'] = 'Themes the user is permitted to select:';
 $txt['themeadmin_themelist_link'] = 'Show the list of installed themes';
 
 // Strings for the variants
-$txt['variant_light'] = 'ElkArte Light';
-$txt['variant_besocial'] = 'ElkArte Be Social!';
-$txt['variant_dark'] = 'ElkArte Darktanion';
+$txt['variant_light'] = 'Fern Green';
+$txt['variant_besocial'] = 'Be-Social!';
+$txt['variant_dark'] = 'Darktanion';
+$txt['variant_blue'] = 'Manic Blue';
+$txt['variant_gold'] = 'Harvest Gold';

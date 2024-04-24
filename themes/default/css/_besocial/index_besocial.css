@@ -1,8 +1,16 @@
-/* INTRODUCTION
+/*
+ * ___________.__   __      _____          __
+ * \_   _____/|  | |  | __ /  _  \________/  |_  ____
+ *  |    __)_ |  | |  |/ //  /_\  \_  __ \   __\/ __ \
+ *  |        \|  |_|    </    |    \  | \/|  | \  ___/
+ * /_______  /|____/__|_ \____|__  /__|   |__|  \___  >
+ *         \/           \/       \/                 \/
+ * https://www.elkarte.net
+ * © ElkArte Forum contributorsINTRODUCTION
  *
  * This is a very basic version of the Elkarte theme.
  * It is intended primarily as a "clean slate" for custom theming.
- * This is eye candy only. All the layout code is in index.css.
+ * This is MOSTLY eye candy only, but some specific layout override code is included.
  *
  * All theme variants depend on the layout code for stability.
  * It is better to copy code to a variant CSS file for testing.
@@ -81,10 +89,11 @@
 	--menu_button_active_2: #7CBC0A; /* Compliment gradient color for above */
 	--menu_button_active_hover: #6DB3F2; /* Link, list, breadcrumb active/hover colors (gradient and color) */
 	--menu_button_active_hover_2: #1E69DE; /* Compliment gradient color for above */
+	--menu_dropdown_indicator: #AFAFAF; /* dropdown menu indicator */
 
 	/* Main Menu Regular Buttons */
 	--menu_border_hover: #AFAFAF; /* Hover / active border */
-	--menu_button_hover_background: #7BB128; /* A background used on some menu hovers */
+	--menu_button_hover_background: #F0F0F0; /* A background used on some menu hovers */
 
 	/* Category Headers */
 	--category_header_text: #777777; /* Text in the category bars */
@@ -106,6 +115,7 @@
 	/* Generally used in topic display */
 	--me: #50AA3A; /* me and footnotes */
 	--topic_name: #585858; /* Subject line, poster name and keyinfo */
+	--poster_name: #585858;
 	--icon_online: #B4E391; /* part of icon online gradient */
 	--icon_online_grad: #7BB128; /* part of icon online gradient */
 	--sticky_row: #F0F0FF; /* sticky row background */
@@ -185,28 +195,28 @@
 	--opacity50: rgba(0, 0, 0, 0.5);
 
 	/* font size px to em based on 14px base font (.875em) */
-	--font9: 0.643rem;
-	--font10: 0.714rem;
-	--font11: 0.786rem;
-	--font12: 0.857rem;
-	--font13: 0.929rem;
-	--font14: 1.0rem;
-	--font15: 1.071rem;
-	--font16: 1.142rem;
-	--font17: 1.214rem;
-	--font18: 1.286rem;
-	--font19: 1.357rem;
-	--font20: 1.429rem;
-	--font21: 1.5rem;
-	--font22: 1.571rem;
-	--font23: 1.643rem;
-	--font24: 1.714rem;
-	--font25: 1.786rem;
-	--font26: 1.857rem;
-	--font27: 1.929em;
-	--font28: 2.0rem;
-	--font29: 2.072rem;
-	--font30: 2.143rem;
+	--font9: 0.9rem;
+	--font10: 1.0rem;
+	--font11: 1.1rem;
+	--font12: 1.2rem;
+	--font13: 1.3rem;
+	--font14: 1.4rem;
+	--font15: 1.5rem;
+	--font16: 1.6rem;
+	--font17: 1.7rem;
+	--font18: 1.8rem;
+	--font19: 1.9rem;
+	--font20: 2.0rem;
+	--font21: 2.1rem;
+	--font22: 2.2rem;
+	--font23: 2.3rem;
+	--font24: 2.4rem;
+	--font25: 2.5rem;
+	--font26: 2.6rem;
+	--font27: 2.7rem;
+	--font28: 2.8rem;
+	--font29: 2.9rem;
+	--font30: 3.0rem;
 }
 
 /* -------------------------------------------------------
@@ -228,7 +238,7 @@ a:hover, a.new_win:hover {
 }
 
 html, body {
-	font-size: 14px;
+	font-size: 62.5%;
 	font-weight: 400;
 	line-height: 1.4;
 }
@@ -237,6 +247,10 @@ html, body {
    This color should match $FOOTER background. */
 html {
 	background: var(--html_background);
+}
+
+.wrapper {
+	font-size: var(--font14);
 }
 
 body, input, button, select, textarea, .editor {
@@ -248,7 +262,7 @@ input, .input_text, button, select {
 }
 
 body {
-	padding-top: 35px;
+	padding-top: 3.5rem;
 	color: var(--body_text);
 	background: var(--body_grad_1);
 }
@@ -302,7 +316,7 @@ input[type="submit"], .drop_area_fileselect_text, button[type="submit"], input[t
 
 .linkbutton:link, .linkbutton:visited {
 	font-size: var(--font13);
-	padding: .33em .4em;
+	padding: .5rem .3rem;
 }
 
 /* Hover effects. */
@@ -319,14 +333,14 @@ input[type="submit"]:hover, button[type="submit"]:hover, input[type="button"]:ho
 /* the new "button" */
 .new_posts, .new_posts:visited, .new_posts:link {
 	color: var(--contrast_text);
-	border-radius: 4px;
+	border-radius: .3rem;
 	background: var(--action_available);
 }
 
 /* approval indicator */
 .require_approval {
 	color: var(--contrast_text);
-	border-radius: 4px;
+	border-radius: .4rem;
 	background: var(--action_available);
 }
 
@@ -346,10 +360,10 @@ hr {
 .category_header, .forum_category .category_header {
 	font-size: var(--font20);
 	font-weight: bolder;
-	margin-bottom: 5px;
-	padding: 5px 10px 0 10px;
+	margin-bottom: .5rem;
+	padding: .5rem 1rem 0 1rem;
 	border: 1px solid var(--transparent);
-	border-radius: 5px;
+	border-radius: .5rem;
 	background: var(--body_grad_1);
 	text-shadow: 1px 1px 0 var(--box_shadow);
 }
@@ -374,7 +388,7 @@ hr {
 
 /* Upshrink image in the page top for the header collapse */
 #collapse_button .linklevel1 {
-	border-radius: 2px;
+	border-radius: .2rem;
 }
 
 /* Custom highlighted text style for modern browsers.
@@ -565,8 +579,8 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 .bbc_footnotes div::before {
 	display: block;
 	visibility: hidden;
-	height: 75px;
-	margin-top: -75px;
+	height: 7.5rem;
+	margin-top: -7.5rem;
 	content: " ";
 }
 
@@ -579,9 +593,12 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 #ajax_in_progress, .ajax_infobar {
 	color: var(--top_section_top_border);
 	border-bottom-color: var(--top_section_top_border);
+	background-position: .6rem 50%;
+	background-size: 2rem 2rem;
+}
+
+#ajax_in_progress {
 	background: var(--primary_content_background);
-	background-position: 6px 50%;
-	background-size: 20px 20px;
 }
 
 #ajax_in_progress a {
@@ -597,14 +614,19 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 #top_section {
 	border-top: none;
 	border-bottom: none;
-	background: var(--top_section);
+	background: var(--body_grad_1);
 }
 
 #top_section .wrapper {
-	padding: 0 15px;
+	padding: 0 1.5rem;
 	border-right: 1px solid var(--transparent);
 	border-left: 1px solid var(--transparent);
 	background: var(--top_section);
+}
+
+#top_header.wrapper, #header.wrapper {
+	border-right: 1px solid var(--top_section_top_border);
+	border-left: 1px solid var(--top_section_top_border);
 }
 
 #menu_nav .wrapper {
@@ -629,7 +651,7 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 /* News section. */
 #news {
 	font-size: var(--font13);
-	padding: 8px;
+	padding: .8rem;
 	border-color: var(--primary_border);
 	background: var(--news_background);
 }
@@ -637,7 +659,7 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 #news > h2 {
 	font-size: var(--font21);
 	font-weight: bold;
-	line-height: 1.2em;
+	line-height: 1.2;
 	color: var(--title);
 }
 
@@ -708,7 +730,7 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 	border-color: var(--secondary_border);
 	border-top-color: var(--secondary_border_top);
 	border-left-color: var(--secondary_border_left);
-	border-radius: 2px;
+	border-radius: .2rem;
 	background-image: linear-gradient(to bottom, var(--input_submit_background), var(--input_submit_background_compliment));
 	box-shadow: 1px 1px 2px var(--box_shadow);
 }
@@ -758,7 +780,7 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 	z-index: 10;
 	top: 0;
 	width: 100%;
-	min-height: 35px;
+	min-height: 3.5rem;
 	padding: 0;
 	transform: translateZ(0);
 	color: var(--contrast_text_compliment);
@@ -776,7 +798,7 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 
 /* The icons used on wide screens) */
 #main_menu .icon-menu {
-	transform: translateY(-2px);
+	transform: translateY(-.2rem);
 }
 
 /* Override link colour for admin/profile/etc menus. */
@@ -814,6 +836,11 @@ a.active {
 }
 
 .admin_menu .listlevel1.subsections .linklevel1.active::after {
+	border-top-color: var(--contrast_text);
+}
+
+.admin_menu .listlevel1.subsections .linklevel1::after {
+	border-color: var(--transparent);
 	border-top-color: var(--menu_dropdown_indicator);
 }
 
@@ -822,13 +849,13 @@ a.active {
 	font-size: var(--font12);
 	font-weight: bold;
 	position: relative;
-	top: -7px;
+	top: -.7rem;
 	left: -1px;
 	float: none;
-	padding: 0 .25em;
+	padding: 0 .4rem;
 	color: var(--contrast_text);
 	border-color: var(--transparent);
-	border-radius: 4px;
+	border-radius: .4rem;
 	background: var(--indicator);
 	box-shadow: 1px 1px 2px var(--html_background);
 }
@@ -836,7 +863,7 @@ a.active {
 .button_indicator {
 	color: var(--contrast_text);
 	border-color: var(--transparent);
-	border-radius: 4px;
+	border-radius: .4rem;
 	background: var(--indicator);
 	box-shadow: 1px 1px 2px var(--html_background);
 }
@@ -847,10 +874,10 @@ a.active {
 
 /* Level 1: subsection indicators. */
 #menu_sidebar .listlevel1.subsections .linklevel1::after {
-	font-size: 1em;
+	font-size: var(--font14);
 	position: absolute;
-	top: 1px;
-	right: 6px;
+	top: .1rem;
+	right: .6rem;
 	content: "\25BA";
 }
 
@@ -860,9 +887,9 @@ a.active {
 }
 
 #menu_nav .listlevel1.subsections > a:before {
-	font-size: .75em;
+	font-size: var(--font11);
 	float: left;
-	margin: 3px 3px 0 0;
+	margin: .3rem .3rem 0 0;
 	content: "\25BC";
 	color: var(--title);
 }
@@ -894,7 +921,7 @@ a.active {
 /* Level 2: subsection indicators. */
 .listlevel2.subsections .linklevel2::after {
 	font-size: var(--font14);
-	top: 5px;
+	top: .5rem;
 	content: "\25BA";
 	color: var(--footer_text);
 }
@@ -939,17 +966,17 @@ a.active {
  */
 
 nav.breadcrumb {
-	margin: 1em 0;
+	margin: 1.6rem 0;
 	border: 1px solid var(--primary_border_top);
-	--arrow: 26px;
+	--arrow: 2.6rem;
 }
 
 .breadcrumb .crumb:first-child {
-	padding-left: 1.1em;
+	padding-left: 1.4rem;
 }
 
 .breadcrumb .crumb {
-	padding: 0 0.7em 0 1.5em;
+	padding: 0 1rem 0 2rem;
 	border-color: var(--transparent);
 }
 
@@ -958,7 +985,7 @@ nav.breadcrumb {
 }
 
 .breadcrumb .crumb > a > i.i-home {
-	padding: 3px 0 0 0;
+	padding: .3rem 0 0 0;
 }
 
 /* ---------------
@@ -975,15 +1002,15 @@ nav.breadcrumb {
 }
 
 .buttonlist li {
-	line-height: 1.8em;
+	line-height: 2.4rem;
 }
 
 .buttonlist li a {
-	line-height: 1.8em;
+	line-height: 2.4rem;
 }
 
 .quickbuttons .linklevel1 {
-	line-height: 1.8em;
+	line-height: 2.4rem;
 }
 
 /* -------------------------------------------------------
@@ -996,7 +1023,7 @@ nav.breadcrumb {
 }
 
 .pagelinks .navPages {
-	margin: 0 2px;
+	margin: 0 .2rem;
 	color: var(--menu_text);
 }
 
@@ -1008,7 +1035,7 @@ nav.breadcrumb {
 
 .pagelinks .navPages, .pagelinks .current_page {
 	border-color: var(--transparent);
-	border-radius: 8px;
+	border-radius: .8rem;
 }
 
 /* our buddies &laquo; &raquo; */
@@ -1074,7 +1101,7 @@ nav.breadcrumb {
  */
 
 .category_boards .board_row {
-	grid-template-columns: [bicon] 85px [info] auto [stats] minmax(80px, 125px) [avatar] 65px [latest] 25% [end];
+	grid-template-columns: [bicon] 8.5rem [info] auto [stats] minmax(8rem, 12.5rem) [avatar] 6.5rem [latest] 25% [end];
 }
 
 .board_latest {
@@ -1131,8 +1158,8 @@ nav.breadcrumb {
  */
 
 .topic_listing > li {
-	grid-template-columns: [topic_icon] 50px [topic_info] auto [topic_latest] 300px [topic_stats] 125px [topic_moderation] 75px;
 	border-color: var(--transparent);
+	grid-template-columns: [topic_icon] 5rem [topic_info] auto [topic_latest] 30rem [topic_stats] 12.5rem [topic_moderation] 7.5rem;
 }
 
 .topic_info {
@@ -1144,7 +1171,7 @@ nav.breadcrumb {
 }
 
 .topic_listing .warningbox {
-	margin-bottom: 6px;
+	margin-bottom: .6rem;
 }
 
 .qaction_row {
@@ -1182,7 +1209,7 @@ nav.breadcrumb {
 
 .post_wrapper {
 	border-color: var(--secondary_border_top);
-	border-radius: 10px;
+	border-radius: 1rem;
 }
 
 .small_pagelinks li {
@@ -1197,8 +1224,8 @@ nav.breadcrumb {
 .post_anchor, .pm_anchor, #new {
 	display: block;
 	visibility: hidden;
-	margin-top: -45px;
-	padding-top: 45px;
+	margin-top: -4.5rem;
+	padding-top: 4.5rem;
 }
 
 /* Poor Man lightbox support */
@@ -1271,12 +1298,12 @@ nav.breadcrumb {
 }
 
 .forumposts:nth-of-type(even) {
-	margin-top: 2px;
+	margin-top: .2rem;
 	background: var(--forum_posts);
 }
 
 .forumposts:nth-of-type(odd) {
-	margin-top: 2px;
+	margin-top: .2rem;
 	background: var(--forum_posts_alternative);
 }
 
@@ -1299,11 +1326,11 @@ nav.breadcrumb {
 
 /* Poll results */
 #poll_options .options .statsbar .bar {
-	border-radius: 4px;
+	border-radius: .4rem;
 }
 
 #poll_options .options .percentage {
-	border-radius: 4px;
+	border-radius: .4rem;
 	background: var(--primary_content_background);
 }
 
@@ -1324,6 +1351,10 @@ nav.breadcrumb {
 }
 
 /* Drop menu for the poster info. */
+.poster .name {
+	color: var(--poster_name);
+}
+
 .poster .pm_indicator:hover {
 	border-color: var(--transparent);
 }
@@ -1393,13 +1424,13 @@ nav.breadcrumb {
 }
 
 .poster .menulevel2 {
-	top: calc(100% - 2px);
+	top: calc(100% - .2rem);
 }
 
 /* Disclose V arrow after the name */
 .poster .subsections > a::after, .poster .subsections:hover > .name.linklevel1::after {
 	font-size: var(--font16);
-	margin: 0 0 0 .8em;
+	margin: 0 0 0 .8rem;
 	content: "\25BC";
 	color: var(--footer_text);
 }
@@ -1414,6 +1445,10 @@ nav.breadcrumb {
 }
 
 /* Reply # */
+.keyinfo.above h2, .keyinfo.above h3 {
+	padding: 1rem 2rem 0 2rem;
+}
+
 .keyinfo h3 a, .keyinfo h3 a strong {
 	color: var(--topic_name);
 }
@@ -1464,12 +1499,12 @@ nav.breadcrumb {
 
 .attachment_name {
 	border-bottom: none;
-	border-radius: 4px 4px 0 0;
+	border-radius: .4rem .4rem 0 0;
 }
 
 .attachment_details {
 	border-top: none;
-	border-radius: 0 0 4px 4px;
+	border-radius: 0 0 .4rem .4rem;
 }
 
 .generic_border .attachment_name {
@@ -1482,14 +1517,14 @@ nav.breadcrumb {
  */
 
 .editor_wrapper {
-	width: 60em;
+	width: 80%;
 	margin: 0 auto;
 }
 
 .drop_area {
 	color: var(--emphasize_text);
 	border-color: var(--primary_border);
-	border-radius: 5px;
+	border-radius: .5rem;
 	background-color: var(--mid_grey_background);
 }
 
@@ -1570,7 +1605,7 @@ nav.breadcrumb {
  */
 
 #tabs .profile_content {
-	padding-top: 8px;
+	padding-top: .8rem;
 }
 
 /* The container */
@@ -1736,16 +1771,12 @@ nav.breadcrumb {
 }
 
 .statsbar {
-	border-radius: 4px;
+	border-radius: .4rem;
 }
 
 .statsbar .bar {
-	border-radius: 4px 0 0 4px;
+	border-radius: .4rem 0 0 .4rem;
 	background-image: linear-gradient(to bottom, var(--gradient_bar_bottom) 0%, var(--gradient_bar_top) 100%);
-}
-
-.statsbar .righttext {
-	background: var(--primary_content_background);
 }
 
 /* -------------------------------------------------------
@@ -1766,7 +1797,7 @@ nav.breadcrumb {
 }
 
 .tooltip {
-	background: linear-gradient(to bottom, var(--transparent) 160px, var(--primary_content_background) 200px);
+	background: linear-gradient(to bottom, var(--transparent) 16rem, var(--primary_content_background) 20rem);
 }
 
 /* The darkened background for help pop-ups. */
@@ -1777,7 +1808,7 @@ nav.breadcrumb {
 /* The actual pop-up wrapper. */
 .popup_window {
 	border-color: var(--primary_border);
-	border-radius: 7px 7px 3px 3px;
+	border-radius: .7rem .7rem .3rem .3rem;
 	background-color: var(--primary_content_background);
 	box-shadow: 0 4px 6px var(--opacity50);
 }
@@ -1785,7 +1816,7 @@ nav.breadcrumb {
 /* The text content, hopefully helpful. */
 .popup_content {
 	border-color: var(--secondary_border);
-	border-radius: 6px 6px 2px 2px;
+	border-radius: .6rem .6rem .2rem .2rem;
 	background: var(--primary_content_background);
 	box-shadow: 0 -2px 3px var(--opacity20);
 }
@@ -1893,9 +1924,9 @@ nav.breadcrumb {
 
 /* More boxes, although SVG they have embedded color so they are here */
 .warningbox, .successbox, .infobox, .errorbox {
-	padding: .75em 2.75em;
+	padding: 1rem 4rem;
 	border-color: var(--primary_border);
-	border-left-width: 5px;
+	border-left-width: .5rem;
 	background-repeat: no-repeat;
 }
 
@@ -1994,7 +2025,7 @@ nav.breadcrumb {
 
 @media screen and (max-width: 64em) {
 	.category_boards .board_row {
-		grid-template-columns: [bicon] 85px [info] auto [avatar] 65px [latest] 40% [end];
+		grid-template-columns: [bicon] 8.5rem [info] auto [avatar] 6.5rem [latest] 40% [end];
 	}
 
 	.icon_anchor {
@@ -2007,25 +2038,25 @@ nav.breadcrumb {
 
 @media screen and (max-width: 55em) {
 	#main_menu .icon-menu {
-		margin: 0.05em .25em;
+		margin: .1rem .4rem;
 		transform: translateY(0px);
 	}
 
 	/* menu to icons */
 	#main_menu .icon-menu, #main_menu .icon-menu.i-menu-profile {
 		display: inline-block;
-		width: 45px;
-		height: 45px;
-		margin: .05em;
-		padding: .35em;
-		border: 4px solid;
-		border-radius: .25em;
+		width: 4.5rem;
+		height: 4.5rem;
+		margin: .1rem;
+		padding: .6rem;
+		border: .4rem solid;
+		border-radius: .4rem;
 	}
 
 	.i-menu-profile::before {
-		width: 36px;
-		height: 36px;
-		transform: translate(-3px, -5px);
+		width: 3.6rem;
+		height: 3.6rem;
+		transform: translate(-.3rem, -.5rem);
 	}
 
 	#main_menu .subsections .linklevel1::after, #main_menu .subsections:hover .linklevel1::after {
@@ -2041,7 +2072,7 @@ nav.breadcrumb {
 	}
 
 	#collapse_button {
-		margin-top: -10px;
+		margin-top: -1rem;
 	}
 
 	.button_title {
@@ -2059,19 +2090,19 @@ nav.breadcrumb {
 @media screen and (max-width: 50em) {
 	#forumtitle {
 		font-size: var(--font24);
-		padding: .7em 0;
+		padding: .8rem 0;
 	}
 
 	.pagelinks {
-		padding-bottom: .7em;
+		padding-bottom: .8rem;
 	}
 
 	body {
-		margin-top: 1.25em;
+		margin-top: 2rem;
 	}
 
 	.category_boards .board_row {
-		grid-template-columns: [bicon] 50px [info] auto [latest] 55% [end];
+		grid-template-columns: [bicon] 5rem [info] auto [latest] 55% [end];
 	}
 
 	#menu_sidebar {
@@ -2105,7 +2136,7 @@ nav.breadcrumb {
 	}
 
 	#gotop, #gobottom {
-		padding: 0.8em .1em .4em .1em;
+		padding: 0.8rem .2rem .6rem .2rem;
 	}
 
 	.board_latest {
@@ -2128,7 +2159,7 @@ nav.breadcrumb {
 
 	.topic_listing > li {
 		border-color: var(--primary_border);
-		border-radius: 3px;
+		border-radius: .3rem;
 		box-shadow: 2px 2px 4px var(--box_shadow);
 	}
 
@@ -2138,8 +2169,8 @@ nav.breadcrumb {
 
 	.topic_listing h4 {
 		overflow: hidden;
-		max-width: 20em;
-		margin-bottom: 3px;
+		max-width: 3.2rem;
+		margin-bottom: .3rem;
 		white-space: nowrap;
 		text-overflow: ellipsis;
 	}
@@ -2162,7 +2193,7 @@ nav.breadcrumb {
 
 	.topic_name h4 {
 		font-size: var(--font19);
-		padding-bottom: .1em;
+		padding-bottom: .2rem;
 	}
 
 	.poster .subsections > a::after {
@@ -2170,9 +2201,9 @@ nav.breadcrumb {
 	}
 
 	.board_icon {
-		width: 25px;
-		height: 25px;
-		transform: translateY(-2px);
+		width: 2.5rem;
+		height: 2.5rem;
+		transform: translateY(-.2rem);
 	}
 
 	.forum_category, .forumposts, .content_category {
@@ -2200,19 +2231,19 @@ nav.breadcrumb {
 	}
 
 	nav.breadcrumb {
-		margin: .25em 0;
+		margin: .4rem 0;
 	}
 
 	#search_form {
 		justify-content: center;
 		width: 100%;
-		padding: .25em 0;
+		padding: .4rem 0;
 		border-bottom: 1px solid var(--primary_border);
 	}
 
 	#search_form .input_text {
 		float: none;
-		width: 200px;
+		width: 20rem;
 	}
 
 	#search_form button, #search_form input, #search_form label {

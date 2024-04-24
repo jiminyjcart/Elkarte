@@ -355,11 +355,11 @@ function template_search_form()
 				<label for="quicksearch" class="hide">', $txt['search'], '</label>
 				<input type="search" name="search" id="quicksearch" value="" class="linklevel1" placeholder="', $txt['search'], '" />
 				<button type="submit" aria-label="' . $txt['search'] . '" name="search;sa=results" class="', (empty($modSettings['search_dropdown'])) ? '' : 'with_select', '">
-					<i class="icon i-search icon-shade"><s>', $txt['search'], '</s></i>
+					<i class="icon i-search"><s>', $txt['search'], '</s></i>
 				</button>
 				<button type="button" aria-label="' . $txt['find_close'] . '">
 					<label for="search_form_check">
-						<i class="icon i-close icon-shade"><s>', $txt['find_close'], '</s></i>
+						<i class="icon i-close"><s>', $txt['find_close'], '</s></i>
 					</label>
 				</button>
 				<input type="hidden" name="advanced" value="0" />

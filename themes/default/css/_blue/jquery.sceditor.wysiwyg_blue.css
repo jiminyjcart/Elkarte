@@ -10,12 +10,12 @@
 	--secondary_border_bottom: #BBBBBB;
 	--contrast_text: #FEFEFE; /* Used in shadows, backgrounds or text, many places */
 	--contrast_text_compliment: #E4E4E4; /* Used with --contrast_text for gradients */
-	--box_shadow: #E4E4E4; /* Used on many box shadows */
-	--me: #5BA048; /* me and footnotes */
+	--box_shadow: rgba(0, 0, 0, 0.2); /* Used on many box shadows */
+	--me: #a80000; /* me and footnotes */
 }
 
+/* This really should match your site stylesheet */
 html, body {
-	font-size: 15px;
 	font-weight: 400;
 	line-height: 1.5;
 	overflow: auto;

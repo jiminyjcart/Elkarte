@@ -39,7 +39,7 @@ function template_control_richedit($editor_id)
 				
 			function elk_editor() {
 				sceditor.createEx(eTextarea, {
-					style: "', $settings['theme_url'], '/css/', $context['theme_variant_url'], 'jquery.sceditor.elk_wiz', $context['theme_variant'], '.css', CACHE_STALE, '",
+					style: "', $settings['theme_url'], '/css/', $context['theme_variant_url'], 'jquery.sceditor.wysiwyg', $context['theme_variant'], '.css', CACHE_STALE, '",
 					width: "100%",
 					autofocus: ', (!empty($context['site_action']) && $context['site_action'] !== 'display') ? 'true' : 'false', ',
 					autofocusEnd: false,

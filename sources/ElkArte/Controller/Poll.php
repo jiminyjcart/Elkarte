@@ -130,8 +130,10 @@ class Poll extends AbstractController
 		if (!empty($row['change_vote']) && $this->user->is_guest === false && empty($this->_req->post->options))
 		{
 			checkSession('request');
+
 			// Find out what they voted for before.
 			$pollOptions = determineVote($this->user->id, $row['id_poll']);
+
 			// Just skip it if they had voted for nothing before.
 			if (!empty($pollOptions))
 			{
