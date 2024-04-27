@@ -684,11 +684,12 @@ Elk_QuickQuote.prototype.prepareQuickQuoteButton = function(event) {
 		link.classList.remove('hide');
 		this.setButtonPosition(event, link);
 
-		// Topic Display, Grab the name from the aside area
+		// Topic Display, Grab the name / time from the aside area
 		if (this.postSelector === '.postarea')
 		{
 			username = (postArea.parentNode.previousElementSibling.querySelector('.name').textContent).trim();
-			time_unix = postArea.parentNode.querySelector('time').getAttribute('data-forumtime');
+			let keyInfo = document.getElementById('info_' + msgid);
+			time_unix = keyInfo.querySelector('time').getAttribute('data-forumtime');
 		}
 		// Topic Summary on post page
 		else
