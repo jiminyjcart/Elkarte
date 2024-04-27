@@ -780,13 +780,13 @@ class Poll extends AbstractController
 
 		// Build the link tree.
 		$pollinfo['subject'] = censor($pollinfo['subject']);
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = array(
 			'url' => getUrl('topic', ['topic' => $topic, 'start' => '0', 'subject' => $pollinfo['subject']]),
 			'name' => $pollinfo['subject'],
 		);
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = [
 			'name' => $context['page_title'],
-		);
+		];
 
 		// Register this form in the session variables.
 		checkSubmitOnce('register');

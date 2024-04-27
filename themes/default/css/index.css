@@ -27,7 +27,7 @@
  *
  *		$MAIN................Forum header, wrapper, and footer.
  *		$MENUS...............Main and secondary menus.
- *		$LINKTREE............The breadcrumbs.
+ *		$BREADCRUMBS.........The navigation path breadcrumbs.
  *		$BUTTONS.............Most button strips.
  *		$PAGELINKS...........Page navigation links.
  *
@@ -1728,7 +1728,7 @@ a.bbc_link {
 }
 
 /* -------------------------------------------------------
- *	$LINKTREE / $BREADCRUMBS
+ *	$BREADCRUMBS
  * -------------------------------------------------------
  */
 
@@ -2281,7 +2281,7 @@ button[type="submit"].quick_quote_button.hide {
  * -------------------------------------------------------
  */
 
-/* The small stats, under upper linktree when the info centre stats is off. */
+/* The small stats, under upper breadcrumbs when the info centre stats is off. */
 #index_common_stats {
 	font-size: var(--font13);
 	margin: 0 .8rem .4rem .8rem;

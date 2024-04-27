@@ -648,10 +648,10 @@ class Display extends AbstractController
 		$context['messages_per_page'] = $this->messages_per_page;
 
 		// Build the link tree.
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = [
 			'url' => getUrl('topic', ['topic' => $this->topicinfo['id_topic'], 'start' => '0', 'subject' => $this->topicinfo['subject']]),
 			'name' => $this->topicinfo['subject'],
-		);
+		];
 	}
 
 	/**

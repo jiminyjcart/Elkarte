@@ -59,10 +59,10 @@ class Groups extends AbstractController
 		{
 			isAllowedTo('view_mlist');
 
-			$context['linktree'][] = array(
+			$context['breadcrumbs'][] = [
 				'url' => getUrl('group', ['action' => 'groups']),
 				'name' => $txt['groups'],
-			);
+			];
 		}
 	}
 
@@ -273,10 +273,10 @@ class Groups extends AbstractController
 		$context['group']['can_moderate'] = allowedTo('manage_membergroups') && (allowedTo('admin_forum') || $context['group']['group_type'] != 1);
 
 		// The template is very needy
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = [
 			'url' => getUrl('group', ['action' => 'groups', 'sa' => 'members', 'group' => $context['group']['id'], 'name' => $context['group']['name']]),
 			'name' => $context['group']['name'],
-		);
+		];
 		$context['can_send_email'] = allowedTo('send_email_to_members');
 		$context['sort_direction'] = isset($this->_req->query->desc) ? 'down' : 'up';
 		$context['start'] = $this->_req->query->start;

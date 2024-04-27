@@ -1026,7 +1026,7 @@ class ManageMaillist extends AbstractController
 		$title = empty($this->_req->query->saved) ? ($context['editing'] === true ? 'edit_filter' : 'add_filter') : ('saved_filter');
 		$context['post_url'] = getUrl('admin', ['action' => 'admin', 'area' => 'maillist', 'sa' => 'editfilter', 'edit' => $context['editing'] ? $modSettings['id_filter'] : 'new', 'save']);
 		$context['settings_title'] = $txt[$title];
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = array(
 			'url' => getUrl('admin', ['action' => 'admin', 'area' => 'maillist', 'sa' => 'editfilter']),
 			'name' => ($context['editing']) ? $txt['edit_filter'] : $txt['add_filter'],
 		);
@@ -1434,10 +1434,10 @@ class ManageMaillist extends AbstractController
 		$title = ((isset($this->_req->query->saved) && $this->_req->query->saved == '1') ? 'saved_parser' : ($context['editing'] === true ? 'edit_parser' : 'add_parser'));
 		$context['settings_title'] = $txt[$title];
 		$context['post_url'] = getUrl('admin', ['action' => 'admin', 'area' => 'maillist', 'sa' => 'editparser', 'edit' => $context['editing'] ? $modSettings['id_filter'] : 'new', 'save']);
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = [
 			'url' => getUrl('admin', ['action' => 'admin', 'area' => 'maillist', 'sa' => 'editparser']),
 			'name' => ($context['editing']) ? $txt['edit_parser'] : $txt['add_parser'],
-		);
+		];
 
 		// prep it, load it, show it
 		$settingsForm->prepare();

@@ -104,7 +104,7 @@ class Stats extends AbstractController
 		loadJavascriptFile(['stats.js', 'ext/chart.min.js', 'elk_chart.js']);
 
 		// Build the link tree......
-		$context['linktree'][] = [
+		$context['breadcrumbs'][] = [
 			'url' => getUrl('action', ['action' => 'stats']),
 			'name' => $txt['stats_center']
 		];

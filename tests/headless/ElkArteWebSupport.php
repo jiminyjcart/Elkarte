@@ -284,7 +284,7 @@ abstract class ElkArteWebSupport extends Selenium2TestCase
 	{
 		global $context;
 
-		$context['linktree'] = [];
+		$context['breadcrumbs'] = [];
 		$context['session_id'] = '';
 		$context['session_var'] = '';
 

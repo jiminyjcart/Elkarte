@@ -609,7 +609,7 @@ class Errors extends AbstractModel
 			global $modSettings;
 
 			// Who knew dying took this much effort
-			$context['linktree'] = $context['linktree'] ?? array();
+			$context['breadcrumbs'] = $context['breadcrumbs'] ?? array();
 			User::load(true);
 
 			$_SESSION['session_var'] = $_SESSION['session_var'] ?? '';

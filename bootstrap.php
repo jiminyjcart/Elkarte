@@ -385,7 +385,7 @@ class Bootstrap
 
 		// Get rid of $board and $topic... do stuff loadBoard would do.
 		unset($board, $topic);
-		$context['linktree'] = array();
+		$context['breadcrumbs'] = [];
 
 		// Load the user and their cookie, as well as their settings.
 		User::load(true);

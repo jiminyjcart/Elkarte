@@ -19,7 +19,7 @@ function template_whos_selection_above()
 {
 	global $context, $txt;
 
-	// Display the table header and linktree.
+	// Display the table header and breadcrumbs.
 	echo '
 	<div id="whos_online">
 		<form action="', getUrl('action', ['action' => 'who']), '" method="post" id="whoFilter" accept-charset="UTF-8">

@@ -195,10 +195,10 @@ class Register extends AbstractController
 		loadJavascriptFile(array('register.js', 'ext/mailcheck.min.js'));
 
 		// Add the register chain to the link tree.
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = [
 			'url' => $scripturl . '?action=register',
 			'name' => $txt['register'],
-		);
+		];
 
 		// Prepare the time gate! Done like this to allow later steps to reset the limit for any reason
 		if (!isset($_SESSION['register']))

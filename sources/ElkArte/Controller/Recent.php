@@ -180,11 +180,11 @@ class Recent extends AbstractController implements FrontpageInterface
 		$context['sub_template'] = 'recent';
 		$quote_enabled = empty($modSettings['disabledBBC']) || !in_array('quote', explode(',', $modSettings['disabledBBC']));
 
-		// Linktree
-		$context['linktree'][] = array(
+		// Breadcrumbs
+		$context['breadcrumbs'][] = [
 			'url' => getUrl('action', ['action' => 'recent'] + (empty($board) ? (empty($categories) ? [] : ['c' => implode(',', $categories)]) : ['board' => $board . '.0'])),
 			'name' => $context['page_title']
-		);
+		];
 
 		// Nothing here... Or at least, nothing you can see...
 		if (!$this->_grabber->findRecentMessages($this->_start, $this->_num_per_page))
@@ -242,10 +242,10 @@ class Recent extends AbstractController implements FrontpageInterface
 				throw new Exception('no_access', false);
 			}
 
-			$context['linktree'][] = array(
+			$context['breadcrumbs'][] = [
 				'url' => getUrl('action', $modSettings['default_forum_action']) . '#c' . $categories[0],
 				'name' => $name
-			);
+			];
 		}
 
 		// Find the number of posts in these category's, exclude the recycle board.

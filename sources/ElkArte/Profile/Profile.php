@@ -142,7 +142,7 @@ class Profile extends AbstractController
 		$this->_check_access();
 
 		// Build the link tree.
-		$this->_build_profile_linktree();
+		$this->_build_profile_breadcrumbs();
 
 		// Set the template for this area... if you still can :P
 		// and add the profile layer.
@@ -564,18 +564,18 @@ class Profile extends AbstractController
 	 * Just builds the link tree based on where were are in the profile section
 	 * and whose profile is being viewed, etc.
 	 */
-	private function _build_profile_linktree()
+	private function _build_profile_breadcrumbs()
 	{
 		global $context, $txt;
 
-		$context['linktree'][] = [
+		$context['breadcrumbs'][] = [
 			'url' => getUrl('profile', ['action' => 'profile', 'u' => $this->_memID, 'name' => $this->_profile['real_name']]),
 			'name' => sprintf($txt['profile_of_username'], $context['member']['name']),
 		];
 
 		if (!empty($this->_profile_include_data['label']))
 		{
-			$context['linktree'][] = [
+			$context['breadcrumbs'][] = [
 				'url' => getUrl('profile', ['action' => 'profile', 'area' => $this->_profile_include_data['current_area'], 'u' => $this->_memID, 'name' => $this->_profile['real_name']]),
 				'name' => $this->_profile_include_data['label'],
 			];
@@ -596,7 +596,7 @@ class Profile extends AbstractController
 			return;
 		}
 
-		$context['linktree'][] = [
+		$context['breadcrumbs'][] = [
 			'url' => getUrl('profile', ['action' => 'profile', 'area' => $this->_profile_include_data['current_area'], 'sa' => $this->_current_subsection, 'u' => $this->_memID, 'name' => $this->_profile['real_name']]),
 			'name' => $this->_profile_include_data['subsections'][$this->_current_subsection]['label'],
 		];

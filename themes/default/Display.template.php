@@ -737,7 +737,7 @@ function template_pages_and_buttons_below()
 	template_pagesection('normal_buttons');
 
 	// Show the lower breadcrumbs.
-	theme_linktree();
+	theme_breadcrumbs();
 }
 
 /**
