@@ -259,7 +259,7 @@
  */
 
 .wrapper {
-	/* Next controls forum width, when it is not set in admin. */
+	/* Next controls the overall forum font */
 	font-size: var(--font14);
 }
 
@@ -386,7 +386,7 @@ strong {
 	text-shadow: -1px -1px 1px var(--box_shadow);
 	line-height: 1.5;
 	font-size: var(--font15);
-	padding: .4rem .8rem 0 .8rem;
+	padding: .2rem .8rem .2rem .8rem;
 }
 
 /* Single ones a bit darker than board index ones. */
@@ -407,6 +407,11 @@ strong {
 
 .category_header a:link {
 	color: var(--category_header_text);
+}
+
+.hdicon::before {
+	width: 2rem;
+	height: 2rem;
 }
 
 /* Custom highlighted text style for modern browsers.
@@ -727,7 +732,7 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 .linklevel1, .linklevel1:link, .linklevel1:visited {
 	color: var(--menu_text);
 	border-color: var(--transparent);
-	background: transparent;
+	background: var(--transparent);
 	box-shadow: none;
 }
 
@@ -1362,6 +1367,10 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 	color: var(--topic_name);
 }
 
+.keyinfo.above {
+	background: var(--menu_background);
+}
+
 /* The icon selection dropdown you get by clicking on the icon in message view */
 .keyinfo .messageicon .dropdown {
 	border-color: var(--transparent);
@@ -1387,8 +1396,12 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 	background: var(--menu_button_hover_background);
 }
 
-.messageContent {
+.messageContent:not(.above) {
 	border-top-color: var(--secondary_border);
+}
+
+.messageContent.above {
+	border-top-color: var(--transparent);
 }
 
 .messageContent .bbc_img.ila_pending {
@@ -1465,7 +1478,6 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 	border-color: var(--primary_border);
 	background: var(--notice);
 	box-shadow: 0 0 8px 1px var(--opacity30);
-
 }
 
 /* Used by share topic */
@@ -1610,7 +1622,7 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 
 /* Hover effect */
 .ui-tabs .ui-tabs-nav li.ui-state-hover .ui-tabs-anchor {
-	color: var(--menu_text);
+	color: var(--contrast_text);
 	border-color: var(--menu_border_hover);
 	border-top-color: var(--menu_border_hover_top);
 	border-left-color: var(--menu_border_hover_left);
@@ -1800,6 +1812,14 @@ ul.cf_icons {
 /* Add a background that fits with the calendar. */
 #calendar_navigation {
 	border-color: var(--primary_border);
+}
+
+.previous_month, .next_month {
+	margin-top: 0;
+}
+
+#month_grid .category_header {
+	padding-bottom: .4rem;
 }
 
 /* -------------------------------------------------------

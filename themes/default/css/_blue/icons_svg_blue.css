@@ -10,16 +10,22 @@
    Some areas, for example board icons, are custom content, from font awesome, as well */
 
 /* Top Menu icons */
+#button_home .i-home::before {
+    content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' stroke='white' stroke-width='1px' fill='black' viewBox='0 0 32 32'%3E%3Cpath d='M32 18.45L16 6.03 0 18.45v-5.063L16 .967l16 12.42zM28 18v12h-8v-8h-8v8H4V18l12-9z'/%3E%3C/svg%3E");
+}
+
+/* Attention menu icons, like new messages */
 .i-menu-pm-on::before, .i-menu-pm-on.enabled::before,
 .i-menu-mentions-on::before, .i-menu-mentions-on.enabled::before {
     filter: invert(66%) sepia(32%) saturate(4068%) hue-rotate(2deg) brightness(107%) contrast(102%);
     --hexcode: #FFA500;
 }
 
+/* normal color of top menu icons */
 .i-menu-pm-off::before,
+#button_home .i-home::before,
 .i-menu-mentions-off::before,
 .i-menu-admin::before,
-.i-menu-profile::before, .i-menu-profile.enabled::before,
 .i-menu-unread.enabled::before,
 .i-menu-unreadreplies.enabled::before,
 .i-menu-login::before, .i-menu-login.enabled::before,
@@ -32,10 +38,34 @@
     --hexcode: #557ea0;
 }
 
+/* Hover and active states need some contrast due to background */
+#button_home:hover .i-home::before, #button_home .active .i-home::before,
+#button_pm:hover i::before, #button_pm .active i::before,
+#button_mentions:hover i::before, #button_mentions .active i::before,
+#button_admin:hover i::before, #button_admin .active i::before,
+#button_unread:hover i::before, #button_unread .active i::before,
+#button_unreadreplies:hover i::before, #button_unreadreplies .active i::before,
+#button_login:hover i::before, #button_login .active i::before,
+#button_register:hover i::before, #button_register .active i::before,
+.i-menu-profile::before, .i-menu-profile.enabled::before {
+    filter: invert(73%) sepia(18%) saturate(848%) hue-rotate(168deg) brightness(91%) contrast(85%);
+}
+
 /* Communication icons */
-.i-envelope-o::before, .i-envelope-blank::before {
+.i-envelope-o::before, .i-envelope-blank::before, .fred.i-profile::before {
     filter: invert(63%) sepia(41%) saturate(641%) hue-rotate(157deg) brightness(86%) contrast(99%);
     --hexcode: #43A8DA;
+}
+
+.i-directory::before, .i-calendar::before,
+.i-contact::before,
+.i-sort-amount-up::before, .i-sortup::before,
+.i-sort-amount-down::before, .i-sortdown::before,
+.i-users::before,
+.i-post-text::before, .i-xx::before, .i-normal::before,
+.i-switch-off::before {
+    filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(164deg) brightness(101%) contrast(101%);
+    --hexcode: #ffffff;
 }
 
 .i-envelope::before {
@@ -49,18 +79,12 @@
     --hexcode: #1AB31A;
 }
 
-/* Was bar-chart */
-.i-poll::before, .i-user::before {
-    filter: invert(31%) sepia(72%) saturate(1247%) hue-rotate(185deg) brightness(90%) contrast(93%);
-    --hexcode: #1966B3;
-}
-
-.i-comment::before, .i-profile::before,
+.i-comment::before, .i-profile::before, .i-user::before,
 .i-comment-blank::before, .i-comments-blank::before, .i-comments::before,
 .i-bell-blank::before, .i-account::before, .i-register::before,
 .i-cog::before, .i-sign-in::before, .i-sign-out::before, .i-phone::before {
-    filter: invert(63%) sepia(41%) saturate(641%) hue-rotate(157deg) brightness(86%) contrast(99%);
-    --hexcode: #43A8DA;
+    filter: invert(83%) sepia(13%) saturate(1903%) hue-rotate(183deg) brightness(102%) contrast(110%);
+    --hexcode: #b4dcff;
 }
 
 .i-bell::before {
@@ -68,7 +92,12 @@
     --hexcode: #FFA500;
 }
 
-/* beSocial Board icons are from Font Awesome */
+.i-modify::before, .i-pencil::before, .i-package::before, .i-menu-login::before, .i-menu-login.enabled::before {
+    filter: invert(78%) sepia(98%) saturate(658%) hue-rotate(334deg) brightness(104%) contrast(102%);
+    --hexcode: #FFD923;
+}
+
+/* Manic Board icons are based on Font Awesome speech balloon */
 .i-board-redirect::before {
     content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23ACACAC' viewBox='0 0 56 56'%3E%3Cpath d='M34 28q0 1.03-.84 1.63l-14 10q-.97.7-2.07.15Q16 39.25 16 38V18q0-1.25 1.1-1.78 1.1-.56 2.06.16l14 10q.84.6.84 1.62zm6 15V13q0-.44-.28-.72T39 12H9q-.44 0-.72.28T8 13v30q0 .44.28.72T9 44h30q.44 0 .72-.28T40 43zm8-30v30q0 3.72-2.64 6.36T39 52H9q-3.72 0-6.36-2.64T0 43V13q0-3.72 2.64-6.36T9 4h30q3.72 0 6.36 2.64T48 13z'/%3E%3C/svg%3E");
 }

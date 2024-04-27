@@ -19,7 +19,7 @@ var disableDrafts = false;
 	'use strict';
 
 	// Editor instance
-	var editor;
+	let editor;
 
 	function Elk_Mentions(options)
 	{
@@ -27,7 +27,7 @@ var disableDrafts = false;
 		this.opts = $.extend({}, this.defaults, options);
 	}
 
-	Elk_Mentions.prototype.attachAtWho = function (oMentions, $element, oIframeWindow)
+	Elk_Mentions.prototype.attachAtWho = function ($element, oIframeWindow)
 	{
 		let mentioned = $('#mentioned'),
 			corrected_offset = {};
@@ -35,15 +35,16 @@ var disableDrafts = false;
 		// Create / use a container to hold the results
 		if (mentioned.length === 0)
 		{
-			$('#' + oMentions.opts.editor_id).after(oMentions.opts._mentioned);
+			$('#' + this.opts.editor_id).after(this.opts._mentioned);
 		}
 		else
 		{
-			oMentions.opts._mentioned = mentioned;
+			this.opts._mentioned = mentioned;
 		}
 
-		oMentions.opts.cache.mentions = this.opts._mentioned;
+		this.opts.cache.mentions = this.opts._mentioned;
 
+		let self = this;
 		$element.atwho({
 			at: "@",
 			limit: 8,
@@ -54,9 +55,9 @@ var disableDrafts = false;
 				filter: function (query, items, search_key)
 				{
 					// Already cached this query, then use it
-					if (typeof oMentions.opts.cache.names[query] !== 'undefined')
+					if (typeof self.opts.cache.names[query] !== 'undefined')
 					{
-						return oMentions.opts.cache.names[query];
+						return self.opts.cache.names[query];
 					}
 
 					return items;
@@ -79,9 +80,9 @@ var disableDrafts = false;
 
 					// No slamming the server either
 					let current_call = Math.round(new Date().getTime());
-					if (oMentions.opts._last_call !== 0 && oMentions.opts._last_call + 150 > current_call)
+					if (self.opts._last_call !== 0 && self.opts._last_call + 150 > current_call)
 					{
-						callback(oMentions.opts._names);
+						callback(self.opts._names);
 						return;
 					}
 
@@ -93,18 +94,18 @@ var disableDrafts = false;
 					};
 
 					// Make the request
-					suggest(obj, function ()
+					suggest(self, obj, function ()
 					{
 						// Update the time gate
-						oMentions.opts._last_call = current_call;
+						self.opts._last_call = current_call;
 
 						// Update the cache with the values for reuse in local filter
-						oMentions.opts.cache.names[query] = oMentions.opts._names;
+						self.opts.cache.names[query] = self.opts._names;
 
 						// Update the query cache for use in revalidateMentions
-						oMentions.opts.cache.queries[oMentions.opts.cache.queries.length] = query;
+						self.opts.cache.queries[self.opts.cache.queries.length] = query;
 
-						callback(oMentions.opts._names);
+						callback(self.opts._names);
 					});
 				},
 				beforeInsert: function (value, $li)
@@ -112,7 +113,7 @@ var disableDrafts = false;
 					// Set up for a new pull-down box/location
 					corrected_offset = {};
 
-					oMentions.addUID($li.data('id'), $li.data('value'));
+					self.addUID($li.data('id'), $li.data('value'));
 
 					return value;
 				},
@@ -121,7 +122,9 @@ var disableDrafts = false;
 					let match, space, regex_matcher;
 
 					if (!subtext || subtext.length < 3)
+					{
 						return null;
+					}
 
 					if (should_startWithSpace)
 					{
@@ -204,16 +207,17 @@ var disableDrafts = false;
 		}
 
 		/**
-		 * Makes the fetch call for data, returns to callback function when done.
+		 * Sends a suggestion request to the server and retrieves the results.
 		 *
-		 * @param obj values to pass to action suggest
-		 * @param callback function to call when we have completed our call
+		 * @param {Elk_Mentions} self - The context of the suggest function.
+		 * @param {Object} obj - The object containing the suggestions parameters.
+		 * @param {Function} callback - The function to be called after retrieving the suggestions.
 		 */
-		function suggest(obj, callback)
+		function suggest(self, obj, callback)
 		{
 			let postString = serialize(obj) + "&" + elk_session_var + "=" + elk_session_id;
 
-			oMentions.opts._names = [];
+			self.opts._names = [];
 			fetch(elk_prepareScriptUrl(elk_scripturl) + "action=suggest;api=xml", {
 				method: "POST",
 				body: postString,
@@ -234,7 +238,7 @@ var disableDrafts = false;
 				.then(data => {
 					let items = data.querySelectorAll('item');
 					items.forEach((item, idx) => {
-						oMentions.opts._names[idx] = {
+						self.opts._names[idx] = {
 							"id": item.getAttribute('id'),
 							"name": item.textContent
 						};
@@ -280,7 +284,7 @@ var disableDrafts = false;
 	 */
 	sceditor.plugins.mention = function ()
 	{
-		var base = this,
+		let base = this,
 			oMentions;
 
 		base.init = function ()
@@ -303,7 +307,7 @@ var disableDrafts = false;
 
 			// Adds the selector to the list of known "mentioner"
 			add_elk_mention(oMentions.opts.editor_id, {isPlugin: true});
-			oMentions.attachAtWho(oMentions, $(sceditor_textarea), {});
+			oMentions.attachAtWho($(sceditor_textarea), {});
 
 			// Using wysiwyg, then lets attach atwho to it
 			if (!instance.opts.runWithoutWysiwygSupport)
@@ -313,7 +317,7 @@ var disableDrafts = false;
 					oIframeWindow = oIframe.contentWindow,
 					oIframeBody = oIframe.contentDocument.body;
 
-				oMentions.attachAtWho(oMentions, $(oIframeBody), oIframeWindow);
+				oMentions.attachAtWho($(oIframeBody), oIframeWindow);
 			}
 		};
 	};

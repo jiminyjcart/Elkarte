@@ -144,8 +144,8 @@
 	--hr_background: #E4E4E4;
 
 	/* Misc */
-	--links: #49643D; /* normal links */
-	--bbclinks: #49643D; /* bbc links */
+	--links: #435C38; /* normal links */
+	--bbclinks: #435C38; /* bbc links */
 	--valid: #EBFFD8; /*  used as valid input background color */
 	--invalid: #FFEEEE; /* very pale red, used as invalid input color */
 	--information: #F0F6F0; /* information box background */

@@ -117,7 +117,6 @@ html, body {
 	line-height: 1.5;
 }
 
-
 /* Global box sizing, for stabilising fluid layouts.
    Remove margin and padding in all browsers. */
 * {
@@ -134,17 +133,17 @@ html, body {
 /* Width control for top bar, header, main content and footer content.
    root (rem) font size */
 .wrapper {
-	/* Next controls forum width, when it is not set in admin. */
 	font-size: var(--font15);
-	/* Next limits maximum width on wide screens. */
+	/* Next controls forum width, when it is not set in admin. */
 	width: 90%;
+	/* Next limits maximum width on wide screens. */
 	max-width: var(--max_width);
 	margin: 0 auto;
 }
 
 /* Normal, standard links. */
 a, a:link, a:visited,
-	/* Links that open in a new window. */
+/* Links that open in a new window. */
 a.new_win:link, a.new_win:visited {
 	text-decoration: none;
 }
@@ -192,8 +191,6 @@ form, input, button, select, textarea {
 	font-size: 1em;
 	font-weight: normal;
 }
-
-/* .input_text, .editor */
 
 /* Fieldsets are used to group elements.
    Declaring as overflow: auto; is probably a good idea. */
@@ -245,7 +242,7 @@ legend::before, .collapsed legend::before {
 	content: "\00a0";
 }
 
-/* Set list-style to none by default. Best in most places.*/
+/* Set list-style to none by default. Best in most places. */
 ul, ol {
 	list-style: none;
 }
@@ -397,7 +394,7 @@ input[type="checkbox"], input[type="radio"] {
 
 /* Common submit button styling. */
 input[type="submit"], button[type="submit"], input[type="button"], button[type="button"],
-	/* Anchors styled to look like buttons. */
+/* Anchors styled to look like buttons. */
 .linkbutton:link, .linkbutton:visited {
 	display: inline-block;
 	margin-right: 0.2rem;
@@ -604,11 +601,16 @@ em, .em {
 }
 
 /* Category Header icons, chain i-xyz from icons_svg */
+h2.hdicon {
+	display: flex;
+	align-items: center;
+}
+
 .hdicon::before {
-	display: inline-flex;
-	width: 2rem;
-	height: 2.4rem;
-	margin: 0 .3rem 0 0;
+	display: inline-block;
+	width: 2.2rem;
+	height: 2.2rem;
+	margin: 0 .6rem 0 0;
 	content: "";
 	vertical-align: text-bottom;
 }
@@ -751,7 +753,7 @@ em, .em {
 
 /* A quote, perhaps from another post. */
 .bbc_quote,
-	/* A code block - maybe PHP ;) - shared styles. */
+/* A code block - maybe PHP ;) - shared styles. */
 .bbc_code {
 	font-size: var(--font14);
 	overflow: auto;
@@ -1906,6 +1908,7 @@ a.bbc_link {
 /* Radius right end of the last button. */
 .quickbuttons li:last-child, .quickbuttons li:last-child a {
 	border-radius: 0 .4rem .4rem 0;
+	margin-right: .2rem;
 }
 
 /* Single buttons get all corners rounded. */
@@ -2852,15 +2855,25 @@ button[type="submit"].quick_quote_button.hide {
 }
 
 /* The MAIN post container, holds one entire post including .poster
-   and all of the postarea data (which is another grid) */
+   and all the postarea data (which is another grid, see .postarea) */
 .post_wrapper {
 	display: grid;
-	padding-top: .6rem;
-	grid-template-columns: [poster] 22.5rem [postarea] 1fr;
+	grid-template-columns: 22.5rem 1fr;
 	grid-template-rows: auto auto;
 	grid-template-areas:
-	"keyinfo_header keyinfo_header "
+	"keyinfo_header keyinfo_header"
 	"poster postarea";
+}
+
+/* When hidden poster area, use single column grid */
+.post_wrapper2 {
+	display: grid;
+	padding-top: .6rem;
+	grid-template-columns: 1fr;
+	grid-template-rows: auto auto;
+	grid-template-areas:
+	"keyinfo_header"
+	"postarea";
 }
 
 aside.poster, #quickreplybox .poster {
@@ -2928,10 +2941,10 @@ aside.poster, #quickreplybox .poster {
 /* Dropdown `business card` grid, left is avatar, right is information */
 .poster_div_container {
 	display: grid;
-	grid-template-columns: [poster] 13.5rem [details] 27.5rem;
+	grid-template-columns: 13.5rem 27.5rem;
+	grid-template-rows: auto;
 	grid-template-areas:
-		"poster"
-		"details";
+    "poster details";
 }
 
 .poster_div_avatar {
@@ -3048,21 +3061,10 @@ aside.poster, #quickreplybox .poster {
 }
 
 /* Hidden poster information option, instead you get a flyout menu link in the keyinfo area */
-.poster.poster2 {
-	display: inline-block;
-	float: left;
-}
-
-.poster.poster2 .listlevel1 {
-	font-size: var(--font13);
-	text-align: center;
-}
-
 .poster.poster2 .name {
-	font-size: var(--font13);
+	font-size: var(--font14);
 	margin-top: 0;
 	padding: 0 .8rem 0 0;
-	text-align: left;
 }
 
 /* Do one override here for .poster. Still saves code all round. */
@@ -3073,13 +3075,13 @@ aside.poster, #quickreplybox .poster {
 }
 
 /* ------------------------------------------------------------------------
-   This holds all data related to the post.   The min of 0 prevents items like <pre> from blowing out the grid
+   This holds all data related to the post.  The min of 0 prevents items like <pre> from blowing out the grid
    header.keyinfo -> messageContent -> footer > .attachments -> footer >quickbuttons -> footer >signature */
 .postarea {
 	display: grid;
 	padding: 0 1.6rem 0 1.4rem;
 	grid-template-columns: minmax(0, auto);
-	grid-template-rows: [keyinfo] auto [messageContent] auto [postfooter] auto;
+	grid-template-rows: auto auto auto;
 	grid-template-areas:
 	"keyinfo"
 	"messageContent"
@@ -3092,12 +3094,14 @@ aside.poster, #quickreplybox .poster {
 	font-size: var(--font13);
 	display: flex;
 	align-items: center;
+	margin-top: .6rem;
 	padding: 1px 0 .5rem 0;
 	grid-area: keyinfo;
 }
 
 .keyinfo.above {
 	grid-area: keyinfo_header;
+	margin-top: 0;
 }
 
 .keyinfo.above h2, .keyinfo.above h3 {
@@ -3109,6 +3113,7 @@ aside.poster, #quickreplybox .poster {
 	order: 2;
 	max-width: 15em;
 	margin-left: auto;
+	margin-right: .6rem;
 	white-space: pre;
 	text-overflow: ellipsis;
 }
@@ -3135,7 +3140,7 @@ aside.poster, #quickreplybox .poster {
 	padding: .2rem;
 }
 
-/* This div and items are added by javascript for the icon selection */
+/* This div and items are added by javascript for the icon selection in the keyinfo line */
 #iconList {
 	display: flex;
 	align-items: center;
@@ -3245,6 +3250,11 @@ aside.poster, #quickreplybox .poster {
 	grid-area: signature;
 }
 
+/* when hidding the posterarea, increase the padding */
+.postarea2 .post_footer .generic_menu, .postarea2 .post_footer .signature {
+	padding: .8rem .8rem;
+}
+
 /* All the signatures used in the forum. */
 .signature {
 	font-size: var(--font13);
@@ -3278,12 +3288,14 @@ aside.poster, #quickreplybox .poster {
 #forumposts .category_header {
 	overflow: hidden;
 	text-overflow: ellipsis;
+	display: flex;
+	align-items: center;
 }
 
 /* Number of views and previous /next links in the category header */
 .nextlinks {
 	font-size: var(--font15);
-	float: right;
+	margin-left: auto;
 	white-space: pre;
 }
 
@@ -3556,6 +3568,10 @@ aside.poster, #quickreplybox .poster {
 #quickreplybox {
 	margin: .4rem 0 0 0;
 	border-radius: .4rem .4rem 0 0;
+}
+
+#quickreplybox .postarea2, #quickreplybox .postarea {
+	padding: 1rem;
 }
 
 .editor_wrapper {
@@ -5772,19 +5788,19 @@ div.labels {
 .icon-big {
 	line-height: 1.5;
 	width: 2.2rem;
-	height: 2.2rem;
+	height: 100%;
 }
 
 .icon-lg {
 	line-height: 2;
-	width: 3rem;
-	height: 3rem;
+	width: 2.5rem;
+	height: 100%;
 }
 
 .icon-xl {
 	line-height: 4;
 	width: 6rem;
-	height: 6rem;
+	height: 100%;
 }
 
 .icon-middle {
@@ -6056,7 +6072,7 @@ div.labels {
 
 	/* allow for a 2 line post subject */
 	.board_row .lastpost_link {
-		height: 5rem;
+		height: 4rem;
 		max-height: 4.8rem;
 		padding-top: 1rem;
 		white-space: pre-wrap;
@@ -6827,11 +6843,17 @@ div.labels {
 	#main_menu .icon-menu, #main_menu .icon-menu.i-menu-profile {
 		width: 4.1rem;
 		height: 4.1rem;
+		min-height: 4.1rem;
+	}
+
+	#search_form_button .linklevel1 {
+		height: 4.1rem;
+		margin-bottom: -.1rem;
 	}
 
 	#main_menu .i-menu-profile::before {
 		width: 3.1rem;
-		height: 3.1rem
+		height: 3.1rem;
 	}
 
 	#main_menu .listlevel2, #main_menu .listlevel3 {

@@ -690,7 +690,8 @@ class Admin extends AbstractController
 			'title' => 'support_credits_title',
 			'description' => 'support_credits_desc',
 		]);
-		Txt::load('Who');
+		Txt::load('About');
+		require_once(SUBSDIR . '/About.subs.php');
 		$context += prepareCreditsData();
 
 		// This makes it easier to get the latest news with your time format.

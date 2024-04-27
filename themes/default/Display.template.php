@@ -145,7 +145,7 @@ function template_messages()
 					<a class="post_anchor" id="msg' . $message['id'] . '"></a>' : '';
 
 		echo '
-				<article class="post_wrapper forumposts', $message['classes'], $message['approved'] ? '' : ' approvebg', '">';
+				<article class="post_wrapper', empty($options['hide_poster_area']) ? '' : '2', ' forumposts', $message['classes'], $message['approved'] ? '' : ' approvebg', '">';
 
 		if (!empty($settings['show_keyinfo_above']))
 		{
@@ -306,8 +306,9 @@ function template_keyinfo($message, $ignoring, $above = false)
 
 	echo '
 						<header class="keyinfo', ($above ? ' above' : ''), '">
-						', (empty($options['hide_poster_area']) ? '' : '<ul class="poster poster2">' . template_build_poster_div($message, $ignoring) . '</ul>');
+						', (empty($options['hide_poster_area']) ? '' : '<ul class="poster no_js poster2">' . template_build_poster_div($message, $ignoring) . '</ul>');
 
+	// Follow-up button when required
 	if (!empty($context['follow_ups'][$message['id']]))
 	{
 		echo '
@@ -340,7 +341,6 @@ function template_keyinfo($message, $ignoring, $above = false)
 							</h3>
 							<div id="msg_', $message['id'], '_quick_mod"', $ignoring ? ' class="hide"' : '', '></div>
 						</header>';
-
 }
 
 /**
@@ -377,7 +377,7 @@ function template_quickreply_below()
 	</h3>
 	<div id="quickreplybox">
 		<section>
-			<article class="post_wrapper forumposts">';
+			<article class="post_wrapper', empty($options['hide_poster_area']) ? '' : '2', ' forumposts">';
 
 		if (empty($options['hide_poster_area']))
 		{
@@ -556,7 +556,7 @@ function template_quickreply_below()
 			funcOnAfterCreate: function () {
 				// Attach AtWho to the quick edit box
 				add_elk_mention("#quick_edit_body_container textarea");
-				var i = all_elk_mentions.length - 1;
+				let i = all_elk_mentions.length - 1;
 				all_elk_mentions[i].oMention = new elk_mentions(all_elk_mentions[i].oOptions);
 			}
 		});
