@@ -1243,7 +1243,7 @@ IconList.prototype.initIcons = function() {
 	{
 		if (document.images[i].id.substring(0, iPrefixLength) === this.opt.sIconIdPrefix)
 		{
-			setOuterHTML(document.images[i], '<div class="dropdown" title="' + this.opt.sLabelIconList + '" onclick="' + this.opt.sBackReference + '.openPopup(this, ' + document.images[i].id.substr(iPrefixLength) + ')" onmouseover="' + this.opt.sBackReference + '.onBoxHover(this, true)" onmouseout="' + this.opt.sBackReference + '.onBoxHover(this, false)"><img src="' + document.images[i].src + '" alt="' + document.images[i].alt + '" id="' + document.images[i].id + '" /></div>');
+			setOuterHTML(document.images[i], '<span class="dropdown" title="' + this.opt.sLabelIconList + '" onclick="' + this.opt.sBackReference + '.openPopup(this, ' + document.images[i].id.substring(iPrefixLength) + ')" onmouseover="' + this.opt.sBackReference + '.onBoxHover(this, true)" onmouseout="' + this.opt.sBackReference + '.onBoxHover(this, false)"><img src="' + document.images[i].src + '" alt="' + document.images[i].alt + '" id="' + document.images[i].id + '" /></span>');
 		}
 	}
 };
@@ -1274,7 +1274,6 @@ IconList.prototype.openPopup = function(oDiv, iMessageId) {
 	}
 
 	// Set the position of the container.
-	// @todo why not make it a child of the existing div
 	let aPos = elk_itemPos(oDiv);
 
 	this.oContainerDiv.style.top = (aPos[1] + oDiv.offsetHeight) + 'px';
