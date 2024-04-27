@@ -621,6 +621,10 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
  * -------------------------------------------------------
  */
 
+#header {
+	padding: 1.2rem .2rem 1.2rem .2rem;
+}
+
 /* The top bar. */
 #top_section {
 	border-top: none;
