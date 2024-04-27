@@ -124,14 +124,14 @@ var disableDrafts = false;
 					// Set the url location if we have not already done this for this item
 					if (typeof map.url === 'undefined')
 					{
-						if (typeof (map.type) !== 'undefined')
-						{
-							map.url = elk_smileys_url;
-						}
-						else
+						if (typeof (map.type) === 'undefined')
 						{
 							map.type = 'svg';
 							map.url = elk_emoji_url;
+						}
+						else
+						{
+							map.url = elk_smileys_url;
 						}
 					}
 
