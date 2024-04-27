@@ -19,7 +19,7 @@
  *
  *		$MAIN................Forum header, wrapper, and footer.
  *		$MENUS...............Main and secondary menus.
- *		$LINKTREE............The breadcrumbs.
+ *		$BREADCRUMBS.........The navigation path breadcrumbs.
  *		$BUTTONS.............Most button strips.
  *		$PAGELINKS...........Page navigation links.
  *
@@ -896,7 +896,7 @@ sup.bbc_footnotes, sup.bbc_footnotes a {
 }
 
 /* ------------------------
- *	$LINKTREE / $BREADCRUMB
+ *	$BREADCRUMB
  * ------------------------
  */
 

@@ -193,10 +193,10 @@ class Memberlist extends AbstractController
 			$context['colspan'] += $column['colspan'] ?? 1;
 		}
 
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = [
 			'url' => $scripturl . '?action=memberlist',
 			'name' => $txt['members_list']
-		);
+		];
 
 		$context['can_send_pm'] = allowedTo('pm_send');
 
@@ -364,11 +364,11 @@ class Memberlist extends AbstractController
 		$context['end'] = min($start + $modSettings['defaultMaxMembers'], $context['num_members']);
 		$context['can_moderate_forum'] = allowedTo('moderate_forum');
 		$context['page_title'] = sprintf($txt['viewing_members'], $context['start'], $context['end']);
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = [
 			'url' => $scripturl . '?action=memberlist;sort=' . $sort . ';start=' . $start,
 			'name' => &$context['page_title'],
 			'extra_after' => ' (' . sprintf($txt['of_total_members'], $context['num_members']) . ')'
-		);
+		];
 
 		$limit = $start;
 		$where = '';
@@ -607,10 +607,10 @@ class Memberlist extends AbstractController
 			redirectexit('action=memberlist');
 		}
 
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = [
 			'url' => $scripturl . '?action=memberlist;sa=search',
 			'name' => &$context['page_title']
-		);
+		];
 
 		// Highlight the correct button, too!
 		unset($context['memberlist_buttons']['view_all_members']['active']);

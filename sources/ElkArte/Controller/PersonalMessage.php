@@ -142,11 +142,11 @@ class PersonalMessage extends AbstractController
 		$context['current_label_redirect'] = 'action=pm;f=' . $context['folder'] . (isset($start) ? ';start=' . $start : '') . (empty($label) ? '' : ';l=' . $label);
 		$context['can_issue_warning'] = featureEnabled('w') && allowedTo('issue_warning') && !empty($modSettings['warning_enable']);
 
-		// Build the linktree for all the actions...
-		$context['linktree'][] = array(
+		// Build the breadcrumbs for all the actions...
+		$context['breadcrumbs'][] = [
 			'url' => getUrl('action', ['action' => 'pm']),
 			'name' => $txt['personal_messages']
-		);
+		];
 
 		// Preferences...
 		$context['display_mode'] = (int) User::$settings['pm_prefs'] & 3;
@@ -484,16 +484,16 @@ class PersonalMessage extends AbstractController
 		// Now, build the link tree!
 		if ($context['current_label_id'] === -1)
 		{
-			$context['linktree'][] = array(
+			$context['breadcrumbs'][] = [
 				'url' => getUrl('action', ['action' => 'pm', 'f' => $context['folder']]),
 				'name' => $pmbox
-			);
+			];
 		}
 
 		// Build it further if we also have a label.
 		if ($context['current_label_id'] !== -1)
 		{
-			$context['linktree'][] = array(
+			$context['breadcrumbs'][] = array(
 				'url' => getUrl('action', ['action' => 'pm', 'f' => $context['folder'], 'l' => $context['current_label_id']]),
 				'name' => $txt['pm_current_label'] . ': ' . $context['current_label']
 			);
@@ -929,10 +929,10 @@ class PersonalMessage extends AbstractController
 		$context['message'] = str_replace(array('"', '<', '>', '&nbsp;'), array('&quot;', '&lt;', '&gt;', ' '), $form_message);
 
 		// And build the link tree.
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = [
 			'url' => getUrl('action', ['action' => 'pm', 'sa' => 'send']),
 			'name' => $txt['new_message']
-		);
+		];
 
 		// Needed for the editor.
 		require_once(SUBSDIR . '/Editor.subs.php');
@@ -1068,10 +1068,10 @@ class PersonalMessage extends AbstractController
 		}
 
 		// Build the link tree....
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = [
 			'url' => getUrl('action', ['action' => 'pm', 'sa' => 'send']),
 			'name' => $txt['new_message']
-		);
+		];
 
 		// Set each of the errors for the template.
 		$context['post_error'] = array(
@@ -1619,7 +1619,7 @@ class PersonalMessage extends AbstractController
 		}
 
 		// Build the link tree elements.
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = array(
 			'url' => getUrl('action', ['action' => 'pm', 'sa' => 'prune']),
 			'name' => $txt['pm_prune']
 		);
@@ -1637,7 +1637,7 @@ class PersonalMessage extends AbstractController
 		require_once(SUBSDIR . '/PersonalMessage.subs.php');
 
 		// Build the link tree elements...
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = array(
 			'url' => getUrl('action', ['action' => 'pm', 'sa' => 'manlabels']),
 			'name' => $txt['pm_manage_labels']
 		);
@@ -1847,11 +1847,11 @@ class PersonalMessage extends AbstractController
 		$context['menu_item_selected'] = 'settings';
 		$context['submit_button_text'] = $txt['pm_settings'];
 
-		// Add our position to the linktree.
-		$context['linktree'][] = array(
+		// Add our position to the breadcrumbs.
+		$context['breadcrumbs'][] = [
 			'url' => getUrl('action', ['action' => 'pm', 'sa' => 'settings']),
 			'name' => $txt['pm_settings']
-		);
+		];
 
 		// Are they saving?
 		if (isset($this->_req->post->save))
@@ -2043,10 +2043,10 @@ class PersonalMessage extends AbstractController
 		require_once(SUBSDIR . '/PersonalMessage.subs.php');
 
 		// The link tree - gotta have this :o
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = [
 			'url' => getUrl('action', ['action' => 'pm', 'sa' => 'manrules']),
 			'name' => $txt['pm_manage_rules']
-		);
+		];
 
 		$context['page_title'] = $txt['pm_manage_rules'];
 		$context['sub_template'] = 'rules';
@@ -2614,10 +2614,10 @@ class PersonalMessage extends AbstractController
 		$context['page_title'] = $txt['pm_search_title'];
 		$context['sub_template'] = 'search_results';
 		$context['menu_data_' . $context['pm_menu_id']]['current_area'] = 'search';
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = [
 			'url' => getUrl('action', ['action' => 'pm', 'sa' => 'search']),
 			'name' => $txt['pm_search_bar_title'],
-		);
+		];
 	}
 
 	/**
@@ -3024,10 +3024,10 @@ class PersonalMessage extends AbstractController
 
 		$context['page_title'] = $txt['pm_search_title'];
 		$context['sub_template'] = 'search';
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = [
 			'url' => getUrl('action', ['action' => 'pm', 'sa' => 'search']),
 			'name' => $txt['pm_search_bar_title'],
-		);
+		];
 	}
 
 	/**

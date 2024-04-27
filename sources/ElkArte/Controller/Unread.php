@@ -106,16 +106,16 @@ class Unread extends AbstractController
 			require_once(SUBSDIR . '/Categories.subs.php');
 			$name = categoryName((int) $this->_req->query->c[0]);
 
-			$context['linktree'][] = array(
+			$context['breadcrumbs'][] = [
 				'url' => getUrl('action', $modSettings['default_forum_action']) . '#c' . (int) $this->_req->query->c[0],
 				'name' => $name
-			);
+			];
 		}
 
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = [
 			'url' => $scripturl . '?action=' . $this->_action . sprintf($context['querystring_board_limits'], 0) . $context['querystring_sort_limits'],
 			'name' => $this->_action_unread ? $txt['unread_topics_visit'] : $txt['unread_replies']
-		);
+		];
 
 		// Prepare the template
 		theme()->getTemplates()->load('Recent');
@@ -451,10 +451,10 @@ class Unread extends AbstractController
 
 		if ($context['showing_all_topics'])
 		{
-			$context['linktree'][] = array(
+			$context['breadcrumbs'][] = [
 				'url' => $scripturl . '?action=' . $this->_action . ';all' . sprintf($context['querystring_board_limits'], 0) . $context['querystring_sort_limits'],
 				'name' => $txt['unread_topics_all']
-			);
+			];
 
 			$txt['unread_topics_visit_none'] = str_replace('{unread_all_url}', $scripturl . '?action=unread;all', $txt['unread_topics_visit_none']);
 		}

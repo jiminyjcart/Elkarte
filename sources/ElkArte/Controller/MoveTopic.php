@@ -171,14 +171,14 @@ class MoveTopic extends AbstractController
 		$context['sub_template'] = 'move_topic';
 
 		// Breadcrumbs
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = [
 			'url' => getUrl('topic', ['topic' => $this->_topic, 'start' => 0, 'subject' => $context['subject']]),
 			'name' => $context['subject'],
-		);
-		$context['linktree'][] = array(
+		];
+		$context['breadcrumbs'][] = [
 			'url' => '#',
 			'name' => $txt['move_topic'],
-		);
+		];
 
 		$context['back_to_topic'] = isset($this->_req->post->goback);
 

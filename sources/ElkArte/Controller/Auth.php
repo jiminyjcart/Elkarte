@@ -97,10 +97,10 @@ class Auth extends AbstractController
 		$context['never_expire'] = false;
 
 		// Add the login chain to the link tree.
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = [
 			'url' => getUrl('action', ['action' => 'login']),
 			'name' => $txt['login'],
-		);
+		];
 
 		// Set the login URL - will be used when the login process is done (but careful not to send us to an attachment).
 		if (isset($_SESSION['old_url']) && validLoginUrl($_SESSION['old_url'], true))
@@ -180,10 +180,10 @@ class Auth extends AbstractController
 		$context['page_title'] = $txt['login'];
 
 		// Add the login chain to the link tree.
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = [
 			'url' => getUrl('action', ['action' => 'login']),
 			'name' => $txt['login'],
-		);
+		];
 
 		// You forgot to type your username, dummy!
 		if (!isset($_POST['user']) || $_POST['user'] === '')

@@ -834,18 +834,18 @@ class Post extends AbstractController
 		// Build the link tree.
 		if (empty($topic))
 		{
-			$context['linktree'][] = array(
+			$context['breadcrumbs'][] = [
 				'name' => '<em>' . $txt['start_new_topic'] . '</em>'
-			);
+			];
 		}
 		else
 		{
-			$context['linktree'][] = array(
+			$context['breadcrumbs'][] = [
 				'url' => $scripturl . '?topic=' . $topic . '.' . $_REQUEST['start'],
 				'name' => $this->_form_subject,
 				'extra_before' => '<span><strong class="nav">' . $context['page_title'] . ' ( </strong></span>',
 				'extra_after' => '<span><strong class="nav"> )</strong></span>'
-			);
+			];
 		}
 
 		$context['back_to_topic'] = isset($_REQUEST['goback']) || (isset($_REQUEST['msg']) && !isset($_REQUEST['subject']));

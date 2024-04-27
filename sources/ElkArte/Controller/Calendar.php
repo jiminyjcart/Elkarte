@@ -170,25 +170,25 @@ class Calendar extends AbstractController
 		// Set the page title to mention the month or week, too
 		$context['page_title'] .= ' - ' . ($context['view_week'] ? sprintf($txt['calendar_week_title'], $context['calendar_grid_main']['week_number'], ($context['calendar_grid_main']['week_number'] == 53 ? $context['current_year'] - 1 : $context['current_year'])) : $txt['months'][$context['current_month']] . ' ' . $context['current_year']);
 
-		// Load up the linktree!
-		$context['linktree'][] = array(
+		// Load up the breadcrumbs!
+		$context['breadcrumbs'][] = [
 			'url' => getUrl('action', ['action' => 'calendar']),
 			'name' => $txt['calendar']
-		);
+		];
 
-		// Add the current month to the linktree.
-		$context['linktree'][] = array(
+		// Add the current month to the breadcrumbs.
+		$context['breadcrumbs'][] = [
 			'url' => getUrl('action', ['action' => 'calendar', 'year' => $context['current_year'], 'month' => $context['current_month']]),
 			'name' => $txt['months'][$context['current_month']] . ' ' . $context['current_year']
-		);
+		];
 
-		// If applicable, add the current week to the linktree.
+		// If applicable, add the current week to the breadcrumbs.
 		if ($context['view_week'])
 		{
-			$context['linktree'][] = array(
+			$context['breadcrumbs'][] = [
 				'url' => getUrl('action', ['action' => 'calendar', 'year' => $context['current_year'], 'month' => $context['current_month'], 'day' => $context['current_day'], 'viewweek']),
 				'name' => $txt['calendar_week'] . ' ' . $context['calendar_grid_main']['week_number']
-			);
+			];
 		}
 
 		// Build the calendar button array.
@@ -274,7 +274,7 @@ class Calendar extends AbstractController
 		$context['cal_minyear'] = $modSettings['cal_minyear'];
 		$context['cal_maxyear'] = (int) date('Y') + $modSettings['cal_limityear'];
 		$context['page_title'] = $event->isNew() ? $txt['calendar_edit'] : $txt['calendar_post_event'];
-		$context['linktree'][] = [
+		$context['breadcrumbs'][] = [
 			'name' => $context['page_title'],
 		];
 	}

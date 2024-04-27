@@ -309,14 +309,14 @@ class Mentions extends AbstractController
 		createList($list_options);
 
 		$context['page_title'] = $txt['my_mentions'] . (empty($this->_page) ? '' : ' - ' . sprintf($txt['my_mentions_pages'], $this->_page));
-		$context['linktree'][] = [
+		$context['breadcrumbs'][] = [
 			'url' => getUrl('action', ['action' => 'mentions']),
 			'name' => $txt['my_mentions'],
 		];
 
 		if (!empty($this->_type))
 		{
-			$context['linktree'][] = [
+			$context['breadcrumbs'][] = [
 				'url' => getUrl('action', ['action' => 'mentions', 'type' => $this->_type]),
 				'name' => $txt['mentions_type_' . $this->_type],
 			];

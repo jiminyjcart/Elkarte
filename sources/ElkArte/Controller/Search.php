@@ -137,7 +137,7 @@ class Search extends AbstractController
 		isAllowedTo('search_posts');
 
 		// Link tree....
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = array(
 			'url' => getUrl('action', ['action' => 'search']),
 			'name' => $txt['search']
 		);
@@ -157,7 +157,7 @@ class Search extends AbstractController
 			$context['visual_verification_id'] = $verificationOptions['id'];
 		}
 
-		// If you got back from search;sa=results by using the linktree, you get your original search parameters back.
+		// If you got back from search;sa=results by using the breadcrumbs, you get your original search parameters back.
 		$params = $this->_req->getQuery('params');
 		if ($this->_search === null && isset($params))
 		{
@@ -438,15 +438,15 @@ class Search extends AbstractController
 		$context['params'] = $this->_search->compileURLparams();
 
 		// ... and add the links to the link tree.
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = [
 			'url' => getUrl('action', ['action' => 'search', 'params' => $context['params']]),
 			'name' => $txt['search']
-		);
+		];
 
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = [
 			'url' => getUrl('action', ['action' => 'search', 'sa' => 'results', 'params' => $context['params']]),
 			'name' => $txt['search_results']
-		);
+		];
 
 		// Start guest off collapsed
 		if ($context['user']['is_guest'] && !isset($context['minmax_preferences']['asearch']))

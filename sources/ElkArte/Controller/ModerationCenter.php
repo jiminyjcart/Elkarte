@@ -289,14 +289,14 @@ class ModerationCenter extends AbstractController
 		$context['admin_area'] = $mod_include_data['current_area'];
 
 		// Build the link tree.
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = array(
 			'url' => getUrl('action', ['action' => 'moderate']),
 			'name' => $txt['moderation_center'],
 		);
 
 		if (isset($mod_include_data['current_area']) && $mod_include_data['current_area'] !== 'index')
 		{
-			$context['linktree'][] = [
+			$context['breadcrumbs'][] = [
 				'url' => getUrl('action', ['action' => 'moderate', 'area' => $mod_include_data['current_area']]),
 				'name' => $mod_include_data['label'],
 			];
@@ -305,7 +305,7 @@ class ModerationCenter extends AbstractController
 		if (!empty($mod_include_data['current_subsection']) && isset($mod_include_data['subsections'][$mod_include_data['current_subsection']]['label'])
 			&& $mod_include_data['subsections'][$mod_include_data['current_subsection']]['label'] !== $mod_include_data['label'])
 		{
-			$context['linktree'][] = [
+			$context['breadcrumbs'][] = [
 				'url' => getUrl('action', ['action' => 'moderate', 'area' => $mod_include_data['current_area'], 'sa' => $mod_include_data['current_subsection']]),
 				'name' => $mod_include_data['subsections'][$mod_include_data['current_subsection']]['label'],
 			];

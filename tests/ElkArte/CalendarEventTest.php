@@ -35,7 +35,7 @@ class CalendarEventTest extends ElkArteCommonSetupTest
 	{
 		global $context, $txt;
 
-		$context['linktree'] = array();
+		$context['breadcrumbs'] = array();
 		parent::setUp();
 
 		// Fiddling with globals is a chore in PHPUnit.

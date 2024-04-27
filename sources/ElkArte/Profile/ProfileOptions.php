@@ -551,7 +551,7 @@ class ProfileOptions extends AbstractController
 		$variant = $this->_req->getQuery('vrt', 'cleanhtml');
 
 		// Build the link tree
-		$context['linktree'][] = [
+		$context['breadcrumbs'][] = [
 			'url' => $scripturl . '?action=profile;sa=pick;u=' . $this->_memID,
 			'name' => $txt['theme_pick'],
 		];

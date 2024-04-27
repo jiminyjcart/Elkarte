@@ -224,12 +224,12 @@ class Who extends AbstractController
 		require_once(SUBSDIR . '/Who.subs.php');
 		$url_data = determineActions($url_data);
 
-		// Setup the linktree and page title (do it down here because the language files are now loaded..)
+		// Setup the breadcrumbs and page title (do it down here because the language files are now loaded..)
 		$context['page_title'] = $txt['who_title'];
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = [
 			'url' => getUrl('action', ['action' => 'who']),
 			'name' => $txt['who_title']
-		);
+		];
 
 		foreach ($context['members'] as $i => $member)
 		{

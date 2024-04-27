@@ -12,7 +12,7 @@
 /*
 /*		$MAIN................Forum header, wrapper, and footer.
 /*		$MENUS...............Main and secondary menus.
-/*		$LINKTREE............The breadcrumbs.
+ *		$BREADCRUMBS.........The navigation path breadcrumbs.
 /*		$BUTTONS.............Most button strips.
 /*		$PAGELINKS...........Page navigation links.
 /*
@@ -309,7 +309,7 @@ h2 a.collapse {
 }
 
 /* -------------------------------------------------------
- *	$LINKTREE / $BREADCRUMBS
+ *	$BREADCRUMBS
  * -------------------------------------------------------
  */
 

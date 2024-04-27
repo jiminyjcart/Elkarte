@@ -18,7 +18,7 @@
  * the forum, namely with body_above and body_below. It also contains the
  * menu sub template, which appropriately displays the menu; the init sub
  * template, which is there to set the theme up; (init can be missing.) and
- * the linktree sub template, which sorts out the link tree.
+ * the breadcrumb sub template, which sorts out the breadcrumbs.
  *
  * The init sub template should load any data and set any hardcoded options.
  *
@@ -28,8 +28,8 @@
  * The body_below sub template, conversely, is shown after the main content.
  * It should probably contain the copyright statement and some other things.
  *
- * The linktree sub template should display the link tree, using the data
- * in the $context['linktree'] variable.
+ * The breadcrumb sub template should display the breadcrumbs, using the data
+ * in the $context['breadcrumbs'] variable.
  *
  * The menu sub template should display all the relevant buttons the user
  * wants and or needs.
@@ -265,7 +265,7 @@ function template_body_above()
 		</aside>';
 
 	// Show the navigation tree.
-	theme_linktree();
+	theme_breadcrumbs();
 
 	// The main content should go here.
 	echo '
@@ -487,17 +487,17 @@ function template_html_below()
 }
 
 /**
- * Show a linktree / breadcrumbs. This is that thing that shows
+ * Show breadcrumbs. This is that thing that shows
  * "My Community | General Category | General Discussion"..
  *
  * @param string $default a string representing the index in $context where
- *               the linktree is stored (default value is 'linktree')
+ *               the breadcrumbs are stored (default value is 'breadcrumbs')
  */
-function theme_linktree($default = 'linktree')
+function theme_breadcrumbs($default = 'breadcrumbs')
 {
 	global $context, $settings, $txt;
 
-	// If linktree is empty, just return - also allow an override.
+	// If breadcrumbs is empty, just return - also allow an override.
 	if (empty($context[$default]))
 	{
 		return;
@@ -507,7 +507,7 @@ function theme_linktree($default = 'linktree')
 		<nav class="breadcrumb" aria-label="breadcrumbs">';
 
 	// Each tree item has a URL and name. Some may have extra_before and extra_after.
-	// Added a linktree class to make targeting dividers easy.
+	// Added a crumb class to make targeting dividers easy.
 	foreach ($context[$default] as $pos => $tree)
 	{
 		$tree['name'] = ($tree['extra_before'] ?? '') . $tree['name'] . ($tree['extra_after'] ?? '');

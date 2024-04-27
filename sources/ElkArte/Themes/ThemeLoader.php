@@ -510,9 +510,9 @@ class ThemeLoader
 			}
 		}
 
-		foreach ($context['linktree'] as $k => $dummy)
+		foreach ($context['breadcrumbs'] as $k => $dummy)
 		{
-			$context['linktree'][$k]['url'] = strtr($dummy['url'], [$oldurl => $boardurl]);
+			$context['breadcrumbs'][$k]['url'] = strtr($dummy['url'], [$oldurl => $boardurl]);
 		}
 	}
 
@@ -608,8 +608,8 @@ class ThemeLoader
 			$this->showLoginBar();
 		}
 
-		// Set the top level linktree up.
-		array_unshift($context['linktree'], [
+		// Set the top level breadcrumbs.
+		array_unshift($context['breadcrumbs'], [
 			'url' => $scripturl,
 			'name' => $context['forum_name'],
 		]);

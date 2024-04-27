@@ -219,8 +219,8 @@ function loadBoard()
 	// and not global moderators, is_moderator is meant to take into account both.
 	User::$info->is_moderator = false;
 
-	// Start the linktree off empty..
-	$context['linktree'] = array();
+	// Start the breadcrumbs off empty..
+	$context['breadcrumbs'] = [];
 
 	// Have they by chance specified a message id but nothing else?
 	if (empty($_REQUEST['action']) && empty($topic) && empty($board) && !empty($_REQUEST['msg']))
@@ -437,14 +437,14 @@ function loadBoard()
 			$board_info['error'] = 'access';
 		}
 
-		// Build up the linktree.
-		$context['linktree'] = array_merge(
-			$context['linktree'],
-			array(array(
+		// Build up the breadcrumbs.
+		$context['breadcrumbs'] = array_merge(
+			$context['breadcrumbs'],
+			[[
 				'url' => getUrl('action', $modSettings['default_forum_action']) . '#c' . $board_info['cat']['id'],
 				'name' => $board_info['cat']['name']
-			)
-			),
+			]
+			],
 			array_reverse($board_info['parent_boards']),	[
 				[
 					'url' => getUrl('board', ['board' => $board, 'start' => '0', 'name' => $board_info['name']]),
@@ -470,13 +470,13 @@ function loadBoard()
 		$_GET['board'] = '';
 		$_GET['topic'] = '';
 
-		// The linktree should not give the game away mate!
-		$context['linktree'] = array(
-			array(
+		// The breadcrumbs should not give the game away mate!
+		$context['breadcrumbs'] = [
+			[
 				'url' => $scripturl,
 				'name' => $context['forum_name_html_safe']
-			)
-		);
+			]
+		];
 
 		// If it's a prefetching agent, stop it
 		stop_prefetching();

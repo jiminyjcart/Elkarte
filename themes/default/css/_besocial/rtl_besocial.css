@@ -21,7 +21,7 @@
  *
  *		$MAIN................Forum header, wrapper, and footer.
  *		$MENUS...............Main and secondary menus.
- *		$LINKTREE............The breadcrumbs.
+ *		$BREADCRUMBS.........The navigation path breadcrumbs.
  *		$BUTTONS.............Most button strips.
  *		$PAGELINKS...........Page navigation links.
  *
@@ -192,10 +192,10 @@ input[type="submit"]:hover, button[type="submit"]:hover, input[type="button"]:ho
 }
 
 /* -------------------------------------------------------
- *	$LINKTREE
+ *	$BREADCRUMBS
  * -------------------------------------------------------
  */
-.linktree:not(:last-child):after {
+.breadcrumbs:not(:last-child):after {
 	transform: scale(1) rotate(-135deg);
 }
 

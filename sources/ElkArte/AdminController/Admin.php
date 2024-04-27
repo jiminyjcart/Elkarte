@@ -91,7 +91,7 @@ class Admin extends AbstractController
 
 		// Actually create the menu!
 		$admin_include_data = $this->loadMenu();
-		$this->buildLinktree($admin_include_data);
+		$this->buildBreadCrumbs($admin_include_data);
 
 		// And off we go, only one action, the chosen menu area
 		$action = new Action();
@@ -573,22 +573,22 @@ class Admin extends AbstractController
 	 *
 	 * @param array $admin_include_data
 	 */
-	private function buildLinktree($admin_include_data)
+	private function buildBreadCrumbs($admin_include_data)
 	{
 		global $txt, $context;
 
 		// Build the link tree.
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = [
 			'url' => getUrl('admin', ['action' => 'admin']),
 			'name' => $txt['admin_center'],
-		);
+		];
 
 		if (isset($admin_include_data['current_area']) && $admin_include_data['current_area'] !== 'index')
 		{
-			$context['linktree'][] = array(
+			$context['breadcrumbs'][] = [
 				'url' => getUrl('admin', ['action' => 'admin', 'area' => $admin_include_data['current_area'], '{session_data}']),
 				'name' => $admin_include_data['label'],
-			);
+			];
 		}
 
 		if (!isset($admin_include_data['current_subsection'], $admin_include_data['subsections'][$admin_include_data['current_subsection']]))
@@ -601,10 +601,10 @@ class Admin extends AbstractController
 			return;
 		}
 
-		$context['linktree'][] = array(
+		$context['breadcrumbs'][] = [
 			'url' => getUrl('admin', ['action' => 'admin', 'area' => $admin_include_data['current_area'], 'sa' => $admin_include_data['current_subsection'], '{session_data}']),
 			'name' => $admin_include_data['subsections'][$admin_include_data['current_subsection']]['label'],
-		);
+		];
 	}
 
 	/**
