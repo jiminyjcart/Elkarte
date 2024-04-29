@@ -125,11 +125,11 @@ class Display extends AbstractController
 		// The start isn't a number; it's information about what to do, where to go.
 		$this->makeStartAdjustments($total_visible_posts);
 
-		// Censor the title...
+		// Censor the subject...
 		$this->topicinfo['subject'] = censor($this->topicinfo['subject']);
 
 		// Allow addons access to the topicinfo array
-		call_integration_hook('integrate_display_topic', array($this->topicinfo));
+		call_integration_hook('integrate_display_topic', [$this->topicinfo]);
 
 		// If all is set, figure out what needs to be done
 		$can_show_all = $this->getCanShowAll($total_visible_posts);
@@ -159,7 +159,7 @@ class Display extends AbstractController
 			'offset' => $limit,
 		];
 
-		// Get each post and poster in this topic.
+		// Get each post and poster on this topic page.
 		$topic_details = getTopicsPostsAndPoster($this->topicinfo['id_topic'], $limit_settings, $ascending);
 		$messages = $topic_details['messages'];
 
@@ -175,13 +175,16 @@ class Display extends AbstractController
 		$context['first_message'] = 0;
 		$context['first_new_message'] = false;
 
-		call_integration_hook('integrate_display_message_list', array(&$messages, &$all_posters));
+		call_integration_hook('integrate_display_message_list', [&$messages, &$all_posters]);
 
 		// If there _are_ messages here... (probably an error otherwise :!)
 		if (!empty($messages))
 		{
 			// Mark the board as read or not ... calls updateReadNotificationsFor() sets $context['is_marked_notify']
 			$this->markRead($messages, $board);
+
+			// Mark notifications for this member and first seen messages
+			$this->markNotificationsRead($messages);
 
 			$msg_parameters = [
 				'message_list' => $messages,
@@ -712,6 +715,34 @@ class Display extends AbstractController
 	}
 
 	/**
+	 * Marks notifications read for specified messages
+	 *
+	 * @param array $messages An array of message ids
+	 * @return void
+	 */
+	private function markNotificationsRead($messages)
+	{
+		global $modSettings;
+
+		$mark_at_msg = max($messages);
+		if ($mark_at_msg >= $this->topicinfo['id_last_msg'])
+		{
+			$mark_at_msg = $modSettings['maxMsgID'];
+		}
+
+		// If there are new messages "in view", lets mark any notification for them as read
+		if ($mark_at_msg >= $this->topicinfo['new_from'])
+		{
+			require_once(SUBSDIR . '/Mentions.subs.php');
+			$filterMessages = array_filter($messages, static function ($element) use ($mark_at_msg) {
+				return $element >= $mark_at_msg;
+			});
+
+			markNotificationsRead($filterMessages);
+		}
+	}
+
+	/**
 	 * Keeps track of where the user is in reading this topic.
 	 *
 	 * @param array $messages
@@ -721,36 +752,38 @@ class Display extends AbstractController
 	{
 		global $modSettings;
 
-		// Guests can't mark topics read or for notifications, just can't sorry.
-		if ($this->user->is_guest === false && !empty($messages))
+		// Guests can't mark topics read or for notifications, just can't, sorry.
+		if ($this->user->is_guest || empty($messages))
 		{
-			$boardseen = isset($this->_req->query->boardseen);
+			return;
+		}
 
-			$mark_at_msg = max($messages);
-			if ($mark_at_msg >= $this->topicinfo['id_last_msg'])
+		$boardseen = isset($this->_req->query->boardseen);
+
+		$mark_at_msg = max($messages);
+		if ($mark_at_msg >= $this->topicinfo['id_last_msg'])
+		{
+			$mark_at_msg = $modSettings['maxMsgID'];
+		}
+
+		if ($mark_at_msg >= $this->topicinfo['new_from'])
+		{
+			markTopicsRead([$this->user->id, $this->topicinfo['id_topic'], $mark_at_msg, $this->topicinfo['unwatched']], $this->topicinfo['new_from'] !== 0);
+			$numNewTopics = getUnreadCountSince($board, empty($_SESSION['id_msg_last_visit']) ? 0 : $_SESSION['id_msg_last_visit']);
+
+			if (empty($numNewTopics))
 			{
-				$mark_at_msg = $modSettings['maxMsgID'];
+				$boardseen = true;
 			}
+		}
 
-			if ($mark_at_msg >= $this->topicinfo['new_from'])
-			{
-				markTopicsRead(array($this->user->id, $this->topicinfo['id_topic'], $mark_at_msg, $this->topicinfo['unwatched']), $this->topicinfo['new_from'] !== 0);
-				$numNewTopics = getUnreadCountSince($board, empty($_SESSION['id_msg_last_visit']) ? 0 : $_SESSION['id_msg_last_visit']);
+		updateReadNotificationsFor($this->topicinfo['id_topic'], $board);
 
-				if (empty($numNewTopics))
-				{
-					$boardseen = true;
-				}
-			}
-
-			updateReadNotificationsFor($this->topicinfo['id_topic'], $board);
-
-			// Mark board as seen if we came using last post link from BoardIndex. (or other places...)
-			if ($boardseen)
-			{
-				require_once(SUBSDIR . '/Boards.subs.php');
-				markBoardsRead($board, false, false);
-			}
+		// Mark board as seen if we came using last post link from BoardIndex. (or other places...)
+		if ($boardseen)
+		{
+			require_once(SUBSDIR . '/Boards.subs.php');
+			markBoardsRead($board, false, false);
 		}
 	}
 
