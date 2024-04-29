@@ -522,7 +522,7 @@ function markNotificationsRead($messages)
 		[
 			'status' => 0,
 			'member' => User::$info->id,
-			'targets' => is_array($messages) ? $messages : [$messages],
+			'targets' => $messages,
 			'mention_types' => $mentionTypes,
 		]
 	)->fetch_callback(
