@@ -297,22 +297,16 @@ class Mentioning extends AbstractModel
 	 * - note that delete is a "soft-delete" because otherwise anyway we have to remember
 	 * - when a user was already mentioned for a certain message (e.g. in case of editing)
 	 *
-	 * @param int|int[] $id_mentions the mention id in the db
+	 * @param int|int[] $id_mentions the mention(s) id in the db
 	 * @param string $status status to update, 'new', 'read', 'deleted', 'unapproved'
 	 * @return bool if successfully changed or not
 	 * @package Mentions
 	 */
 	protected function _changeStatus($id_mentions, $status = 'read')
 	{
-		$success = $this->_db->query('', '
-			UPDATE {db_prefix}log_mentions
-			SET status = {int:status}
-			WHERE id_mention IN ({array_int:id_mentions})',
-				[
-					'id_mentions' => (array) $id_mentions,
-					'status' => $this->_known_status[$status],
-				]
-			)->affected_rows() !== 0;
+		require_once(SUBSDIR . '/Mentions.subs.php');
+
+		$success = changeStatus($id_mentions, $this->user->id, $this->_known_status[$status], false);
 
 		// Update the top level mentions count
 		if ($success)

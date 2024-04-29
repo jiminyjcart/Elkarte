@@ -187,7 +187,8 @@ function toggleMentionsApproval($msgs, $approved)
 	// Update the mentions menu count for the members that have this message
 	$status = $approved ? 0 : 3;
 	$db->fetchQuery('
-		SELECT id_member, status
+		SELECT 
+			id_member, status
 		FROM {db_prefix}log_mentions
 		WHERE id_target IN ({array_int:messages})',
 		array(
@@ -437,11 +438,11 @@ function getNewMentions($id_member, $timestamp)
  * Get the available mention types for a user.
  *
  * @param int|null $user The user ID. If null, User::$info->id will be used.
- * @param string $type The type of mentions.  user will return only those that the user has enabled and set
- * as notification.  If not user, returns the system level enabled mentions.
+ * @param string $type The type of mentions.  "user" will return only those that the user has enabled and set
+ * as on site notification.
  *
- * By default, will filter out notification types with a method set to none, e.g. the user had disable that
- * type of mention.  Use type=all to return everything, or type=notification to return only those
+ * By default, will filter out notification types with a method set to none, e.g. the user has disabled that
+ * type of mention.  Use type "system" to return everything, or type "user" to return only those
  * that they want on-site notifications.
  *
  * @return array The available mention types.
@@ -486,4 +487,111 @@ function getMentionTypes($user, $type = 'user')
 
 	sort($enabled);
 	return $enabled;
+}
+
+/**
+ * Marks a set of notifications as read.
+ *
+ * Intended to be called when viewing a topic page.
+ *
+ * @param array $messages
+ */
+function markNotificationsRead($messages)
+{
+	// Guests can't mark notifications
+	if (User::$info->is_guest || empty($messages))
+	{
+		return;
+	}
+
+	// These are the types associated with messages (where the id_target is a msg_id)
+	$mentionTypes = ['mentionmem', 'likemsg', 'rlikemsg', 'quotedmem', 'watchedtopic', 'watchedboard'];
+	$messages = is_array($messages) ? $messages : [$messages];
+	$changes = [];
+
+	// Find unread notifications for this group of messages for this member
+	$db = database();
+	$db->fetchQuery('
+		SELECT 
+			id_mention
+		FROM {db_prefix}log_mentions
+		WHERE status = {int:status}
+			AND id_member = {int:member}
+			AND id_target IN ({array_int:targets})
+			AND mention_type IN ({array_string:mention_types})',
+		[
+			'status' => 0,
+			'member' => User::$info->id,
+			'targets' => $messages,
+			'mention_types' => $mentionTypes,
+		]
+	)->fetch_callback(
+	function ($row) use (&$changes) {
+		$changes[] = (int) $row['id_mention'];
+	});
+
+	if (!empty($changes))
+	{
+		changeStatus(array_unique($changes), User::$info->id);
+	}
+}
+
+/**
+ * Change the status of mentions
+ *
+ * Updates the status of mentions in the database. Also updates the mentions count for the member.
+ *
+ *  - Can be used to mark as read, new, deleted, etc a group of mention id's
+ *  - Note that delete is a "soft-delete" because otherwise anyway we have to remember
+ *  - When a user was already mentioned for a certain message (e.g. in case of editing)
+ *
+ * @param int|array $id_mentions The id(s) of the mentions to update
+ * @param int $member_id The id of the member
+ * @param int $status The new status for the mentions (default: 1)
+ * @param bool $update Whether to update the mentions count (default: true)
+ *
+ * @return bool Returns true if the update was successful, false otherwise
+ */
+function changeStatus($id_mentions, $member_id, $status = 1, $update = true)
+{
+	$db = database();
+
+	$id_mentions = is_array($id_mentions) ? $id_mentions : [$id_mentions];
+	$status = $status ?? 1;
+
+	$success = $db->query('', '
+		UPDATE {db_prefix}log_mentions
+		SET status = {int:status}
+		WHERE id_mention IN ({array_int:id_mentions})',
+		[
+			'id_mentions' => $id_mentions,
+			'status' => $status,
+		]
+	)->affected_rows() !== 0;
+
+	// Update the mentions count
+	if ($success && $update)
+	{
+		$number = count($id_mentions);
+		require_once(SUBSDIR . '/Members.subs.php');
+
+		// Increase the count by 1
+		if ($number === 1 && $status === 0)
+		{
+			updateMemberData($member_id, ['mentions' => '+']);
+			return true;
+		}
+
+		// Mark as read we decrease the count by 1
+		if ($number === 1 && $status === 1)
+		{
+			updateMemberData($member_id, ['mentions' => '-']);
+			return true;
+		}
+
+		// A full recount is required
+		countUserMentions(false, '', $member_id);
+	}
+
+	return $success;
 }
