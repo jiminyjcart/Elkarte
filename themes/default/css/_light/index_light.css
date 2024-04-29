@@ -2070,7 +2070,7 @@ ul.cf_icons {
 	}
 
 	#main_menu .linklevel1:not(#search_form_menu input):not(#search_form_menu select):not(#search_form_menu button) {
-		border-color: transparent;
+		border-color: var(--transparent);
 		box-shadow: none;
 	}
 }

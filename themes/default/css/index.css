@@ -3154,7 +3154,7 @@ aside.poster, #quickreplybox .poster {
 }
 
 #iconList > .messageIcon > img {
-	height: 1.8rem;
+	width: 1.8rem;
 }
 
 #iconList > .messageIcon:hover {
@@ -3659,8 +3659,6 @@ dl.send_mail dd {
 .popup_content dl.settings dt {
 	margin-bottom: 1.5rem;
 }
-
-/* end of relatively useless share button stuff */
 
 /* -------------------------------------------------------
  *	$EDITOR ... The main post editor section
@@ -4830,7 +4828,7 @@ div.labels {
 
 /* Use the old one true layout trick here. */
 .weeklist .content, .weeklist .calendar_today {
-	margin: 0 0 -9.5rem 10em;
+	margin: 0 0 -9.5rem 10rem;
 	padding: .8rem .8rem 10rem .8rem;
 }
 

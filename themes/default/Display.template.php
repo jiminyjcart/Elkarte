@@ -570,6 +570,7 @@ function template_quickreply_below()
 			iTopicId: ' . $context['current_topic'] . ',
 			sSessionId: elk_session_id,
 			sSessionVar: elk_session_var,
+			bRTL: ' . (!empty($context['right_to_left']) ? 'true' : 'false') . ',
 			sAction: "messageicons;board=' . $context['current_board'] . '" ,
 			sLabelIconList: "' . $txt['message_icon'] . '",
 		});', true);
