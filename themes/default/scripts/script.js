@@ -1227,6 +1227,8 @@ function IconList (oOptions)
 	this.funcParent = this;
 	this.iCurMessageId = 0;
 	this.iCurTimeout = 0;
+	this.aPos = [];
+	this.oDiv = {};
 
 	// Set a default Action
 	if (!('sAction' in this.opt) || this.opt.sAction === null)
@@ -1268,20 +1270,19 @@ IconList.prototype.openPopup = function(oDiv, iMessageId) {
 
 		// Start to fetch its contents.
 		ajax_indicator(true);
+		this.oDiv = oDiv;
 		sendXMLDocument.call(this, elk_prepareScriptUrl(elk_scripturl) + 'action=xmlhttp;sa=' + this.opt.sAction + ';api=xml', '', this.onIconsReceived);
 
 		createEventListener(document.body);
 	}
 
 	// Set the position of the container.
-	let aPos = elk_itemPos(oDiv);
-
-	this.oContainerDiv.style.top = (aPos[1] + oDiv.offsetHeight) + 'px';
-	this.oContainerDiv.style.left = (aPos[0] - 1) + 'px';
 	this.oClickedIcon = oDiv;
 
 	if (this.bListLoaded)
 	{
+		this.oContainerDiv.style.top = (this.aPos[1] + oDiv.offsetHeight) + 'px';
+		this.oContainerDiv.style.left = (this.aPos[0] - 1) + 'px';
 		this.oContainerDiv.style.display = 'flex';
 	}
 
@@ -1301,6 +1302,14 @@ IconList.prototype.onIconsReceived = function(oXMLDoc) {
 	this.oContainerDiv.innerHTML = sItems;
 	this.oContainerDiv.style.display = 'flex';
 	this.bListLoaded = true;
+
+	this.aPos = elk_itemPos(this.oDiv);
+	if (this.opt.bRTL)
+	{
+		this.aPos[0] -= this.oContainerDiv.getBoundingClientRect().width - 24;
+	}
+	this.oContainerDiv.style.top = (this.aPos[1] + this.oDiv.offsetHeight) + 'px';
+	this.oContainerDiv.style.left = (this.aPos[0] - 1) + 'px';
 
 	ajax_indicator(false);
 };

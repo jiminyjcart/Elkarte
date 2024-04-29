@@ -9,7 +9,7 @@
  * © ElkArte Forum contributors
  *
  * INTRODUCTION
- * This variant is the standard, light, Elkarte RTL theme.
+ * This variant is the standard, blue, Elkarte RTL theme.
  * This is eye candy only. All the layout code is in rtl.css.
  * -------------------------------------------------------
  * $CONTENTS
@@ -65,32 +65,6 @@ body {
 	background-image: linear-gradient(to left, var(--body_grad_1) 0%, var(--body_grad_2) 50%, var(--body_grad_1) 100%);
 }
 
-fieldset {
-	box-shadow: inset 1px -1px 3px var(--box_shadow);
-}
-
-/* Dont show disabled buttons as active on hover */
-input[type=submit][disabled]:hover, button[disabled], button[disabled]:hover {
-	border-right: 1px solid var(--secondary_border_right);
-	border-left: 1px solid var(--secondary_border_left);
-}
-
-/* Common button styling. */
-input[type="submit"], .drop_area_fileselect_text, button[type="submit"], input[type="button"],
-/* Anchors styled to look like buttons. */
-.linkbutton:link, .linkbutton:visited {
-	border-right: 1px solid var(--secondary_border_right);
-	border-left: 1px solid var(--secondary_border_left);
-	box-shadow: -1px 1px 2px var(--box_shadow);
-}
-
-/* Hover effects. */
-input[type="submit"]:hover, button[type="submit"]:hover, input[type="button"]:hover, .linkbutton:hover {
-	border-right-color: var(--primary_border_top);
-	border-left-color: var(--primary_border_left);
-	box-shadow: -2px 1px 1px var(--opacity10) inset;
-}
-
 /* Styles for main headers. */
 .category_header, .forum_category .category_header {
 	text-shadow: -1px 1px 0 var(--box_shadow);
@@ -105,11 +79,6 @@ input[type="submit"]:hover, button[type="submit"]:hover, input[type="button"]:ho
  * $BBC
  * -------------------------------------------------------
  */
-
-/* Extra quote styling */
-.bbc_quote {
-	box-shadow: -2px 2px 2px var(--box_shadow);
-}
 
 /* -------------------------------------------------------
  * $AJAX
@@ -138,78 +107,15 @@ input[type="submit"]:hover, button[type="submit"]:hover, input[type="button"]:ho
  * -------------------------------------------------------
  */
 
-/* Level 1 Menu bar: link or button. General styling. */
-.linklevel1, .linklevel1:link, .linklevel1:visited, .quickbuttons .inline_mod_check {
-	border-right: 1px solid var(--secondary_border_right);
-	border-left: 1px solid var(--secondary_border_left);
-	box-shadow: -1px 1px 2px var(--box_shadow);
-}
-
-/* Level 1 button hover and focus effects. */
-.linklevel1:hover, .listlevel1:hover .linklevel1,
-.linklevel2:hover, .listlevel2:hover .linklevel2,
-.linklevel3:hover, .listlevel3:hover .linklevel3,
-#menu_sidebar .linklevel1:hover, #menu_sidebar .listlevel1:hover .linklevel1 {
-	border-right: 1px solid var(--secondary_border_right);
-	border-left: 1px solid var(--secondary_border_right);
-	box-shadow: -2px 1px 1px var(--opacity10) inset;
-}
-
-.poster li.poster_online:hover .linklevel1 {
-	border-right: 1px solid var(--secondary_border_right);
-	border-left: 1px solid var(--secondary_border_left);
-	box-shadow: -2px 1px 1px var(--opacity10) inset;
-}
-
-.poster li.poster_online .nolink {
-	border-right: 1px solid var(--secondary_border_right);
-	border-left: 1px solid var(--secondary_border_left);
-	box-shadow: -1px 1px 2px var(--box_shadow);
-}
-
-/* Level 1 active buttons. */
-.linklevel1.active, .listlevel1:hover .active,
-#collapse_button .linklevel1, .pm_indicator {
-	box-shadow: -1px 1px 2px #BBBBBB;
-}
-
-/* Hover effects for those buttons. */
-.linklevel1.active:hover, .listlevel1:hover .linklevel1.active,
-#collapse_button .linklevel1:hover, .linklevel1:hover .pm_indicator {
-	border-right-color: var(--menu_border_hover_top);
-	border-left-color: var(--menu_border_hover);
-	box-shadow: -1px 1px 1px var(--opacity30) inset;
-}
-
-/* Levels 2 and 3: drop menu wrapper. */
-.menulevel2, .menulevel3 {
-	border-right: 1px solid var(--menu_border);
-	border-left: 1px solid var(--menu_border_left);
-	box-shadow: -2px 2px 3px var(--opacity20);
-}
-
-/* Tricky PM indicator. Define it carefully */
-.pm_indicator {
-	box-shadow: -2px 2px 3px var(--opacity20), 0 -1px 0 var(--menu_button_active) inset;
-}
-
-.button_indicator {
-	box-shadow: -2px 2px 2px var(--opacity20);
-}
-
 /* -------------------------------------------------------
  * $BOARDICONS
  * -------------------------------------------------------
  */
 
-
 /* -------------------------------------------------------
  *	$BREADCRUMBS
  * -------------------------------------------------------
  */
-.navigate_section {
-	box-shadow: -1px 2px 3px var(--box_shadow);
-}
 
 .breadcrumb .crumb.active:after, .breadcrumb .crumb:hover:after, .breadcrumb .crumb:last-child {
 	background-image: linear-gradient(0deg, var(--menu_button_active), var(--menu_button_active_2));
@@ -224,20 +130,10 @@ input[type="submit"]:hover, button[type="submit"]:hover, input[type="button"]:ho
  * -------------------------------------------------------
  */
 
-/* The active one */
-.buttonlist li a.active {
-	box-shadow: -1px 1px 2px var(--box_shadow);
-}
-
 /* -------------------------------------------------------
  *	$PAGELINKS
  * -------------------------------------------------------
  */
-.pagelinks .navPages:hover, .pagelinks .current_page {
-	border-right: 1px solid var(--secondary_border_right);
-	border-left: 1px solid var(--secondary_border_left);
-	box-shadow: -2px 1px 1px var(--opacity10) inset;
-}
 
 /* -------------------------------------------------------
  *	$TABLES
@@ -249,50 +145,20 @@ input[type="submit"]:hover, button[type="submit"]:hover, input[type="button"]:ho
  * -------------------------------------------------------
  */
 
-/* The board categories and newsfader - some shared styling. */
-.forum_category, .forumposts, .content_category {
-	box-shadow: -1px 2px 3px var(--box_shadow);
-}
-
 .board_latest {
 	border-right: 1px solid var(--secondary_border_right);
 }
 
-/* The board description and who-is-viewing stuff. */
-#description_board {
-	box-shadow: -1px 2px 4px var(--box_shadow);
-}
-
-.topic_listing {
-	box-shadow: -1px 2px 4px var(--box_shadow);
-}
-
-.jump_to_header {
-	box-shadow: -2px 1px var(--opacity10) inset;
+.topic_info {
+	border-right-color: var(--transparent);
+	border-left-color: var(--primary_border);
+	padding: .6rem 1.2rem .6rem 2.2rem;
 }
 
 /* -------------------------------------------------------
  *	$TOPICS
  * -------------------------------------------------------
  */
-
-/* On to the posts */
-.forumposts {
-	box-shadow: -1px 2px 4px var(--box_shadow);
-}
-
-/* @todo - Save code by amalgamating common button background declarations. */
-.poster_online .linklevel1 {
-	border-right: 1px solid var(--secondary_border_right);
-	border-left: 1px solid var(--secondary_border_left);
-	box-shadow: -1px 1px 2px var(--box_shadow);
-}
-
-.poster_online .linklevel1:hover {
-	border-right: 1px solid var(--primary_border_right);
-	border-left: 1px solid var(--primary_border_left);
-	box-shadow: -1px 1px 1px var(--opacity10) inset;
-}
 
 /* Do one override here for .poster. Still saves code all round. */
 .poster_avatar .linklevel1, .poster_avatar:hover .linklevel1,
@@ -322,10 +188,6 @@ input[type="submit"]:hover, button[type="submit"]:hover, input[type="button"]:ho
  * $TABS
  * --------------------------------------------------------
  */
-.ui-tabs .ui-state-hover {
-	border-right: 1px solid var(--secondary_border_right);
-	border-left: 1px solid var(--secondary_border_left);
-}
 
 /* -------------------------------------------------------
  * $PROFILE
@@ -350,15 +212,13 @@ input[type="submit"]:hover, button[type="submit"]:hover, input[type="button"]:ho
  * -------------------------------------------------------
  */
 
-/* Styles for the tooltips. */
-#site_tooltip {
-	box-shadow: -3px 3px 3px var(--opacity30);
-}
-
 /* -------------------------------------------------------
  * $SEARCH
  * -------------------------------------------------------
  */
+#search_form_menu select, #search_form_menu input, #search_form_menu button[type="submit"] {
+	border-right-color: var(--menu_border_left);
+}
 
 /* -------------------------------------------------------
  *	$MEMBERLIST
@@ -408,9 +268,6 @@ input[type="submit"]:hover, button[type="submit"]:hover, input[type="button"]:ho
    -------------------------------------------------------------------------------------------*/
 
 @media screen and (max-width: 50em) {
-	#menu_sidebar {
-		box-shadow: -3px 3px 3px var(--opacity30);
-	}
 }
 
 /* This one does up to 540 screens.
@@ -419,14 +276,6 @@ input[type="submit"]:hover, button[type="submit"]:hover, input[type="button"]:ho
 @media screen and (max-width: 33.750em) {
 	.board_latest {
 		border-right-color: var(--transparent);
-	}
-
-	.topic_listing > li {
-		box-shadow: -3px 3px 6px var(--box_shadow);
-	}
-
-	.forumposts .content {
-		box-shadow: -3px 3px 6px var(--box_shadow);
 	}
 
 	.breadcrumb:after {
