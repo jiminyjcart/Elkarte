@@ -48,7 +48,7 @@ function template_messages_informations_above()
 		<main id="forumposts">
 			<header class="category_header">
 				<i class="hdicon ', $context['class'], '"></i>
-				', $txt['topic'], ': ', $context['subject'], '&nbsp;<span class="views_text">(', $context['num_views_text'], ')</span>
+				<span id="topic_subject">', $context['subject'], '</span>&nbsp;<span class="views_text">(', $context['num_views_text'], ')</span>
 				<span class="nextlinks">',
 					empty($context['links']['go_prev']) ? '' : '<a href="' . $context['links']['go_prev'] . '">' . $txt['previous_next_back'] . '</a>',
 					empty($context['links']['go_next']) ? '' : ' - <a href="' . $context['links']['go_next'] . '">' . $txt['previous_next_forward'] . '</a>',
@@ -97,7 +97,7 @@ function template_messages_informations_above()
 	}
 
 	echo '
-			<form id="quickModForm" action="', $scripturl, '?action=quickmod2;topic=', $context['current_topic'], '.', $context['start'], '" method="post" accept-charset="UTF-8" name="quickModForm" onsubmit="return oQuickModify.bInEditMode ? oQuickModify.modifySave(\'' . $context['session_id'] . "', '" . $context['session_var'] . '\') : false">';
+			<form id="quickModForm" action="', $scripturl, '?action=quickmod2;topic=', $context['current_topic'], '.', $context['start'], '" method="post" accept-charset="UTF-8" name="quickModForm" onsubmit="return oQuickModify.bInEditMode ? oQuickModify.modifySave() : false">';
 }
 
 /**
@@ -541,10 +541,10 @@ function template_quickreply_below()
 					<div id="error_box" class="errorbox hide"></div>
 					<textarea class="editor" name="message" rows="12" tabindex="' . ($context['tabindex']++) . '">%body%</textarea><br />
 					<div class="submitbutton">
-						<input type="hidden" name="\' + elk_session_var + \'" value="\' + elk_session_id + \'" />
+						<input type="hidden" name="' . $context['session_var'] . '" value="' . $context['session_id'] . '" />
 						<input type="hidden" name="topic" value="' . $context['current_topic'] . '" />
 						<input type="hidden" name="msg" value="%msg_id%" />
-						<input type="submit" name="post" value="' . $txt['save'] . '" tabindex="' . ($context['tabindex']++) . '" onclick="return oQuickModify.modifySave(\'' . $context['session_id'] . "', '" . $context['session_var'] . '\');" accesskey="s" />
+						<input type="submit" name="post" value="' . $txt['save'] . '" tabindex="' . ($context['tabindex']++) . '" onclick="return oQuickModify.modifySave();" accesskey="s" />
 						<input type="submit" name="cancel" value="' . $txt['modify_cancel'] . '" tabindex="' . ($context['tabindex']++) . '" onclick="return oQuickModify.modifyCancel();" />
 					</div>
 				</div>') . ',

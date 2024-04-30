@@ -144,14 +144,10 @@ QuickModifyTopic.prototype.modify_topic_save = function(cur_session_id, cur_sess
 		return true;
 	}
 
-	let x = [];
-	x[x.length] = 'subject=' + document.forms.quickModForm.subject.value.replace(/&#/g, '&#38;#').php_urlencode();
-	x[x.length] = 'topic=' + parseInt(document.forms.quickModForm.elements.topic.value);
-	x[x.length] = 'msg=' + parseInt(document.forms.quickModForm.elements.msg.value);
-
 	// Send in the call to save the updated topic subject
 	ajax_indicator(true);
-	sendXMLDocument.call(this, elk_prepareScriptUrl(elk_scripturl) + 'action=jsmodify;topic=' + parseInt(document.forms.quickModForm.elements.topic.value) + ';' + cur_session_var + '=' + cur_session_id + ';api=xml', x.join('&'), this.modify_topic_done);
+	let formData = serialize(document.forms.quickModForm); // includes sessionID
+	sendXMLDocument.call(this, elk_prepareScriptUrl(elk_scripturl) + 'action=jsmodify;api=xml', formData, this.modify_topic_done);
 
 	return false;
 };
@@ -538,10 +534,9 @@ QuickModify.prototype.modifyCancel = function() {
 };
 
 // The function called after a user wants to save his precious message.
-QuickModify.prototype.modifySave = function(sSessionId, sSessionVar) {
+QuickModify.prototype.modifySave = function() {
 	let i = 0,
-		x = [],
-		uIds = [];
+		formData = '';
 
 	// We cannot save if we weren't in edit mode.
 	if (!this.bInEditMode)
@@ -567,27 +562,10 @@ QuickModify.prototype.modifySave = function(sSessionId, sSessionVar) {
 		}
 	}
 
-	let oInputs = document.forms.quickModForm.getElementsByTagName('input');
-	for (i = 0; i < oInputs.length; i++)
-	{
-		if (oInputs[i].name === 'uid[]')
-		{
-			uIds.push('uid[' + i + ']=' + parseInt(oInputs[i].value));
-		}
-	}
-
-	x[x.length] = 'subject=' + document.forms.quickModForm.subject.value.replace(/&#/g, '&#38;#').php_urlencode();
-	x[x.length] = 'message=' + document.forms.quickModForm.message.value.replace(/&#/g, '&#38;#').php_urlencode();
-	x[x.length] = 'topic=' + parseInt(document.forms.quickModForm.elements.topic.value);
-	x[x.length] = 'msg=' + parseInt(document.forms.quickModForm.elements.msg.value);
-	if (uIds.length > 0)
-	{
-		x[x.length] = uIds.join('&');
-	}
-
 	// Send in the XMLhttp request and let's hope for the best.
 	ajax_indicator(true);
-	sendXMLDocument.call(this, elk_prepareScriptUrl(this.opt.sScriptUrl) + 'action=jsmodify;topic=' + this.opt.iTopicId + ';' + elk_session_var + '=' + elk_session_id + ';api=xml', x.join('&'), this.onModifyDone);
+	formData = serialize(document.forms.quickModForm); // uses form sessionID
+	sendXMLDocument.call(this, elk_prepareScriptUrl(this.opt.sScriptUrl) + 'action=jsmodify;;api=xml', formData, this.onModifyDone);
 
 	return false;
 };
@@ -617,31 +595,52 @@ QuickModify.prototype.onModifyDone = function(XMLDoc) {
 	}
 
 	let message = XMLDoc.getElementsByTagName('elk')[0].getElementsByTagName('message')[0],
-		body = message.getElementsByTagName('body')[0],
-		error = message.getElementsByTagName('error')[0];
+		oBody = message.getElementsByTagName('body')[0],
+		oSubject = message.getElementsByTagName('subject')[0],
+		oModified = message.getElementsByTagName('modified')[0],
+		oError = message.getElementsByTagName('error')[0];
 
 	document.forms.quickModForm.message.classList.remove('border_error');
 	document.forms.quickModForm.subject.classList.remove('border_error');
 
-	if (body)
+	if (oBody)
 	{
 		// Show new body.
 		let bodyText = '';
-		for (let i = 0; i < body.childNodes.length; i++)
+		for (let i = 0; i < oBody.childNodes.length; i++)
 		{
-			bodyText += body.childNodes[i].nodeValue;
+			bodyText += oBody.childNodes[i].nodeValue;
 		}
 
 		this.sMessageBuffer = this.opt.sTemplateBodyNormal.replace(/%body%/, bodyText);
 		this.oCurMessageDiv.innerHTML = this.sMessageBuffer;
 
 		// Show new subject div, update in case it changed
-		let oSubject = message.getElementsByTagName('subject')[0],
-			sSubjectText = oSubject.childNodes[0].nodeValue;
+		let sSubjectText = oSubject.childNodes[0].nodeValue;
 
 		this.sSubjectBuffer = this.opt.sTemplateSubjectNormal.replace(/%subject%/, sSubjectText);
 		this.oCurSubjectDiv.innerHTML = this.sSubjectBuffer;
 		this.oCurSubjectDiv.style.display = '';
+
+		// If this is the first message, also update the category header.
+		if (oSubject.getAttribute('is_first') === '1')
+		{
+			let subjectHeader = document.getElementById('topic_subject');
+			if (subjectHeader)
+			{
+				subjectHeader.innerHTML = this.sSubjectBuffer;
+			}
+		}
+
+		// Show this message as 'modified'.
+		if (this.opt.bShowModify)
+		{
+			let modifiedSpan = document.querySelector('#modified_' + this.sCurMessageId.substring(4));
+			if (modifiedSpan)
+			{
+				modifiedSpan.innerHTML = oModified.childNodes[0].nodeValue;
+			}
+		}
 
 		// Restore the info bar div
 		this.oCurInfoDiv.innerHTML = this.sInfoBuffer;
@@ -709,18 +708,18 @@ QuickModify.prototype.onModifyDone = function(XMLDoc) {
 			prettyPrint();
 		}
 	}
-	else if (error)
+	else if (oError)
 	{
 		oErrordiv = document.getElementById('error_box');
-		oErrordiv.innerHTML = error.childNodes[0].nodeValue;
+		oErrordiv.innerHTML = oError.childNodes[0].nodeValue;
 		oErrordiv.style.display = '';
 
-		if (error.getAttribute('in_body') === '1')
+		if (oError.getAttribute('in_body') === '1')
 		{
 			document.forms.quickModForm.message.classList.add('border_error');
 		}
 
-		if (error.getAttribute('in_subject') === '1')
+		if (oError.getAttribute('in_subject') === '1')
 		{
 			document.forms.quickModForm.subject.classList.add('border_error');
 		}
