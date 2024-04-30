@@ -1616,7 +1616,7 @@ class Post extends AbstractController
 			obExit(false);
 		}
 
-		checkSession('get');
+		checkSession('request');
 
 		$row = getTopicInfoByMsg($topic, empty($_REQUEST['msg']) ? 0 : (int) $_REQUEST['msg']);
 
