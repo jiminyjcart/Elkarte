@@ -2680,7 +2680,7 @@ function memberQuerySeeBoard($id_member)
  * - If the member's post number is updated, updates their post groups.
  *
  * @param int[]|int $members An array of member ids
- * @param mixed[] $data An associative array of the columns to be updated and their respective values.
+ * @param array $data An associative array of the columns to be updated and their respective values.
  */
 function updateMemberData($members, $data)
 {
@@ -2719,7 +2719,7 @@ function updateMemberData($members, $data)
 	if (!empty($modSettings['integrate_change_member_data']))
 	{
 		// Only a few member variables are really interesting for integration.
-		$integration_vars = array(
+		$integration_vars = [
 			'member_name',
 			'real_name',
 			'email_address',
@@ -2731,7 +2731,7 @@ function updateMemberData($members, $data)
 			'time_offset',
 			'avatar',
 			'lngfile',
-		);
+		];
 		$vars_to_integrate = array_intersect($integration_vars, array_keys($data));
 
 		// Only proceed if there are any variables left to call the integration function.
@@ -2740,7 +2740,7 @@ function updateMemberData($members, $data)
 			// Fetch a list of member_names if necessary
 			if ((!is_array($members) && $members === User::$info->id) || (is_array($members) && count($members) == 1 && in_array(User::$info->id, $members)))
 			{
-				$member_names = array(User::$info->username);
+				$member_names = [User::$info->username];
 			}
 			else
 			{
@@ -2797,7 +2797,7 @@ function updateMemberData($members, $data)
 		{
 			if (preg_match('~^' . $var . ' (\+ |- |\+ -)([\d]+)~', $val, $match))
 			{
-				if ($match[1] != '+ ')
+				if ($match[1] !== '+ ')
 				{
 					$val = 'CASE WHEN ' . $var . ' <= ' . abs($match[2]) . ' THEN 0 ELSE ' . $val . ' END';
 				}

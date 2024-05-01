@@ -150,7 +150,9 @@ h3.category_header form {
 
 /* Styles for the admin home screen. */
 #quick_search {
+	order: 2;
 	margin-top: -.2rem;
+	margin-left: auto;
 }
 
 .admincenter .well, #modcenter .well {
@@ -1229,8 +1231,8 @@ dl.themes_list dd {
 	}
 
 	#core_features .features {
-		width: 100%;
 		float: none;
+		width: 100%;
 	}
 
 	#core_features .features_switch {
