@@ -43,12 +43,19 @@ function template_messages_informations_above()
 {
 	global $context, $settings, $txt, $scripturl, $modSettings;
 
-	// Show the topic information - icon, subject, etc.
+	// Show the topic information - icon, subject, stats, etc.
 	echo '
 		<main id="forumposts">
 			<header class="category_header">
 				<i class="hdicon ', $context['class'], '"></i>
-				<span id="topic_subject">', $context['subject'], '</span>&nbsp;<span class="views_text">(', $context['num_views_text'], ')</span>
+				<span id="topic_subject">', $context['subject'], '</span>
+				<span class="stats_text">
+					<i class="icon icon-small i-user"></i>', $context['topic_starter_name'], '
+					<span>&middot;</span>
+					<i class="icon icon-small i-calendar"></i>', $context['topic_start_time'], '
+					<span>&middot;</span>
+					<i class="icon icon-small i-view"></i>', $context['num_views_text'], '
+				</span>
 				<span class="nextlinks">',
 					empty($context['links']['go_prev']) ? '' : '<a href="' . $context['links']['go_prev'] . '">' . $txt['previous_next_back'] . '</a>',
 					empty($context['links']['go_next']) ? '' : ' - <a href="' . $context['links']['go_next'] . '">' . $txt['previous_next_forward'] . '</a>',

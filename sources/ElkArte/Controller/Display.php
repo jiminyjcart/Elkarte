@@ -441,7 +441,7 @@ class Display extends AbstractController
 	 *
 	 * @param int $topic
 	 * @param int $board
-	 * @throws \ElkArte\Exceptions\Exception on invalid topic value
+	 * @throws Exception on invalid topic value
 	 */
 	public function loadTopicInfo($topic, $board)
 	{
@@ -583,6 +583,8 @@ class Display extends AbstractController
 		$context['topic_last_message'] = $this->topicinfo['id_last_msg'];
 		$context['topic_unwatched'] = $this->topicinfo['unwatched'] ?? 0;
 		$context['start_from'] = $this->start_from;
+		$context['topic_start_time'] = htmlTime($this->topicinfo['poster_time']);
+		$context['topic_starter_name'] = $this->topicinfo['poster_name'];
 
 		// Did this user start the topic or not?
 		$context['user']['started'] = $this->didThisUserStart();
@@ -1015,7 +1017,7 @@ class Display extends AbstractController
 	 * @param string $action the function name of the current action
 	 *
 	 * @return bool
-	 * @throws \ElkArte\Exceptions\Exception not_a_topic
+	 * @throws Exception not_a_topic
 	 */
 	public function trackStats($action = '')
 	{

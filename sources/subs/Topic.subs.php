@@ -1362,7 +1362,7 @@ function getTopicInfo($topic_parameters, $full = '', $selects = array(), $tables
 	}
 
 	$messages_table = $full === 'message' || $full === 'all' || $full === 'starter';
-	$members_table = $full === 'starter';
+	$members_table = $full === 'starter' || $full === 'all';
 	$logs_table = $full === 'all';
 
 	// Create the query, taking full and integration in to account
