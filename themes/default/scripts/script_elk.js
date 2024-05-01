@@ -919,14 +919,17 @@ const ElkNotifier = new window.ElkNotifications({});
 			},
 			showBar = function() {
 				clearTimeout(time_out);
-				elem.style.opacity = '1';
 
-				if (settings.hide_delay !== 0)
-				{
-					time_out = setTimeout(function() {
-						hide();
-					}, settings.hide_delay);
-				}
+				elem.fadeIn(250, function() {
+					if (settings.hide_delay !== 0)
+					{
+						// This will clear the bar if hide has not been implicitly called
+						time_out = setTimeout(function() {
+							hide();
+						}, settings.hide_delay);
+					}
+				});
+
 				return this;
 			},
 			isError = function() {
@@ -940,7 +943,7 @@ const ElkNotifier = new window.ElkNotifications({});
 			hide = function() {
 				// Short delay to avoid removing opacity while it is still be added
 				window.setTimeout(function() {
-					elem.style.opacity = '0';
+					elem.fadeOut(300);
 				}, 300);
 
 				clearTimeout(time_out);
@@ -961,23 +964,7 @@ const ElkNotifier = new window.ElkNotifications({});
 		};
 	});
 
-	// AMD / RequireJS
-	if (typeof define !== 'undefined' && define.amd)
-	{
-		define([], function() {
-			return ElkInfoBar;
-		});
-	}
-	// CommonJS
-	else if (typeof module !== 'undefined' && module.exports)
-	{
-		module.exports = ElkInfoBar;
-	}
-	// included directly via <script> tag
-	else
-	{
-		this.ElkInfoBar = ElkInfoBar;
-	}
+	this.ElkInfoBar = ElkInfoBar;
 })();
 
 /**
