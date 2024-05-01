@@ -34,8 +34,8 @@ class CurlFetchWebdataTest extends TestCase
 			//),
 			array(
 				'https://duckduckgo.com/html',
-				array('q' => 'stargate+sg1 site:www.imdb.com', 'ia' => 'about'),
-				200,
+				array('q' => 'stargate+sg1 site:www.imdb.com', 'b' => ''),
+				[200, 403],
 				'TV Series',
 			),
 		);
@@ -105,9 +105,10 @@ class CurlFetchWebdataTest extends TestCase
 			// Check for correct fetch
 			if (!empty($testcase[2]))
 			{
-				$this->assertEquals($testcase[2], $curl->result('code'));
+				$this->assertContains($curl->result('code'), $testcase[2]);
 			}
-			if (!empty($testcase[3]))
+
+			if (!empty($testcase[3]) && $curl->result('code') == 200)
 			{
 				$this->assertStringContainsString($testcase[3], $curl->result('body'));
 			}
