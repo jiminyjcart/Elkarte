@@ -150,7 +150,7 @@ class CurlFetchWebdata
 			// we don't support that.
 			foreach ($post_data as $name => $value)
 			{
-				$post_vars[] = $name . '=' . urlencode($value[0] === '@' ? '' : $value);
+				$post_vars[] = $name . '=' . urlencode(($value === '' || $value[0] === '@') ? '' : $value);
 			}
 
 			return implode('&', $post_vars);

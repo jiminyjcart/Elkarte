@@ -613,6 +613,7 @@ h2.hdicon {
 	margin: 0 .6rem 0 0;
 	content: "";
 	vertical-align: text-bottom;
+	line-height: 1.8rem;
 }
 
 /* Expand/Collapse image in the various headers */
@@ -2886,6 +2887,7 @@ aside.poster, #quickreplybox .poster {
 	display: flex;
 	align-items: center;
 	flex-direction: column;
+	padding-top: .4rem;
 }
 
 /* li lines in poster, could use flex / flex row here */
@@ -3285,26 +3287,50 @@ aside.poster, #quickreplybox .poster {
 	border-radius: .4rem .4rem 0 0;
 }
 
+/* The area at the top of each topic page, icon, title, views, links */
 #forumposts .category_header {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	display: flex;
-	align-items: center;
+	display: grid;
+	grid-template-columns: 3rem auto 1fr;
+	grid-template-rows: 4rem auto;
+	grid-template-areas:
+    "hdicon subject subject"
+    ". stats navigation";
 }
 
-/* Number of views and previous /next links in the category header */
+/* Topic icon and title */
+#forumposts .hdicon {
+	align-self: center;
+	grid-area: hdicon;
+	height: 2.2rem;
+}
+
+#forumposts .hdicon::before {
+	vertical-align: initial;
+}
+
+#topic_subject {
+	align-self: center;
+	grid-area: subject;
+	font-size: var(--font22);
+}
+
+/* Number of views and previous / next links in the category header */
 .nextlinks {
 	font-size: var(--font15);
 	margin-left: auto;
 	white-space: pre;
+	justify-self: end;
+	grid-area: navigation;
 }
 
-.views_text {
+.stats_text {
 	font-size: var(--font13);
-	white-space: pre;
+	opacity: .85;
+	place-self: start center;
+	grid-area: stats;
 }
 
-/* Used a spacer between posts */
+/* Used as a spacer between posts */
 .forumposts {
 	margin-top: .13em;
 	border: 1px solid;
@@ -6127,7 +6153,15 @@ div.labels {
 		max-width: 45%;
 	}
 
-	#forumposts .views_text {
+	#forumposts .category_header {
+		grid-template-columns: auto 1fr;
+		grid-template-rows: 4rem auto;
+		grid-template-areas:
+			"subject subject"
+			"stats navigation";
+	}
+
+	#forumposts .views_text, #forumposts .category_header .hdicon {
 		display: none;
 	}
 

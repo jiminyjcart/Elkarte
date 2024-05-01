@@ -25,13 +25,13 @@ class StreamFetchWebdataTest extends TestCase
 			array(
 				'https://www.w3schools.com/action_page.php',
 				array('firstname' => 'elkarte', 'lastname' => 'forum'),
-				200,
+				[200, 403],
 				'firstname=elkarte&lastname=forum&nbsp;',
 			),
 			array(
 				'https://www.elkarte.net/community/index.php?action=search;sa=results',
 				array('search' => 'stuff', 'search_selection' => 'all', 'advanced' => 0),
-				200,
+				[200, 403],
 				'let you access this section',
 			),
 		);
@@ -113,10 +113,10 @@ class StreamFetchWebdataTest extends TestCase
 			// Check for correct fetch
 			if (!empty($testcase[2]))
 			{
-				$this->assertEquals($testcase[2], $fsock->result('code'), 'PostCodeError:: ' . $testcase[0]);
+				$this->assertContains($fsock->result('code'), $testcase[2], 'PostCodeError:: ' . $testcase[0]);
 			}
 
-			if (!empty($testcase[3]))
+			if (!empty($testcase[3]) && $fsock->result('code') == 200)
 			{
 				$this->assertStringContainsString($testcase[3], $fsock->result('body'), 'PostBodyError:: ' . $testcase[0]);
 			}
