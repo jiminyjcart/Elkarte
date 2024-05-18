@@ -1902,6 +1902,7 @@ function coreFeatures ()
 						token_value = xmlDoc.getElementsByTagName('tokens')[0].querySelector('[type="token_var"]').textContent;
 
 						let message = xmlDoc.getElementsByTagName('messages')[0].getElementsByTagName('message')[0].textContent;
+						ajax_infobar.isSuccess();
 						ajax_infobar.changeText(message);
 					}
 					else
