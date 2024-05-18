@@ -23,6 +23,8 @@ use ElkArte\BoardsList;
 use ElkArte\EventManager;
 use ElkArte\FrontpageInterface;
 use ElkArte\Helper\DataValidator;
+use ElkArte\MembersList;
+use ElkArte\Themes\TemplateLayers;
 use ElkArte\TopicUtil;
 use ElkArte\User;
 
@@ -31,6 +33,27 @@ use ElkArte\User;
  */
 class MessageIndex extends AbstractController implements FrontpageInterface
 {
+	/** @var string The db column wer are going to sort */
+	public $sort_column = '';
+
+	/** @var array Know sort methods to db column */
+	public $sort_methods = [];
+
+	/** @var bool Sort direction asc or desc */
+	public $ascending = '';
+
+	/** @var TemplateLayers The template layers object */
+	private $template_layers;
+
+	/** @var bool if we are marking as read */
+	public $is_marked_notify;
+
+	/** @var string Chosen sort method from the request */
+	public $sort_by;
+
+	/** @var int Basically the page start */
+	public $sort_start;
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -69,7 +92,7 @@ class MessageIndex extends AbstractController implements FrontpageInterface
 			});
 			
 			// Trigger change event
-			var event = new Event("change");
+			let event = new Event("change");
 			document.getElementById("front_page").dispatchEvent(event);', true);
 
 		return [['select', 'message_index_frontpage', self::_getBoardsList()]];
@@ -132,149 +155,411 @@ class MessageIndex extends AbstractController implements FrontpageInterface
 	 */
 	public function action_messageindex()
 	{
-		global $txt, $board, $modSettings, $context, $options, $settings, $board_info;
+		global $txt, $context, $board_info;
+
+		// Check for redirection board, and if found, head off
+		if ($board_info['redirect'])
+		{
+			$this->handleRedirectBoard();
+		}
+
+		// Load any necessary resources
+		$this->loadSupportingResources();
+
+		// Initialize $context
+		$this->initializeContext();
+
+		// Build a list of unapproved posts, if applicable
+		if ($this->currentUserCanApprovePosts() && $this->hasUnapprovedPosts())
+		{
+			$context['unapproved_posts_message'] = $this->buildUnapprovedPostsMessage();
+		}
+
+		// Make sure the starting place makes sense and construct the page index
+		$this->setPageNavigation();
+
+		// Prepare profile links to those who can moderate on this board
+		$this->setBoardModeratorLinks();
+
+		// Mark current and parent boards as seen.
+		$this->markCurrentAndParentBoardsAsSeen();
+
+		// Load basic information about the boards children, aka sub boards
+		$this->prepareSubBoardsForDisplay();
+
+		// Who else is taking a look
+		$this->prepareWhoViewing();
+
+		// Setup topic sort icons/options for template use
+		$this->setSortIcons();
+
+		// Load the topic listing, accounting for sort, start page, etc.
+		$this->loadBoardTopics();
+
+		// What quick moderation options are available?
+		$this->quickModeration();
+
+		// Set template details/layers
+		$this->template_layers = theme()->getLayers();
+		if (!empty($context['boards']) && $this->sort_start === 0)
+		{
+			$this->template_layers->add('display_child_boards');
+		}
+
+		// If there are children, but no topics and no ability to post topics...
+		$context['no_topic_listing'] = !empty($context['boards']) && empty($context['topics']) && !$context['can_post_new'];
+
+		$this->template_layers->add('topic_listing');
+
+		theme()->addJavascriptVar(['notification_board_notice' => $this->is_marked_notify ? $txt['notification_disable_board'] : $txt['notification_enable_board']], true);
+
+		// Is Quick Topic available
+		$this->quickTopic();
+
+		// Finally action buttons like start new topic, notify, mark read ...
+		$this->buildBoardButtons();
+	}
+
+	/**
+	 * Handles redirection for a board. Increments the number of posts in the board
+	 * and redirects to the specified board URL.
+	 */
+	private function handleRedirectBoard(): void
+	{
+		global $board, $board_info;
+
+		// If this is a redirection board head off.
+		require_once(SUBSDIR . '/Boards.subs.php');
+
+		incrementBoard($board, 'num_posts');
+		redirectexit($board_info['redirect']);
+	}
+
+	/**
+	 * Initializes the context by setting various variables for the template.
+	 */
+	private function initializeContext(): void
+	{
+		global $txt, $context, $board_info, $modSettings;
+
+		$description = ParserWrapper::instance()->parseBoard($board_info['description']);
+
+		$context += [
+			'name' => $board_info['name'],
+			'sub_template' => 'topic_listing',
+			'description' => $description,
+			'robot_no_index' => $this->setRobotNoIndex(),
+			// 'Print' the header and board info.
+			'page_title' => strip_tags($board_info['name']),
+			'page_description' => strip_tags($description),
+			// Set the variables up for the template.
+			'can_mark_notify' => $this->currentUserCanMarkNotify(),
+			'can_post_new' => $this->currentUserCanPostNew(),
+			'can_post_poll' => $this->currentUserCanPostPoll(),
+			'can_moderate_forum' => $this->currentUserCanModerate(),
+			'can_approve_posts' => $this->currentUserCanApprovePosts(),
+			'jump_to' => [
+				'label' => addslashes(un_htmlspecialchars($txt['jump_to'])),
+				'board_name' => htmlspecialchars(strtr(strip_tags($board_info['name']), ['&amp;' => '&']), ENT_COMPAT, 'UTF-8'),
+				'child_level' => $board_info['child_level'],
+			],
+			'message_index_preview' => !empty($modSettings['message_index_preview'])
+		];
+	}
+
+	/**
+	 * Sets if this is a page that we do, or do not, want bots to index
+	 *
+	 * @return bool
+	 */
+	public function setRobotNoIndex()
+	{
+		global $context;
+
+		foreach ($this->_req->query as $k => $v)
+		{
+			// Don't index a sort result etc.
+			if (!in_array($k, ['board', 'start', session_name()], true))
+			{
+				return true;
+			}
+		}
+
+		return !empty($this->_req->query->start)
+			&& (!is_numeric($this->_req->query->start) || $this->_req->query->start % $context['messages_per_page'] !== 0);
+	}
+
+	/**
+	 * Checks whether the current user has permission to mark notifications
+	 *
+	 * @return bool True if the current user can mark notifications, false otherwise
+	 */
+	private function currentUserCanMarkNotify(): bool
+	{
+		return allowedTo('mark_notify') && $this->user->is_guest === false;
+	}
+
+	/**
+	 * Checks if the current user is allowed to post new topics
+	 *
+	 * @return bool Returns true if the current user is allowed to post new topics, otherwise false.
+	 */
+	private function currentUserCanPostNew(): bool
+	{
+		global $modSettings;
+
+		return allowedTo('post_new') || ($modSettings['postmod_active'] && allowedTo('post_unapproved_topics'));
+	}
+
+	/**
+	 * Checks if the current user can post a poll
+	 *
+	 * @return bool Returns true if the current user can post a poll, false otherwise
+	 */
+	private function currentUserCanPostPoll(): bool
+	{
+		global $modSettings;
+
+		return !empty($modSettings['pollMode']) && allowedTo('poll_post') && $this->currentUserCanPostNew();
+	}
+
+	/**
+	 * Checks if the current user is allowed to moderate the forum
+	 *
+	 * @return bool Returns true if the current user is allowed to moderate the forum, false otherwise
+	 */
+	private function currentUserCanModerate(): bool
+	{
+		return allowedTo('moderate_forum');
+	}
+
+	/**
+	 * Checks if the current user has the permission to approve posts
+	 *
+	 * @return bool True if the current user can approve posts, false otherwise
+	 */
+	private function currentUserCanApprovePosts(): bool
+	{
+		return allowedTo('approve_posts');
+	}
+
+	/**
+	 * Check if the current user can restore a topic
+	 *
+	 * @return bool True if they can restore a topic
+	 */
+	private function currentUserCanRestore(): bool
+	{
+		global $modSettings, $board;
+
+		return allowedTo('move_any') && !empty($modSettings['recycle_enable']) && $modSettings['recycle_board'] == $board;
+	}
+
+	/**
+	 * Loads supporting resources for the MessageIndex page.
+	 */
+	private function loadSupportingResources(): void
+	{
+		global $modSettings, $txt;
 
 		// Fairly often, we'll work with boards. Current board, sub-boards.
 		require_once(SUBSDIR . '/Boards.subs.php');
 		require_once(SUBSDIR . '/MessageIndex.subs.php');
 
-		// If this is a redirection board head off.
-		if ($board_info['redirect'])
-		{
-			incrementBoard($board, 'num_posts');
-			redirectexit($board_info['redirect']);
-		}
-
 		theme()->getTemplates()->load('MessageIndex');
 		loadJavascriptFile('topic.js');
 
-		$context['name'] = $board_info['name'];
-		$context['sub_template'] = 'topic_listing';
-		$context['description'] = ParserWrapper::instance()->parseBoard($board_info['description']);
-		$template_layers = theme()->getLayers();
+		if (!empty($modSettings['message_index_preview']))
+		{
+			loadJavascriptFile('elk_toolTips.js', ['defer' => true]);
+		}
+
+		theme()->addJavascriptVar([
+			'txt_mark_as_read_confirm' => $txt['mark_these_as_read_confirm']
+		], true);
+	}
+
+	/**
+	 * Checks if the current board has unapproved posts or topics.
+	 *
+	 * @return bool Returns true if the board has unapproved posts or topics, otherwise false.
+	 */
+	private function hasUnapprovedPosts(): bool
+	{
+		global $board_info;
+
+		return $board_info['unapproved_topics'] || $board_info['unapproved_posts'];
+	}
+
+	/**
+	 * Builds the message/links for the number of unapproved posts and topics in the current board.
+	 *
+	 * @return string The message containing the number of unapproved topics and posts.
+	 */
+	private function buildUnapprovedPostsMessage(): string
+	{
+		global $txt, $board_info, $board;
+
+		$unApprovedTopics = $board_info['unapproved_topics'] ? '<a href="' . getUrl('action', ['action' => 'moderate', 'area' => 'postmod', 'sa' => 'topics', 'brd' => $board]) . '">' . $board_info['unapproved_topics'] . '</a>' : 0;
+		$unApprovedPosts = $board_info['unapproved_posts'] ? '<a href="' . getUrl('action', ['action' => 'moderate', 'area' => 'postmod', 'sa' => 'posts', 'brd' => $board]) . '">' . ($board_info['unapproved_posts'] - $board_info['unapproved_topics']) . '</a>' : 0;
+
+		return sprintf($txt['there_are_unapproved_topics'], $unApprovedTopics, $unApprovedPosts, getUrl('action', ['action' => 'moderate', 'area' => 'postmod', 'sa' => ($board_info['unapproved_topics'] ? 'topics' : 'posts'), 'brd' => $board]));
+	}
+
+	/**
+	 * Sets up the page navigation for the board view.
+	 */
+	private function setPageNavigation()
+	{
+		global $board, $modSettings, $context, $options, $board_info;
 
 		// How many topics do we have in total?
-		$board_info['total_topics'] = allowedTo('approve_posts') ? $board_info['num_topics'] + $board_info['unapproved_topics'] : $board_info['num_topics'] + $board_info['unapproved_user_topics'];
+		$board_info['total_topics'] = $this->currentUserCanApprovePosts()
+			? $board_info['num_topics'] + $board_info['unapproved_topics']
+			: $board_info['num_topics'] + $board_info['unapproved_user_topics'];
+
+		$all = $this->_req->isSet('all');
+		$start = $this->_req->getQuery('start', 'intval', 0);
 
 		// View all the topics, or just a few?
 		$context['topics_per_page'] = empty($modSettings['disableCustomPerPage']) && !empty($options['topics_per_page']) ? $options['topics_per_page'] : $modSettings['defaultMaxTopics'];
 		$context['messages_per_page'] = empty($modSettings['disableCustomPerPage']) && !empty($options['messages_per_page']) ? $options['messages_per_page'] : $modSettings['defaultMaxMessages'];
-		$maxindex = isset($this->_req->query->all) && !empty($modSettings['enableAllMessages']) ? $board_info['total_topics'] : $context['topics_per_page'];
-
-		// Right, let's only index normal stuff!
-		$context['robot_no_index'] = $this->setRobotNoIndex();
-
-		// If we can view unapproved messages and there are some build up a list.
-		if (allowedTo('approve_posts') && ($board_info['unapproved_topics'] || $board_info['unapproved_posts']))
-		{
-			$untopics = $board_info['unapproved_topics'] ? '<a href="' . getUrl('action', ['action' => 'moderate', 'area' => 'postmod', 'sa' => 'topics', 'brd' => $board]) . '">' . $board_info['unapproved_topics'] . '</a>' : 0;
-			$unposts = $board_info['unapproved_posts'] ? '<a href="' . getUrl('action', ['action' => 'moderate', 'area' => 'postmod', 'sa' => 'posts', 'brd' => $board]) . '">' . ($board_info['unapproved_posts'] - $board_info['unapproved_topics']) . '</a>' : 0;
-			$context['unapproved_posts_message'] = sprintf($txt['there_are_unapproved_topics'], $untopics, $unposts, getUrl('action', ['action' => 'moderate', 'area' => 'postmod', 'sa' => ($board_info['unapproved_topics'] ? 'topics' : 'posts'), 'brd' => $board]));
-		}
-
-		// Known sort methods.
-		$sort_methods = messageIndexSort();
-		$default_sort_method = 'last_post';
-		$sort_string = '';
-
-		// Requested a sorting method
-		$chosen_sort = $this->_req->getQuery('sort', 'trim');
-		if (isset($chosen_sort))
-		{
-			// We only know these.
-			if (!isset($sort_methods[$chosen_sort]))
-			{
-				$chosen_sort = $default_sort_method;
-			}
-
-			$sort_string = ';sort=' . $chosen_sort . (isset($this->_req->query->desc) ? ';desc' : '');
-		}
+		$per_page = $all && !empty($modSettings['enableAllMessages']) ? $board_info['total_topics'] : $context['topics_per_page'];
 
 		// Make sure the starting place makes sense and construct the page index.
-		$context['page_index'] = constructPageIndex('{scripturl}?board=' . $board . '.%1$d' . $sort_string, $this->_req->query->start, $board_info['total_topics'], $maxindex, true);
-		$context['start'] = &$this->_req->query->start;
+		$context['page_index'] = constructPageIndex('{scripturl}?board=' . $board . '.%1$d' . $this->buildSortingString(), $start, $board_info['total_topics'], $per_page, true);
 
 		// Set a canonical URL for this page.
-		$context['canonical_url'] = getUrl('board', ['board' => $board, 'start' => $context['start'], 'name' => $board_info['name']]);
+		$context['canonical_url'] = getUrl('board', ['board' => $board, 'start' => $start, 'name' => $board_info['name']]);
 
 		$context['links'] += [
-			'prev' => $this->_req->query->start >= $context['topics_per_page'] ? getUrl('board', ['board' => $board, 'start' => $this->_req->query->start - $context['topics_per_page'], 'name' => $board_info['name']]) : '',
-			'next' => $this->_req->query->start + $context['topics_per_page'] < $board_info['total_topics'] ? getUrl('board', ['board' => $board, 'start' => $this->_req->query->start + $context['topics_per_page'], 'name' => $board_info['name']]) : '',
+			'prev' => $start >= $context['topics_per_page'] ? getUrl('board', ['board' => $board, 'start' => $start - $context['topics_per_page'], 'name' => $board_info['name']]) : '',
+			'next' => $start + $context['topics_per_page'] < $board_info['total_topics'] ? getUrl('board', ['board' => $board, 'start' => $start + $context['topics_per_page'], 'name' => $board_info['name']]) : '',
 		];
 
-		if (isset($this->_req->query->all) && !empty($modSettings['enableAllMessages']) && $maxindex > $modSettings['enableAllMessages'])
+		if ($all && !empty($modSettings['enableAllMessages']) && $per_page > $modSettings['enableAllMessages'])
 		{
-			$maxindex = $modSettings['enableAllMessages'];
-			$this->_req->query->start = 0;
+			$per_page = $modSettings['enableAllMessages'];
+			$start = 0;
 		}
+
+		$this->sort_start = $start;
+		$context['start'] = $start;
+		$context['per_page'] = $per_page;
+	}
+
+	/**
+	 * Builds the sorting string for the message index page.
+	 *
+	 * @return string The sorting string with the chosen sort method and direction
+	 */
+	private function buildSortingString()
+	{
+		global $context, $txt;
+
+		// Known sort methods.
+		$this->sort_methods = messageIndexSort();
+		$default_sort_method = 'last_post';
+
+		// Requested a sorting method?
+		$chosen_sort = $this->_req->getQuery('sort', 'trim', $default_sort_method);
+
+		// We only know these.
+		if (!isset($this->sort_methods[$chosen_sort]))
+		{
+			$chosen_sort = $default_sort_method;
+		}
+
+		$sort_string = ';sort=' . $chosen_sort . ($this->_req->isSet('desc') ? ';desc' : '');
+		$this->sort_by = $chosen_sort;
+		$this->ascending = $this->_req->isSet('asc');
+		$this->sort_column = $this->sort_methods[$this->sort_by];
+
+		$context['sort_by'] = $this->sort_by;
+		$context['sort_direction'] = $this->ascending ? 'up' : 'down';
+		$context['sort_title'] = $this->ascending ? $txt['sort_desc'] : $txt['sort_asc'];
+
+		return $sort_string;
+	}
+
+	/**
+	 * Loads board moderator links into the context for displaying on the template.
+	 */
+	private function setBoardModeratorLinks()
+	{
+		global $board_info, $context, $txt;
 
 		// Build a list of the board's moderators.
 		$context['moderators'] = &$board_info['moderators'];
 		$context['link_moderators'] = [];
+
 		if (!empty($board_info['moderators']))
 		{
 			foreach ($board_info['moderators'] as $mod)
 			{
-				$context['link_moderators'][] = '<a href="' . getUrl('profile', ['action' => 'profile', 'u' => $mod['id'], 'name' => $mod['name']]) . '" title="' . $txt['board_moderator'] . '">' . $mod['name'] . '</a>';
+				$context['link_moderators'][] = '<a href="' . getUrl('profile', ['action' => 'profile', 'u' => $mod['id'], 'name' => $mod['name']]) . '" title="' . $txt . '">' . $mod['name'] . '</a>';
 			}
 		}
+	}
 
-		// Mark current and parent boards as seen.
-		if ($this->user->is_guest === false)
+	/**
+	 * Marks the current board and its parent boards as seen for the current user
+	 */
+	public function markCurrentAndParentBoardsAsSeen()
+	{
+		global $board_info, $board;
+
+		if ($this->user->is_guest)
 		{
-			// We can't know they read it if we allow prefetches.
-			stop_prefetching();
+			$this->is_marked_notify = false;
+			return;
+		}
 
-			// Mark the board as read, and its parents.
-			if (!empty($board_info['parent_boards']))
-			{
-				$board_list = array_keys($board_info['parent_boards']);
-				$board_list[] = $board;
-			}
-			else
-			{
-				$board_list = [$board];
-			}
+		// We can't know they read it if we allow prefetches.
+		stop_prefetching();
 
-			// Mark boards as read. Boards alone, no need for topics.
-			markBoardsRead($board_list, false, false);
-
-			// Clear topicseen cache
-			if (!empty($board_info['parent_boards']))
-			{
-				// We've seen all these boards now!
-				foreach ($board_info['parent_boards'] as $k => $dummy)
-				{
-					if (isset($_SESSION['topicseen_cache'][$k]))
-					{
-						unset($_SESSION['topicseen_cache'][$k]);
-					}
-				}
-			}
-
-			if (isset($_SESSION['topicseen_cache'][$board]))
-			{
-				unset($_SESSION['topicseen_cache'][$board]);
-			}
-
-			// From now on, they've seen it. So we reset notifications.
-			$context['is_marked_notify'] = resetSentBoardNotification($this->user->id, $board);
+		// Mark the board as read, and its parents.
+		if (!empty($board_info['parent_boards']))
+		{
+			$board_list = array_keys($board_info['parent_boards']);
+			$board_list[] = $board;
 		}
 		else
 		{
-			$context['is_marked_notify'] = false;
+			$board_list = [$board];
 		}
 
-		// 'Print' the header and board info.
-		$context['page_title'] = strip_tags($board_info['name']);
-		$context['page_description'] = strip_tags($context['description']);
+		// Mark boards as read. Boards alone, no need for topics.
+		markBoardsRead($board_list);
 
-		// Set the variables up for the template.
-		$context['can_mark_notify'] = allowedTo('mark_notify') && $this->user->is_guest === false;
-		$context['can_post_new'] = allowedTo('post_new') || ($modSettings['postmod_active'] && allowedTo('post_unapproved_topics'));
-		$context['can_post_poll'] = !empty($modSettings['pollMode']) && allowedTo('poll_post') && $context['can_post_new'];
-		$context['can_moderate_forum'] = allowedTo('moderate_forum');
-		$context['can_approve_posts'] = allowedTo('approve_posts');
+		// Clear topicseen cache
+		if (!empty($board_info['parent_boards']))
+		{
+			// We've seen all these boards now!
+			foreach ($board_info['parent_boards'] as $k => $dummy)
+			{
+				if (isset($_SESSION['topicseen_cache'][$k]))
+				{
+					unset($_SESSION['topicseen_cache'][$k]);
+				}
+			}
+		}
+
+		if (isset($_SESSION['topicseen_cache'][$board]))
+		{
+			unset($_SESSION['topicseen_cache'][$board]);
+		}
+
+		// From now on, they've seen it. So we reset notifications.
+		$this->is_marked_notify = resetSentBoardNotification($this->user->id, $board);
+	}
+
+	/**
+	 * Prepare and load sub-boards for display.
+	 */
+	private function prepareSubBoardsForDisplay()
+	{
+		global $board_info, $modSettings, $context;
 
 		// Prepare sub-boards for display.
 		$boardIndexOptions = [
@@ -284,8 +569,17 @@ class MessageIndex extends AbstractController implements FrontpageInterface
 			'set_latest_post' => false,
 			'countChildPosts' => !empty($modSettings['countChildPosts']),
 		];
-		$boardlist = new BoardsList($boardIndexOptions);
-		$context['boards'] = $boardlist->getBoards();
+
+		$boardList = new BoardsList($boardIndexOptions);
+		$context['boards'] = $boardList->getBoards();
+	}
+
+	/**
+	 * Prepares and loads into context the information about who is currently viewing the board
+	 */
+	private function prepareWhoViewing()
+	{
+		global $settings, $board;
 
 		// Nosey, nosey - who's viewing this board?
 		if (!empty($settings['display_who_viewing']))
@@ -293,41 +587,51 @@ class MessageIndex extends AbstractController implements FrontpageInterface
 			require_once(SUBSDIR . '/Who.subs.php');
 			formatViewers($board, 'board');
 		}
+	}
 
-		// Set the sort
-		$context['sort_by'] = $chosen_sort ?? $default_sort_method;
-		$ascending = isset($this->_req->query->asc);
-		$sort_column = $sort_methods[$context['sort_by']];
-		$context['sort_direction'] = $ascending ? 'up' : 'down';
-		$context['sort_title'] = $ascending ? $txt['sort_desc'] : $txt['sort_asc'];
+	/**
+	 * Sets the sort icons for the topics headers in the context.
+	 */
+	private function setSortIcons()
+	{
+		global $context, $board, $board_info, $txt;
 
 		// Trick
 		$txt['starter'] = $txt['started_by'];
 
 		// todo: Need to move this to theme.
-		foreach ($sort_methods as $key => $val)
+		foreach ($this->sort_methods as $key => $val)
 		{
-			$sorticon = match ($key)
+			$sortIcon = match ($key)
 			{
 				'subject', 'starter', 'last_poster' => 'alpha',
 				default => 'numeric',
 			};
 
 			$context['topics_headers'][$key] = [
-				'url' => getUrl('board', ['board' => $context['current_board'], 'start' => $context['start'], 'sort' => $key, 'name' => $board_info['name'], $context['sort_by'] == $key && $context['sort_direction'] === 'up' ? 'desc' : 'asc']),
-				'sort_dir_img' => $context['sort_by'] === $key ? '<i class="icon icon-small i-sort-' . $sorticon . '-' . $context['sort_direction'] . '" title="' . $context['sort_title'] . '"><s>' . $context['sort_title'] . '</s></i>' : '',
+				'url' => getUrl('board', ['board' => $board, 'start' => $this->sort_start, 'sort' => $key, 'name' => $board_info['name'], $this->sort_by === $key && $this->ascending ? 'desc' : 'asc']),
+				'sort_dir_img' => $this->sort_by === $key ? '<i class="icon icon-small i-sort-' . $sortIcon . '-' . $context['sort_direction'] . '" title="' . $context['sort_title'] . '"><s>' . $context['sort_title'] . '</s></i>' : '',
 			];
 		}
+	}
+
+	/**
+	 * Loads board topics into the context
+	 */
+	private function loadBoardTopics()
+	{
+		global $board, $modSettings, $context, $settings, $board_info;
 
 		// Calculate the fastest way to get the topics.
 		$start = $this->_req->getQuery('start', 'intval', 0);
+		$per_page = $context['per_page'];
 		$fake_ascending = false;
 		if ($start > ($board_info['total_topics'] - 1) / 2)
 		{
-			$ascending = !$ascending;
+			$this->ascending = !$this->ascending;
 			$fake_ascending = true;
-			$maxindex = $board_info['total_topics'] < $start + $maxindex + 1 ? $board_info['total_topics'] - $start : $maxindex;
-			$start = $board_info['total_topics'] < $start + $maxindex + 1 ? 0 : $board_info['total_topics'] - $start - $maxindex;
+			$per_page = $board_info['total_topics'] < $start + $per_page + 1 ? $board_info['total_topics'] - $start : $per_page;
+			$start = $board_info['total_topics'] < $start + $per_page + 1 ? 0 : $board_info['total_topics'] - $start - $per_page;
 		}
 
 		$context['topics'] = [];
@@ -337,14 +641,14 @@ class MessageIndex extends AbstractController implements FrontpageInterface
 			'only_approved' => $modSettings['postmod_active'] && !allowedTo('approve_posts'),
 			'previews' => empty($modSettings['message_index_preview']) ? 0 : (empty($modSettings['preview_characters']) ? -1 : $modSettings['preview_characters']),
 			'include_avatars' => $settings['avatars_on_indexes'],
-			'ascending' => $ascending,
+			'ascending' => $this->ascending,
 			'fake_ascending' => $fake_ascending
 		];
 
 		// Allow integration to modify / add to the $indexOptions
-		call_integration_hook('integrate_messageindex_topics', [&$sort_column, &$indexOptions]);
+		call_integration_hook('integrate_messageindex_topics', [&$this->sort_column, &$indexOptions]);
 
-		$topics_info = messageIndexTopics($board, $this->user->id, $start, $maxindex, $context['sort_by'], $sort_column, $indexOptions);
+		$topics_info = messageIndexTopics($board, $this->user->id, $start, $per_page, $this->sort_by, $this->sort_column, $indexOptions);
 
 		$context['topics'] = TopicUtil::prepareContext($topics_info, false, empty($modSettings['preview_characters']) ? 128 : $modSettings['preview_characters']);
 
@@ -371,28 +675,33 @@ class MessageIndex extends AbstractController implements FrontpageInterface
 
 		// Trigger a topic loaded event
 		$this->_events->trigger('topicinfo', ['callbacks' => &$context['topics']]);
+	}
 
-		$context['jump_to'] = [
-			'label' => addslashes(un_htmlspecialchars($txt['jump_to'])),
-			'board_name' => htmlspecialchars(strtr(strip_tags($board_info['name']), ['&amp;' => '&']), ENT_COMPAT, 'UTF-8'),
-			'child_level' => $board_info['child_level'],
-		];
+	/**
+	 * Determines which quick moderation actions are available for this user.
+	 * Loads which actions are available, on a per-topic basis, into $context.
+	 */
+	private function quickModeration()
+	{
+		global $modSettings, $context, $options, $board_info;
 
 		// Is Quick Moderation active/needed?
 		if (!empty($options['display_quick_mod']) && !empty($context['topics']))
 		{
-			$context['can_markread'] = $context['user']['is_logged'];
-			$context['can_lock'] = allowedTo('lock_any');
-			$context['can_sticky'] = allowedTo('make_sticky');
-			$context['can_move'] = allowedTo('move_any');
-			$context['can_remove'] = allowedTo('remove_any');
-			$context['can_merge'] = allowedTo('merge_any');
+			$context += [
+				'can_markread' => $context['user']['is_logged'],
+				'can_lock' => allowedTo('lock_any'),
+				'can_sticky' => allowedTo('make_sticky'),
+				'can_move' => allowedTo('move_any'),
+				'can_remove' => allowedTo('remove_any'),
+				'can_merge' => allowedTo('merge_any'),
+			];
 
 			// Ignore approving own topics as it's unlikely to come up...
 			$context['can_approve'] = $modSettings['postmod_active'] && allowedTo('approve_posts') && !empty($board_info['unapproved_topics']);
 
 			// Can we restore topics?
-			$context['can_restore'] = allowedTo('move_any') && !empty($modSettings['recycle_enable']) && $modSettings['recycle_board'] == $board;
+			$context['can_restore'] = $this->currentUserCanRestore();
 
 			// Set permissions for all the topics.
 			foreach ($context['topics'] as $t => $topic)
@@ -420,17 +729,186 @@ class MessageIndex extends AbstractController implements FrontpageInterface
 				call_integration_hook('integrate_quick_mod_actions');
 			}
 		}
+	}
 
-		if (!empty($context['boards']) && $context['start'] == 0)
+	/**
+	 * Loads into $context the moderation button array for template use.
+	 * Call integrate_message_index_mod_buttons hook
+	 */
+	public function buildQuickModerationButtons()
+	{
+		global $context;
+
+		$context['can_show'] = false;
+		$quickMod = array_column($context['topics'], 'quick_mod', 'id');
+		$context['show_qm_message_checkbox'] = array_column($context['topics'], 'id');
+
+		// Build valid topic id's by action
+		$keys = array_keys($quickMod);
+		foreach (['move', 'lock', 'remove', 'approve'] as $area)
 		{
-			$template_layers->add('display_child_boards');
+			// e.g. get topic id's where this quick_mod action xxx value is valid
+			$temp = array_combine($keys, array_column($quickMod, $area));
+			$context['allow_qm']['can_' . $area] = array_keys($temp, true);
+			${'show_' . $area} = !empty($context['allow_qm']['can_' . $area]);
 		}
 
-		// If there are children, but no topics and no ability to post topics...
-		$context['no_topic_listing'] = !empty($context['boards']) && empty($context['topics']) && !$context['can_post_new'];
-		$template_layers->add('topic_listing');
+		// Build the mod button array with buttons that are valid for, at least some, of the messages
+		$context['mod_buttons'] = [
+			'move' => [
+				'test' => $show_move ? 'can_move' : 'can_show',
+				'text' => 'move_topic',
+				'id' => 'move',
+				'lang' => true,
+				'url' => 'javascript:void(0);',
+			],
+			'remove' => [
+				'test' => $show_remove ? 'can_remove' : 'can_show',
+				'text' => 'remove_topic',
+				'id' => 'remove',
+				'lang' => true,
+				'url' => 'javascript:void(0);',
+			],
+			'lock' => [
+				'test' => $show_lock ? 'can_lock' : 'can_show',
+				'text' => 'set_lock',
+				'id' => 'lock',
+				'lang' => true,
+				'url' => 'javascript:void(0);',
+			],
+			'approve' => [
+				'test' => $show_approve ? 'can_approve' : 'can_show',
+				'text' => 'approve',
+				'id' => 'approve',
+				'lang' => true,
+				'url' => 'javascript:void(0);',
+			],
+			'sticky' => [
+				'test' => 'can_sticky',
+				'text' => 'set_sticky',
+				'id' => 'sticky',
+				'lang' => true,
+				'url' => 'javascript:void(0);',
+			],
+			'merge' => [
+				'test' => 'can_merge',
+				'text' => 'merge',
+				'id' => 'merge',
+				'lang' => true,
+				'url' => 'javascript:void(0);',
+			],
+			'markread' => [
+				'test' => 'can_markread',
+				'text' => 'mark_read_short',
+				'id' => 'markread',
+				'lang' => true,
+				'url' => 'javascript:void(0);',
+			],
+		];
 
-		theme()->addJavascriptVar(['notification_board_notice' => $context['is_marked_notify'] ? $txt['notification_disable_board'] : $txt['notification_enable_board']], true);
+		// Restore a topic, maybe even some doxing !
+		if ($context['can_restore'])
+		{
+			$context['mod_buttons']['restore'] = [
+				'text' => 'restore_topic',
+				'lang' => true,
+				'url' => 'javascript:void(0);',
+			];
+		}
+
+		// Allow adding new buttons easily.
+		call_integration_hook('integrate_message_index_quickmod_buttons');
+
+		$context['mod_buttons'] = array_reverse($context['mod_buttons']);
+	}
+
+	/**
+	 * Similar to Quick Reply, this is Quick Topic.
+	 * Allows a way to start a new topic from the boards message index.
+	 */
+	private function quickTopic(): void
+	{
+		global $txt, $modSettings, $context, $options;
+
+		// Quick topic enabled?
+		if ($context['can_post_new'] && !empty($options['display_quick_reply']))
+		{
+			$this->prepareQuickTopic();
+
+			checkSubmitOnce('register');
+
+			$context['becomes_approved'] = true;
+			if ($modSettings['postmod_active'] && !allowedTo('post_new') && allowedTo('post_unapproved_topics'))
+			{
+				$context['becomes_approved'] = false;
+			}
+			else
+			{
+				isAllowedTo('post_new');
+			}
+
+			require_once(SUBSDIR . '/Editor.subs.php');
+			// Create the editor for the QT area
+			$editorOptions = [
+				'id' => 'message',
+				'value' => '',
+				'labels' => [
+					'post_button' => $txt['post'],
+				],
+				'height' => '200px',
+				'width' => '100%',
+				'smiley_container' => 'smileyBox_message',
+				'bbc_container' => 'bbcBox_message',
+				// We submit/switch to full post page for the preview
+				'preview_type' => 1,
+				'buttons' => [
+					'more' => [
+						'type' => 'submit',
+						'name' => 'more_options',
+						'value' => $txt['post_options'],
+						'options' => ''
+					]
+				],
+			];
+
+			// Trigger the prepare_context event for modules that have tied in to it
+			$this->_events->trigger('prepare_context', ['editorOptions' => &$editorOptions, 'use_quick_reply' => !empty($options['display_quick_reply'])]);
+
+			create_control_richedit($editorOptions);
+
+			theme()->getTemplates()->load('GenericMessages');
+		}
+	}
+
+	/**
+	 * If Quick Topic is on, we need to load user information into $context so the poster sidebar renders
+	 */
+	private function prepareQuickTopic(): void
+	{
+		global $options, $context;
+
+		if (empty($options['hide_poster_area']) && $options['display_quick_reply'])
+		{
+			MembersList::load(User::$info->id);
+			$thisUser = MembersList::get(User::$info->id);
+			$thisUser->loadContext();
+
+			$context['thisMember'] = [
+				'id' => 'new',
+				'is_message_author' => true,
+				'member' => $thisUser->toArray()['data']
+			];
+			$context['can_issue_warning'] = allowedTo('issue_warning') && featureEnabled('w') && !empty($modSettings['warning_enable']);
+			$context['can_send_pm'] = allowedTo('pm_send');
+		}
+	}
+
+	/**
+	 * Build the board buttons for the message index page.
+	 */
+	private function buildBoardButtons(): void
+	{
+		global $context, $settings, $board;
 
 		// Build the message index button array.
 		$context['normal_buttons'] = [
@@ -438,18 +916,14 @@ class MessageIndex extends AbstractController implements FrontpageInterface
 				'test' => 'can_post_new',
 				'text' => 'new_topic',
 				'lang' => true,
-				'url' => getUrl('action', ['action' => 'post', 'board' => $context['current_board'] . '.0']),
+				'url' => getUrl('action', ['action' => 'post', 'board' => $board . '.0']),
 				'active' => true],
 			'notify' => [
 				'test' => 'can_mark_notify',
-				'text' => $context['is_marked_notify'] ? 'unnotify' : 'notify',
+				'text' => $this->is_marked_notify ? 'unnotify' : 'notify',
 				'lang' => true, 'custom' => 'onclick="return notifyboardButton(this);"',
-				'url' => getUrl('action', ['action' => 'notifyboard', 'sa' => ($context['is_marked_notify'] ? 'off' : 'on'), 'board' => $context['current_board'] . '.' . $context['start'], '{session_data}'])],
+				'url' => getUrl('action', ['action' => 'notifyboard', 'sa' => ($this->is_marked_notify ? 'off' : 'on'), 'board' => $board . '.' . $this->sort_start, '{session_data}'])],
 		];
-
-		theme()->addJavascriptVar([
-			'txt_mark_as_read_confirm' => $txt['mark_these_as_read_confirm']
-		], true);
 
 		// They can only mark read if they are logged in, and it's enabled!
 		if ($this->user->is_guest === false && $settings['show_mark_read'])
@@ -457,7 +931,7 @@ class MessageIndex extends AbstractController implements FrontpageInterface
 			$context['normal_buttons']['markread'] = [
 				'text' => 'mark_read_short',
 				'lang' => true,
-				'url' => getUrl('action', ['action' => 'markasread', 'sa' => 'board', 'board' => $context['current_board'] . '.0', '{session_data}']),
+				'url' => getUrl('action', ['action' => 'markasread', 'sa' => 'board', 'board' => $board . '.0', '{session_data}']),
 				'custom' => 'onclick="return markboardreadButton(this);"'
 			];
 		}
@@ -467,34 +941,6 @@ class MessageIndex extends AbstractController implements FrontpageInterface
 
 		// Trigger a post load event with quick access to normal buttons
 		$this->_events->trigger('post_load', ['callbacks' => &$context['normal_buttons']]);
-
-		if (!empty($modSettings['message_index_preview']))
-		{
-			loadJavascriptFile('elk_toolTips.js', ['defer' => true]);
-			$context['message_index_preview'] = true;
-		}
-	}
-
-	/**
-	 * Sets if this is a page that we do, or do not, want bots to index
-	 *
-	 * @return bool
-	 */
-	public function setRobotNoIndex()
-	{
-		global $context;
-
-		foreach ($this->_req->query as $k => $v)
-		{
-			// Don't index a sort result etc.
-			if (!in_array($k, ['board', 'start', session_name()], true))
-			{
-				return true;
-			}
-		}
-
-		return !empty($this->_req->query->start)
-			&& (!is_numeric($this->_req->query->start) || $this->_req->query->start % $context['messages_per_page'] !== 0);
 	}
 
 	/**
@@ -793,6 +1239,56 @@ class MessageIndex extends AbstractController implements FrontpageInterface
 	}
 
 	/**
+	 * Just what actions can they perform on this board
+	 *
+	 * Checks if they can markread, sticky, move, remove, lock or merge
+	 *
+	 * @param array $boards_can
+	 * @return array
+	 */
+	public function setPossibleQmActions($boards_can)
+	{
+		$possibleActions = [];
+
+		if ($this->user->is_guest === false)
+		{
+			$possibleActions[] = 'markread';
+		}
+
+		if (!empty($boards_can['make_sticky']))
+		{
+			$possibleActions[] = 'sticky';
+		}
+
+		if (!empty($boards_can['move_any']) || !empty($boards_can['move_own']))
+		{
+			$possibleActions[] = 'move';
+		}
+
+		if (!empty($boards_can['remove_any']) || !empty($boards_can['remove_own']))
+		{
+			$possibleActions[] = 'remove';
+		}
+
+		if (!empty($boards_can['lock_any']) || !empty($boards_can['lock_own']))
+		{
+			$possibleActions[] = 'lock';
+		}
+
+		if (!empty($boards_can['merge_any']))
+		{
+			$possibleActions[] = 'merge';
+		}
+
+		if (!empty($boards_can['approve_posts']))
+		{
+			$possibleActions[] = 'approve';
+		}
+
+		return $possibleActions;
+	}
+
+	/**
 	 * Can they sticky a topic
 	 *
 	 * @param array $boards_can
@@ -850,146 +1346,5 @@ class MessageIndex extends AbstractController implements FrontpageInterface
 			|| ($row['id_member_started'] == $this->user->id
 				&& $row['locked'] != 1
 				&& (in_array(0, $boards_can['lock_own']) || in_array($row['id_board'], $boards_can['lock_own'])));
-	}
-
-	/**
-	 * Just what actions can they perform on this board
-	 *
-	 * Checks if they can markread, sticky, move, remove, lock or merge
-	 *
-	 * @param array $boards_can
-	 * @return array
-	 */
-	public function setPossibleQmActions($boards_can)
-	{
-		$possibleActions = [];
-
-		if ($this->user->is_guest === false)
-		{
-			$possibleActions[] = 'markread';
-		}
-
-		if (!empty($boards_can['make_sticky']))
-		{
-			$possibleActions[] = 'sticky';
-		}
-
-		if (!empty($boards_can['move_any']) || !empty($boards_can['move_own']))
-		{
-			$possibleActions[] = 'move';
-		}
-
-		if (!empty($boards_can['remove_any']) || !empty($boards_can['remove_own']))
-		{
-			$possibleActions[] = 'remove';
-		}
-
-		if (!empty($boards_can['lock_any']) || !empty($boards_can['lock_own']))
-		{
-			$possibleActions[] = 'lock';
-		}
-
-		if (!empty($boards_can['merge_any']))
-		{
-			$possibleActions[] = 'merge';
-		}
-
-		if (!empty($boards_can['approve_posts']))
-		{
-			$possibleActions[] = 'approve';
-		}
-
-		return $possibleActions;
-	}
-
-	/**
-	 * Loads into $context the moderation button array for template use.
-	 * Call integrate_message_index_mod_buttons hook
-	 */
-	public function buildQuickModerationButtons()
-	{
-		global $context;
-
-		$context['can_show'] = false;
-		$quickMod = array_column($context['topics'], 'quick_mod', 'id');
-		$context['show_qm_message_checkbox'] = array_column($context['topics'], 'id');
-
-		// Build valid topic id's by action
-		$keys = array_keys($quickMod);
-		foreach (['move', 'lock', 'remove', 'approve'] as $area)
-		{
-			// e.g. get topic id's where this quick_mod action xxx value is valid
-			$temp = array_combine($keys, array_column($quickMod, $area));
-			$context['allow_qm']['can_' . $area] = array_keys($temp, true);
-			${'show_' . $area} = !empty($context['allow_qm']['can_' . $area]);
-		}
-
-		// Build the mod button array with buttons that are valid for, at least some, of the messages
-		$context['mod_buttons'] = [
-			'move' => [
-				'test' => $show_move ? 'can_move' : 'can_show',
-				'text' => 'move_topic',
-				'id' => 'move',
-				'lang' => true,
-				'url' => 'javascript:void(0);',
-			],
-			'remove' => [
-				'test' => $show_remove ? 'can_remove' : 'can_show',
-				'text' => 'remove_topic',
-				'id' => 'remove',
-				'lang' => true,
-				'url' => 'javascript:void(0);',
-			],
-			'lock' => [
-				'test' => $show_lock ? 'can_lock' : 'can_show',
-				'text' => 'set_lock',
-				'id' => 'lock',
-				'lang' => true,
-				'url' => 'javascript:void(0);',
-			],
-			'approve' => [
-				'test' => $show_approve ? 'can_approve' : 'can_show',
-				'text' => 'approve',
-				'id' => 'approve',
-				'lang' => true,
-				'url' => 'javascript:void(0);',
-			],
-			'sticky' => [
-				'test' => 'can_sticky',
-				'text' => 'set_sticky',
-				'id' => 'sticky',
-				'lang' => true,
-				'url' => 'javascript:void(0);',
-			],
-			'merge' => [
-				'test' => 'can_merge',
-				'text' => 'merge',
-				'id' => 'merge',
-				'lang' => true,
-				'url' => 'javascript:void(0);',
-			],
-			'markread' => [
-				'test' => 'can_markread',
-				'text' => 'mark_read_short',
-				'id' => 'markread',
-				'lang' => true,
-				'url' => 'javascript:void(0);',
-			],
-		];
-
-		// Restore a topic, maybe even some doxing !
-		if ($context['can_restore'])
-		{
-			$context['mod_buttons']['restore'] = [
-				'text' => 'restore_topic',
-				'lang' => true,
-				'url' => 'javascript:void(0);',
-			];
-		}
-
-		// Allow adding new buttons easily.
-		call_integration_hook('integrate_message_index_quickmod_buttons');
-
-		$context['mod_buttons'] = array_reverse($context['mod_buttons']);
 	}
 }
