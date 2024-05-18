@@ -885,7 +885,7 @@ class MessageIndex extends AbstractController implements FrontpageInterface
 	 */
 	private function prepareQuickTopic(): void
 	{
-		global $options, $context;
+		global $options, $context, $modSettings;
 
 		if (empty($options['hide_poster_area']) && $options['display_quick_reply'])
 		{
