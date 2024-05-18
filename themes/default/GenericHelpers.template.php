@@ -121,7 +121,7 @@ function template_select_boards($name, $label = '', $extra = '', $all = false)
  * 		'counter' => (optional) if set, will add a count indicator span in front of the link text
  * ]]
  *
- * @param mixed[] $button_strip the above definition array
+ * @param array $button_strip the above definition array
  * @param string $class overall class to append to "buttonlist no_js" on the list UL
  * @param array $strip_options = [] of options applied to the outer <UL>
  * 		'id' => id to use on the UL
