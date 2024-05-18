@@ -245,7 +245,7 @@ class Post extends AbstractController
 					is_not_guest();
 				}
 
-				// By default the reply will be approved...
+				// By default, the reply will be approved...
 				$context['becomes_approved'] = true;
 				if ($this->_topic_attributes['id_member'] != $this->user->id)
 				{
@@ -352,10 +352,10 @@ class Post extends AbstractController
 	 * Get the message setup for ...
 	 *
 	 * - Sets up the form for preview / modify / new message status.  Items
-	 * such as icons, text, etc
+	 * such as icons, text, etc.
 	 * - Look if a new topic was posted while working on this prose
 	 * - Shows the message preview if requested
-	 * - triggers prepare_modifying, prepare_editing, prepare_posting
+	 * - Triggers prepare_modifying, prepare_editing, prepare_posting
 	 */
 	protected function _generatingMessage()
 	{
@@ -441,6 +441,7 @@ class Post extends AbstractController
 		global $txt, $modSettings, $context;
 
 		$preview = $this->_req->getPost('preview', 'isset', false);
+		$more_options = $this->_req->getPost('more_options', 'isset', false);
 		$ns = $this->_req->getPost('ns', 'isset', false);
 		$notify = $this->_req->getPost('notify', 'intval', 0);
 		$quote = $this->_req->getRequest('quote', 'intval', 0);
@@ -450,8 +451,8 @@ class Post extends AbstractController
 		$icon = $this->_req->getPost('icon', 'trim', 'xx');
 		$msg_id = 0;
 
-		// Validate inputs.
-		if (!$this->_post_errors->hasErrors())
+		// Validate inputs if they are not just moving the full post form (from QR / QT)
+		if (!$more_options && !$this->_post_errors->hasErrors())
 		{
 			// This means they didn't click Post and get an error.
 			$really_previewing = true;
@@ -496,7 +497,7 @@ class Post extends AbstractController
 			$this->user->name = $context['name'];
 		}
 
-		// Only show the preview stuff if they hit Preview.
+		// Only show the preview stuff if they really hit Preview, not post, not more options
 		if ($really_previewing)
 		{
 			$this->_setupPreviewContext(!$ns);
@@ -697,7 +698,7 @@ class Post extends AbstractController
 		// Protect any CDATA blocks.
 		if ($this->getApi() === 'xml')
 		{
-			$context['preview_message'] = strtr($context['preview_message'], array(']]>' => ']]]]><![CDATA[>'));
+			$context['preview_message'] = strtr($context['preview_message'], [']]>' => ']]]]><![CDATA[>']);
 		}
 	}
 
@@ -873,7 +874,7 @@ class Post extends AbstractController
 	 * - Requires various permissions depending on the action.
 	 * - Handles attachment, post, and calendar saving.
 	 * - Sends off notifications, and allows for announcements and moderation.
-	 * accessed from ?action=post2.
+	 * - Accessed from ?action=post2.
 	 * - Triggers events associated with the actual posting
 	 *   - prepare_save_post, save_replying, save_new_topic, save_modify
 	 *   - before_save_post, pre_save_post, after_save_post
@@ -919,7 +920,7 @@ class Post extends AbstractController
 		$topic_info = [];
 
 		// Previewing? Go back to start.
-		if (isset($_REQUEST['preview']))
+		if (isset($_REQUEST['preview']) || isset($_POST['more_options']))
 		{
 			return $this->action_post();
 		}
