@@ -48,7 +48,7 @@ class ManageDraftsModule extends AbstractController
 			'setting_callback' => static function ($value) {
 				require_once(SUBSDIR . '/ScheduledTasks.subs.php');
 				toggleTaskStatusByName('remove_old_drafts', $value);
-				$modules = array('admin', 'post', 'display', 'profile', 'personalmessage');
+				$modules = ['admin', 'post', 'display', 'profile', 'personalmessage', 'messageindex'];
 
 				// Enabling, let's register the modules and prepare the scheduled task
 				if ($value)

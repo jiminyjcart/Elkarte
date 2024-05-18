@@ -21,11 +21,11 @@ use ElkArte\Languages\Txt;
 use ElkArte\Modules\AbstractModule;
 
 /**
- * Class \ElkArte\Modules\Drafts\Display
+ * Class \ElkArte\Modules\Drafts\MessageIndex
  *
- * Enables draft functions for the Display Controller (quick reply)
+ * Enables draft functions for the MessageIndex controller page (quick topic)
  */
-class Display extends AbstractModule
+class MessageIndex extends AbstractModule
 {
 	/** @var bool Autosave switch  */
 	protected static $_autosave_enabled = false;
@@ -50,7 +50,7 @@ class Display extends AbstractModule
 			}
 
 			return [
-				['prepare_context', [Display::class, 'prepare_context'], ['use_quick_reply', 'editorOptions', 'board']],
+				['prepare_context', [MessageIndex::class, 'prepare_context'], ['use_quick_reply', 'editorOptions', 'board']],
 			];
 		}
 
@@ -58,13 +58,13 @@ class Display extends AbstractModule
 	}
 
 	/**
-	 * Prepares context for draft buttons and listing
+	 * Prepares context for draft buttons
 	 *
 	 * What it does:
 	 *
 	 * - Sets/checks the ability to save and autosave drafts for JS and button display
 	 * - Builds the list of drafts available to load
-	 * - Loads necessary Draft javascript functions for full editor or text area
+	 * - Loads necessary Draft javascript functions
 	 *
 	 * @param bool $use_quick_reply
 	 * @param array $editorOptions
@@ -74,8 +74,8 @@ class Display extends AbstractModule
 	{
 		global $context, $options, $txt;
 
-		// Check if the draft functions are enabled and that they have permission to use them (for quick reply.)
-		$context['drafts_save'] = $use_quick_reply && allowedTo('post_draft') && $context['can_reply'];
+		// Check if the draft functions are enabled and that they have permission to use them (for quick topic.)
+		$context['drafts_save'] = $use_quick_reply && allowedTo('post_draft') && $context['can_post_new'];
 		$context['drafts_autosave'] = $context['drafts_save'] && self::$_autosave_enabled && allowedTo('post_autosave_draft') && !empty($options['drafts_autosave_enabled']);
 
 		// Enable the drafts functions for the QR area
@@ -109,7 +109,7 @@ class Display extends AbstractModule
 				loadJavascriptFile('editor/drafts.plugin.js', ['defer' => true]);
 			}
 
-			// No need to show this on the quick reply area, normally set as $txt['shortcuts_drafts']
+			// Hide this for quick topic
 			$context['shortcuts_text'] = '';
 
 			$editorOptions['buttons'] = $editorOptions['buttons'] ?? [];

@@ -247,8 +247,16 @@ class Display extends AbstractController
 			'width' => '100%',
 			'smiley_container' => 'smileyBox_message',
 			'bbc_container' => 'bbcBox_message',
-			// We do XML preview here.
+			// We submit/switch to full post page for the preview
 			'preview_type' => 1,
+			'buttons' => [
+				'more' => [
+					'type' => 'submit',
+					'name' => 'more_options',
+					'value' => $txt['post_options'],
+					'options' => ''
+				]
+			],
 		];
 
 		// Load the template basics now as template_layers is requested by the prepare_context event
