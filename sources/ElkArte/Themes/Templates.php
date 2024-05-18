@@ -21,12 +21,11 @@ use ElkArte\Debug;
 use ElkArte\Errors\Errors;
 use ElkArte\Exceptions\Exception;
 use ElkArte\Helper\FileFunctions;
+use ElkArte\Helper\HttpReq;
 use ElkArte\Http\Headers;
 use ElkArte\Languages\Txt;
 use Error;
 use Generator;
-use JetBrains\PhpStorm\NoReturn;
-
 
 /**
  * Class Templates
@@ -262,7 +261,7 @@ class Templates
 	 *
 	 * @param Error $e
 	 */
-	#[NoReturn] protected function templateNotFound(Error $e)
+	protected function templateNotFound(Error $e)
 	{
 		global $context, $txt, $scripturl, $boardurl;
 
@@ -411,7 +410,7 @@ class Templates
 	 *
 	 * @used-by printLines() Prints syntax for template files with errors.
 	 * @return Generator Highlighted lines ranging from $min to $max.
-	 * @uses    highlight_file() Highlights syntax.
+	 * @uses highlight_file() Highlights syntax.
 	 *
 	 */
 	public function getHighlightedLinesFromFile(string $file, int $min, int $max): Generator
@@ -466,6 +465,7 @@ class Templates
 			{
 				try
 				{
+					$this->_templateDebug($sub_template_name, true);
 					$theme_function();
 				}
 				catch (Error $e)
@@ -493,6 +493,30 @@ class Templates
 					)
 				);
 			}
+		}
+
+		$this->_templateDebug($sub_template_name);
+	}
+
+	/**
+	 * Are we showing debugging for templates?  Just make sure not to do it before the doctype...
+	 *
+	 * @param bool $start
+	 * @param string $sub_template_name
+	 */
+	private function _templateDebug($sub_template_name, $start = false)
+	{
+		$req = HttpReq::instance();
+
+		if ($req->isSet('debug')
+			&& $sub_template_name !== 'init'
+			&& ob_get_length() > 0
+			&& empty($req->getRequest('xml'))
+			&& empty($req->getRequest('api'))
+			&& allowedTo('admin_forum'))
+		{
+			echo '
+ 				<div class="warningbox">---- ', $sub_template_name, ' ', ($start ? 'starts' : 'ends'), ' ----</div>';
 		}
 	}
 
