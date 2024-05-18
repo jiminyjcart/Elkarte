@@ -12,6 +12,8 @@
  *
  */
 
+use ElkArte\MessageTopicIcons;
+
 /**
  * Loads the template used to display boards
  */
@@ -73,7 +75,7 @@ function template_topic_listing_above()
 	if (!empty($context['moderators']))
 	{
 		echo '
-				<div class="moderators">', count($context['moderators']) === 1 ? $txt['moderator'] : $txt['moderators'], ': ', implode(', ', $context['link_moderators']), '.</div>';
+				<div class="moderators"><i class="icon icon-small i-user colorize-orange"></i>', count($context['moderators']) === 1 ? $txt['moderator'] : $txt['moderators'], ': ', implode(', ', $context['link_moderators']), '.</div>';
 	}
 
 	echo '
@@ -85,11 +87,11 @@ function template_topic_listing_above()
 	{
 		if ($settings['display_who_viewing'] == 1)
 		{
-			echo count($context['view_members']), ' ', count($context['view_members']) === 1 ? $txt['who_member'] : $txt['members'];
+			echo '<i class="icon icon-small i-users"></i>', count($context['view_members']), ' ', count($context['view_members']) === 1 ? $txt['who_member'] : $txt['members'];
 		}
 		else
 		{
-			echo empty($context['view_members_list']) ? '0 ' . $txt['members'] : implode(', ', $context['view_members_list']) . (empty($context['view_num_hidden']) || $context['can_moderate_forum'] ? '' : ' (+ ' . $context['view_num_hidden'] . ' ' . $txt['hidden'] . ')');
+			echo '<i class="icon icon-small i-users"></i>', empty($context['view_members_list']) ? '0 ' . $txt['members'] : implode(', ', $context['view_members_list']) . (empty($context['view_num_hidden']) || $context['can_moderate_forum'] ? '' : ' (+ ' . $context['view_num_hidden'] . ' ' . $txt['hidden'] . ')');
 		}
 
 		echo $txt['who_and'], $context['view_num_guests'], ' ', $context['view_num_guests'] == 1 ? $txt['guest'] : $txt['guests'], $txt['who_viewing_board'];
@@ -145,18 +147,21 @@ function template_topic_listing()
 
 	if (!$context['no_topic_listing'])
 	{
-		// If Quick Moderation is enabled start the form.
-		if (!empty($context['can_quick_mod']) && !empty($options['display_quick_mod']) && !empty($context['topics']))
-		{
-			echo '
-	<form action="', $scripturl, '?action=quickmod;board=', $context['current_board'], '.', $context['start'], '" method="post" accept-charset="UTF-8" class="clear" name="quickModForm" id="quickModForm">';
-		}
-
 		// If this person can approve items, and we have some awaiting approval tell them.
 		if (!empty($context['unapproved_posts_message']))
 		{
 			echo '
 		<div class="warningbox">', $context['unapproved_posts_message'], '</div>';
+		}
+
+		// Quick Topic enabled ?
+		template_quicktopic_above();
+
+		// If Quick Moderation is enabled start the form.
+		if (!empty($context['can_quick_mod']) && !empty($options['display_quick_mod']) && !empty($context['topics']))
+		{
+			echo '
+	<form action="', $scripturl, '?action=quickmod;board=', $context['current_board'], '.', $context['start'], '" method="post" accept-charset="UTF-8" class="clear" name="quickModForm" id="quickModForm">';
 		}
 
 		echo '
@@ -485,4 +490,104 @@ function template_topic_listing_below()
 		};', true
 		);
 	}
+}
+
+/**
+ * This is quick topic area above the topic listing, shown when the subject input gains focus
+ */
+function template_quicktopic_above()
+{
+	global $context, $options, $txt, $modSettings, $settings;
+
+	// Using  quick topic, and you can start a new topic?
+	if ($context['can_post_new'] && !empty($options['display_quick_reply']) && !$context['user']['is_guest'])
+	{
+		echo '
+		<form  id="postmodify" action="', getUrl('action', ['action' => 'post2', 'board' => $context['current_board']]), '" method="post" accept-charset="UTF-8" name="postmodify" onsubmit="submitonce(this);', (empty($modSettings['mentions_enabled']) ? '' : "revalidateMentions('postmodify', '" . $context['post_box_name'] . "');"), '">
+		<ul id="quicktopic" class="topic_listing" >
+			<li class="basic_row">
+				<div class="topic_icons', empty($modSettings['messageIcons_enable']) ? ' topicicon i-xx' : '', '">';
+
+		if (!empty($modSettings['messageIcons_enable']))
+		{
+			$icon_sources = new MessageTopicIcons(!empty($modSettings['messageIconChecks_enable']), $settings['theme_dir']);
+			echo '
+					<img src="', $icon_sources->getIconURL(-1), '" alt="" />';
+		}
+
+		echo '
+				</div>
+				<div id="quicktopic_title">', $txt['start_new_topic'], '</div>
+				<input id="quicktopic_subject" type="text" name="subject" tabindex="', $context['tabindex']++, '" size="70" maxlength="80" class="input_text"', ' placeholder="', $txt['subject'], '" required="required" />
+				<div id="quicktopicbox" class="hide">
+					<div class="post_wrapper', empty($options['hide_poster_area']) ? '' : '2', '">';
+
+		if (empty($options['hide_poster_area']))
+		{
+			echo '
+						<ul class="poster no_js">', template_build_poster_div($context['thisMember'], false), '</ul>';
+		}
+
+		echo '
+						<div class="postarea', empty($options['hide_poster_area']) ? '' : '2', '">';
+
+		// Is visual verification enabled?
+		if (!empty($context['require_verification']))
+		{
+			template_verification_controls($context['visual_verification_id'], '<strong>' . $txt['verification'] . ':</strong>', '<br />');
+		}
+
+		template_control_richedit($context['post_box_name']);
+
+		echo '
+							', $context['becomes_approved'] ? '' : '<p class="infobox">' . $txt['wait_for_approval'] . '</p>';
+
+		echo '
+							<input type="hidden" name="topic" value="0" />
+							<input type="hidden" name="icon" value="xx" />
+							<input type="hidden" name="from_qr" value="1" />
+							<input type="hidden" name="board" value="', $context['current_board'], '" />
+							<input type="hidden" name="goback" value="', empty($options['return_to_post']) ? '0' : '1', '" />
+							<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '" />
+							<input type="hidden" name="seqnum" value="', $context['form_sequence_number'], '" />
+							<div id="post_confirm_buttons" class="submitbutton">',
+								template_control_richedit_buttons($context['post_box_name']), '
+							</div>';
+
+		// Show the draft last saved on area
+		if (!empty($context['drafts_save']))
+		{
+			echo '
+						<div class="draftautosave">
+							<span id="throbber" class="hide"><i class="icon i-oval"></i>&nbsp;</span>
+							<span id="draft_lastautosave"></span>
+						</div>';
+		}
+
+		echo '
+					</div>
+				</div>
+			</li>
+		</ul>
+		</form>';
+
+		quickTopicToggle();
+	}
+}
+
+/**
+ * Adds needed JS to show the quick topic area
+ */
+function quickTopicToggle()
+{
+	theme()->addInlineJavascript('
+		document.getElementById("quicktopic_subject").onfocus = function() {
+			let quicktopicbox = document.getElementById("quicktopicbox");
+			let isVisible = quicktopicbox && (quicktopicbox.style.display !== "none" && quicktopicbox.offsetHeight !== 0);
+			
+			if (!isVisible)
+			{
+				quicktopicbox.slideDown();
+			}
+		};', true);
 }

@@ -111,16 +111,13 @@ class TopicUtil
 
 			// Decide how many pages the topic should have.
 			$topic_length = $row['num_replies'] + 1;
+			$pages = '';
 			if ($topic_length > $messages_per_page)
 			{
 				// We can't pass start by reference.
 				$start = -1;
 				$show_all = !empty($modSettings['enableAllMessages']) && $topic_length < $modSettings['enableAllMessages'];
 				$pages = constructPageIndex('{scripturl}?topic=' . $row['id_topic'] . '.%1$d' . $topicseen, $start, $topic_length, $messages_per_page, true, array('prev_next' => false, 'all' => $show_all));
-			}
-			else
-			{
-				$pages = '';
 			}
 
 			$row['new_from'] = $row['new_from'] ?? 0;

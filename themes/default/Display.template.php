@@ -46,29 +46,19 @@ function template_messages_informations_above()
 	// Show the topic information - icon, subject, stats, etc.
 	echo '
 		<main id="forumposts">
-			<header class="category_header">
+			<header id="topic_header" class="category_header">
 				<i class="hdicon ', $context['class'], '"></i>
 				<span id="topic_subject">', $context['subject'], '</span>
 				<span class="stats_text">
-					<i class="icon icon-small i-user"></i>', $context['topic_starter_name'], '
+					<i class="icon icon-small i-user"></i>', sprintf($txt['topic_started_by'], $context['topic_starter_name']), '
 					<span>&middot;</span>
 					<i class="icon icon-small i-calendar"></i>', $context['topic_start_time'], '
 					<span>&middot;</span>
 					<i class="icon icon-small i-view"></i>', $context['num_views_text'], '
-				</span>
-				<span class="nextlinks">',
-					empty($context['links']['go_prev']) ? '' : '<a href="' . $context['links']['go_prev'] . '">' . $txt['previous_next_back'] . '</a>',
-					empty($context['links']['go_next']) ? '' : ' - <a href="' . $context['links']['go_next'] . '">' . $txt['previous_next_forward'] . '</a>',
-					empty($context['links']['derived_from']) ? '' : ' - <a href="' . $context['links']['derived_from'] . '">' . sprintf($txt['topic_derived_from'], '<em>' . Util::shorten_text($context['topic_derived_from']['subject'], empty($modSettings['subject_length']) ? 32 : $modSettings['subject_length'])) . '</em></a>',
-				'</span>
-			</header>
-			<section>';
+				</span>';
 
 	if (!empty($settings['display_who_viewing']) || !empty($context['topic_redirected_from']))
 	{
-		echo '
-			<div class="generalinfo">';
-
 		if (!empty($settings['display_who_viewing']))
 		{
 			echo '
@@ -77,12 +67,12 @@ function template_messages_informations_above()
 			// Show just numbers...?
 			if ($settings['display_who_viewing'] == 1)
 			{
-				echo count($context['view_members']), ' ', count($context['view_members']) === 1 ? $txt['who_member'] : $txt['members'];
+				echo '<i class="icon icon-small i-users"></i>', count($context['view_members']), ' ', count($context['view_members']) === 1 ? $txt['who_member'] : $txt['members'];
 			}
 			// Or show the actual people viewing the topic?
 			else
 			{
-				echo empty($context['view_members_list']) ? '0 ' . $txt['members'] : implode(', ', $context['view_members_list']) . (empty($context['view_num_hidden']) || $context['can_moderate_forum'] ? '' : ' (+ ' . $context['view_num_hidden'] . ' ' . $txt['hidden'] . ')');
+				echo '<i class="icon icon-small i-users"></i>', empty($context['view_members_list']) ? '0 ' . $txt['members'] : implode(', ', $context['view_members_list']) . (empty($context['view_num_hidden']) || $context['can_moderate_forum'] ? '' : ' (+ ' . $context['view_num_hidden'] . ' ' . $txt['hidden'] . ')');
 			}
 
 			// Now show how many guests are here too.
@@ -98,12 +88,16 @@ function template_messages_informations_above()
 					' . sprintf($txt['no_redir'], '<a href="' . $context['topic_redirected_from']['redir_href'] . '">' . $context['topic_redirected_from']['subject'] . '</a>'), '
 				</span>';
 		}
-
-		echo '
-			</div>';
 	}
 
 	echo '
+				<span class="nextlinks">',
+					empty($context['links']['go_prev']) ? '' : '<a href="' . $context['links']['go_prev'] . '">' . $txt['previous_next_back'] . '</a>',
+					empty($context['links']['go_next']) ? '' : ' - <a href="' . $context['links']['go_next'] . '">' . $txt['previous_next_forward'] . '</a>',
+					empty($context['links']['derived_from']) ? '' : ' - <a href="' . $context['links']['derived_from'] . '">' . sprintf($txt['topic_derived_from'], '<em>' . Util::shorten_text($context['topic_derived_from']['subject'], empty($modSettings['subject_length']) ? 32 : $modSettings['subject_length'])) . '</em></a>', '
+				</span>
+			</header>
+			<section>
 			<form id="quickModForm" action="', $scripturl, '?action=quickmod2;topic=', $context['current_topic'], '.', $context['start'], '" method="post" accept-charset="UTF-8" name="quickModForm" onsubmit="return oQuickModify.bInEditMode ? oQuickModify.modifySave() : false">';
 }
 
@@ -307,6 +301,14 @@ function template_messages()
 	}
 }
 
+/**
+ * This function is responsible for rendering the key information section of a message.
+ *
+ * @param array $message The message data.
+ * @param bool $ignoring Whether the message is being ignored.
+ * @param bool $above Indicates if the key info section should be rendered above the message body.
+ * @return void
+ */
 function template_keyinfo($message, $ignoring, $above = false)
 {
 	global $context, $settings, $options, $txt;
@@ -383,8 +385,7 @@ function template_quickreply_below()
 		<a href="javascript:oQuickReply.swap();">', $txt['quick_reply'], '</a>
 	</h3>
 	<div id="quickreplybox">
-		<section>
-			<article class="post_wrapper', empty($options['hide_poster_area']) ? '' : '2', ' forumposts">';
+		<div class="post_wrapper', empty($options['hide_poster_area']) ? '' : '2', ' forumposts">';
 
 		if (empty($options['hide_poster_area']))
 		{
@@ -394,84 +395,71 @@ function template_quickreply_below()
 
 		// Make a postarea similar to post
 		echo '
-				<div class="postarea', empty($options['hide_poster_area']) ? '' : '2', '">
-					<header class="category_header">
-						<h4>', $txt['reply'], '</h4>
-					</header>
-					<div id="quickReplyOptions">
-						<form action="', getUrl('action', ['action' => 'post2', 'board' => $context['current_board']]), '" method="post" accept-charset="UTF-8" name="postmodify" id="postmodify" onsubmit="submitonce(this);', (empty($modSettings['mentions_enabled']) ? '' : "revalidateMentions('postmodify', '" . $context['post_box_name'] . "');"), '">
-							<input type="hidden" name="topic" value="', $context['current_topic'], '" />
-							<input type="hidden" name="subject" value="', $context['response_prefix'], $context['subject'], '" />
-							<input type="hidden" name="icon" value="xx" />
-							<input type="hidden" name="from_qr" value="1" />
-							<input type="hidden" name="notify" value="', $context['is_marked_notify'] || !empty($options['auto_notify']) ? '1' : '0', '" />
-							<input type="hidden" name="not_approved" value="', (int) !$context['can_reply_approved'], '" />
-							<input type="hidden" name="goback" value="', empty($options['return_to_post']) ? '0' : '1', '" />
-							<input type="hidden" name="last_msg" value="', $context['topic_last_message'], '" />
-							<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '" />
-							<input type="hidden" name="seqnum" value="', $context['form_sequence_number'], '" />';
+			<div class="postarea', empty($options['hide_poster_area']) ? '' : '2', '">
+				<header class="category_header">
+					<h4>', $txt['reply'], '</h4>
+				</header>
+				<div id="quickReplyOptions">
+					<form action="', getUrl('action', ['action' => 'post2', 'board' => $context['current_board']]), '" method="post" accept-charset="UTF-8" name="postmodify" id="postmodify" onsubmit="submitonce(this);', (empty($modSettings['mentions_enabled']) ? '' : "revalidateMentions('postmodify', '" . $context['post_box_name'] . "');"), '">
+						<input type="hidden" name="topic" value="', $context['current_topic'], '" />
+						<input type="hidden" name="subject" value="', $context['response_prefix'], $context['subject'], '" />
+						<input type="hidden" name="icon" value="xx" />
+						<input type="hidden" name="from_qr" value="1" />
+						<input type="hidden" name="notify" value="', $context['is_marked_notify'] || !empty($options['auto_notify']) ? '1' : '0', '" />
+						<input type="hidden" name="not_approved" value="', (int) !$context['can_reply_approved'], '" />
+						<input type="hidden" name="goback" value="', empty($options['return_to_post']) ? '0' : '1', '" />
+						<input type="hidden" name="last_msg" value="', $context['topic_last_message'], '" />
+						<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '" />
+						<input type="hidden" name="seqnum" value="', $context['form_sequence_number'], '" />';
 
 		// Guests just need more.
 		if ($context['user']['is_guest'])
 		{
 			echo '
-							<dl>
-								<dt>
-									<label for="guestname">', $txt['name'], ':</label> <input type="text" name="guestname" id="guestname" value="', $context['name'], '" size="25" class="input_text" tabindex="', $context['tabindex']++, '" />
-								</dd>
-								<dt>
-									<label for="email">', $txt['email'], ':</label> <input type="text" name="email" id="email" value="', $context['email'], '" size="25" class="input_text" tabindex="', $context['tabindex']++, '" />
-								</dd>
-							</dl>';
+						<dl>
+							<dt>
+								<label for="guestname">', $txt['name'], ':</label> <input type="text" name="guestname" id="guestname" value="', $context['name'], '" size="25" class="input_text" tabindex="', $context['tabindex']++, '" />
+							</dd>
+							<dt>
+								<label for="email">', $txt['email'], ':</label> <input type="text" name="email" id="email" value="', $context['email'], '" size="25" class="input_text" tabindex="', $context['tabindex']++, '" />
+							</dd>
+						</dl>';
 		}
 
 		// Is visual verification enabled?
 		if (!empty($context['require_verification']))
 		{
-			template_verification_controls($context['visual_verification_id'], '
-							<strong>' . $txt['verification'] . ':</strong>', '<br />');
+			template_verification_controls($context['visual_verification_id'], '<strong>' . $txt['verification'] . ':</strong>', '<br />');
 		}
 
 		echo '
-							', template_control_richedit($context['post_box_name']);
+						', template_control_richedit($context['post_box_name']);
 
 		echo '
-							', $context['is_locked'] ? '<p class="warningbox smalltext">' . $txt['quick_reply_warning'] . '</p>' : '',
-							$context['oldTopicError'] ? '<p class="warningbox smalltext"></i>' . sprintf($txt['error_old_topic'], $modSettings['oldTopicDays']) . '</p>' : '', '
-							', $context['can_reply_approved'] ? '' : '<p class="infobox">' . $txt['wait_for_approval'] . '</p>';
+						', $context['is_locked'] ? '<p class="warningbox smalltext">' . $txt['quick_reply_warning'] . '</p>' : '',
+						$context['oldTopicError'] ? '<p class="warningbox smalltext"></i>' . sprintf($txt['error_old_topic'], $modSettings['oldTopicDays']) . '</p>' : '', '
+						', $context['can_reply_approved'] ? '' : '<p class="infobox">' . $txt['wait_for_approval'] . '</p>';
 
 		echo '
-							<div id="post_confirm_buttons" class="submitbutton">
-								<input type="submit" name="post" value="', $txt['post'], '" onclick="return submitThisOnce(this);" accesskey="s" tabindex="', $context['tabindex']++, '" />
-								<input type="submit" name="preview" value="', $txt['preview'], '" onclick="return submitThisOnce(this);" accesskey="p" tabindex="', $context['tabindex']++, '" />';
-
-		// Draft save button?
-		if (!empty($context['drafts_save']))
-		{
-			echo '
-								<input type="hidden" id="id_draft" name="id_draft" value="', empty($context['id_draft']) ? 0 : $context['id_draft'], '" />
-								<input type="button" name="save_draft" value="', $txt['draft_save'], '" onclick="return confirm(' . JavaScriptEscape($txt['draft_save_note']) . ') && submitThisOnce(this);" accesskey="d" tabindex="', $context['tabindex']++, '" />';
-		}
-
-		echo '
-							</div>';
+						<div id="post_confirm_buttons" class="submitbutton">',
+							template_control_richedit_buttons($context['post_box_name']), '
+						</div>';
 
 		// Show the draft last saved on area
 		if (!empty($context['drafts_save']))
 		{
 			echo '
-							<div class="draftautosave">
-								<span id="throbber" class="hide"><i class="icon i-oval"></i>&nbsp;</span>
-								<span id="draft_lastautosave"></span>
-							</div>';
+						<div class="draftautosave">
+							<span id="throbber" class="hide"><i class="icon i-oval"></i>&nbsp;</span>
+							<span id="draft_lastautosave"></span>
+						</div>';
 		}
 
 		echo '
-						</form>
-					</div>
+					</form>
 				</div>
-			</article>
-		</section>
+			</div>
+		</div>
 	</div>';
 	}
 

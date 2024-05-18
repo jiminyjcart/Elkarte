@@ -2302,7 +2302,7 @@ button[type="submit"].quick_quote_button.hide {
 .category_boards .board_row {
 	display: grid;
 	min-height: 9rem;
-	grid-template-columns: [bicon] 7.5rem [info] auto [avatar] 6rem [latest] 32% [stats] minmax(8rem, 12rem) [end];
+	grid-template-columns: [bicon] 7.5rem [info] 1fr [avatar] 6.5rem [latest] 30% [stats] minmax(8rem, 12rem) [end];
 	grid-template-rows: [primary] auto [children] auto;
 }
 
@@ -2579,7 +2579,7 @@ button[type="submit"].quick_quote_button.hide {
 }
 
 #description_board .generalinfo, #forumposts .generalinfo {
-	margin: .12em 0 .3rem 0;
+	margin: 0 0 .3rem 0;
 	padding: .4rem .4rem .4rem 1.2rem;
 	border: 1px solid;
 }
@@ -2595,6 +2595,37 @@ button[type="submit"].quick_quote_button.hide {
 	border: 1px solid;
 	grid-template-columns: [topic_icon] 5rem [topic_info] auto [topic_latest] 35rem [topic_stats] 15rem [topic_moderation] 7.5rem;
 	grid-template-rows: auto;
+}
+
+/* The quick topic area is like the topic listing, its sits at the top */
+#quicktopic > li {
+	display: grid;
+	align-content: center;
+	grid-template-columns: [topic_icon] 5rem [topic_title] 22.5rem [topic_subject] auto;
+	grid-template-rows: auto auto;
+	grid-template-areas:
+		"topic_icon topic_title topic_subject"
+		". editor editor";
+}
+
+#quicktopicbox .postarea2, #quicktopicbox .postarea {
+	padding: 1rem;
+}
+
+#quicktopicbox {
+	grid-area: editor;
+}
+
+#quicktopic_title {
+	padding: 1rem;
+	font-weight: 600;
+	grid-area: topic_title;
+}
+
+#quicktopic_subject {
+	max-width: 75%;
+	margin: 1rem;
+	grid-area: topic_subject;
 }
 
 /* Container, holds the topic icon and fred */
@@ -2877,7 +2908,7 @@ button[type="submit"].quick_quote_button.hide {
 	"postarea";
 }
 
-aside.poster, #quickreplybox .poster {
+aside.poster, #quickreplybox .poster, #quicktopicbox .poster {
 	grid-area: poster;
 }
 
@@ -3287,46 +3318,52 @@ aside.poster, #quickreplybox .poster {
 	border-radius: .4rem .4rem 0 0;
 }
 
-/* The area at the top of each topic page, icon, title, views, links */
 #forumposts .category_header {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: flex;
+	align-items: center;
+}
+
+/* The area at the top of each topic page, icon, title, views, links */
+#topic_header.category_header {
 	display: grid;
 	grid-template-columns: 3rem auto 1fr;
-	grid-template-rows: 4rem auto;
+	grid-template-rows: 4rem auto auto;
 	grid-template-areas:
     "hdicon subject subject"
-    ". stats navigation";
+    ". stats navigation"
+    ". viewing .";
 }
 
 /* Topic icon and title */
-#forumposts .hdicon {
+#topic_header .hdicon {
 	align-self: center;
 	grid-area: hdicon;
 	height: 2.2rem;
 }
 
-#forumposts .hdicon::before {
+#topic_header .hdicon::before {
 	vertical-align: initial;
 }
 
-#topic_subject {
+#topic_header #topic_subject, #boarddescription {
 	align-self: center;
 	grid-area: subject;
-	font-size: var(--font22);
+	font-size: var(--font18);
 }
 
 /* Number of views and previous / next links in the category header */
-.nextlinks {
+#topic_header .nextlinks {
 	font-size: var(--font15);
-	margin-left: auto;
-	white-space: pre;
 	justify-self: end;
 	grid-area: navigation;
 }
 
-.stats_text {
+#topic_header .stats_text {
 	font-size: var(--font13);
 	opacity: .85;
-	place-self: start center;
+	place-self: center start;
 	grid-area: stats;
 }
 
@@ -3336,10 +3373,11 @@ aside.poster, #quickreplybox .poster {
 	border: 1px solid;
 }
 
-/* Other Topic information, in the description box, above the listing */
+/* Other Topic information */
 #whoisviewing, #redirectfrom {
 	font-size: var(--font13);
-	padding: .4rem 0 .3rem 0;
+	place-self: center start;
+	grid-area: viewing;
 }
 
 #redirectfrom {
@@ -3606,14 +3644,7 @@ aside.poster, #quickreplybox .poster {
 	margin: 0 auto;
 }
 
-/* The QR textarea */
-#quickReplyOptions .quickreply {
-	height: 15rem;
-	padding: 0 .4rem;
-	outline: none;
-}
-
-/* The QR buttons may be better suited not being over the topic buttons */
+/* The post area buttons are better suited on the left, not being over other topic buttons */
 #post_confirm_buttons {
 	justify-content: flex-start;
 }
@@ -3783,7 +3814,8 @@ ul.post_options li {
 
 .shortcuts {
 	font-size: var(--font13);
-	margin-right: auto;
+	margin-left: auto;
+	order: 2;
 }
 
 #mobile .shortcuts {
@@ -6153,7 +6185,7 @@ div.labels {
 		max-width: 45%;
 	}
 
-	#forumposts .category_header {
+	#topic_header.category_header {
 		grid-template-columns: auto 1fr;
 		grid-template-rows: 4rem auto;
 		grid-template-areas:
@@ -6161,7 +6193,7 @@ div.labels {
 			"stats navigation";
 	}
 
-	#forumposts .views_text, #forumposts .category_header .hdicon {
+	#topic_header .views_text, #topic_header .hdicon {
 		display: none;
 	}
 

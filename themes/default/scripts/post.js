@@ -10,7 +10,7 @@
  */
 
 /** global: $editor_data, elk_scripturl, elk_session_var, elk_session_id */
-/** global: poll_add, poll_remove, XMLHttpRequest, form_name */
+/** global: poll_add, poll_remove, XMLHttpRequest, form_name, preview_area */
 
 /**
  * This file contains javascript associated with the posting and previewing

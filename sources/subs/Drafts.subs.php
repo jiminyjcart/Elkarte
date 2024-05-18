@@ -564,8 +564,8 @@ function saveDraft($draft, $check_last_save = false)
  * - The core draft feature must be enabled, as well as the pm draft option
  * - Determines if this is a new or and update to an existing pm draft
  *
- * @param mixed[] $recipientList
- * @param mixed[] $draft
+ * @param array $recipientList
+ * @param array $draft
  * @param bool $check_last_save
  *
  * @return bool|void
