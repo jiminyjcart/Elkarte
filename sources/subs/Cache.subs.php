@@ -44,10 +44,7 @@ function cache_quick_get($key, $file, $function, $params, $level = 1)
  *
  * - It may "miss" so shouldn't be depended on
  * - Uses the cache engine chosen in the ACP and saved in settings.php
- * - It supports:
- *     memcache: http://www.php.net/memcache
- *     APC: http://www.php.net/apc
- *     Zend: http://files.zend.com/help/Zend-Platform/zend_cache_functions.htm
+ * - It supports Memcache, Memcached, APCu, Zend, Redis & Filebased engines
  *
  * @param string $key
  * @param string|int|array|null $value
@@ -117,11 +114,18 @@ function clean_cache($type = '')
  */
 function loadCacheEngines($supported_only = true)
 {
-	global $cache_memcached;
+	global $cache_servers, $cache_uid, $cache_password;
 
 	$engines = [];
 
 	$classes = new GlobIterator(SOURCEDIR . '/ElkArte/Cache/CacheMethod/*.php', FilesystemIterator::SKIP_DOTS);
+
+	$current = '';
+	$cache = Cache::instance();
+	if ($cache->isEnabled())
+	{
+		$current = $cache->getAccelerator();
+	}
 
 	foreach ($classes as $file_path)
 	{
@@ -137,15 +141,22 @@ function loadCacheEngines($supported_only = true)
 		// Validate the class name exists
 		if (class_exists($class))
 		{
-			$options = [];
-			if (strpos($engine_name, 'Memcache') === 0)
+			$options = [
+				'servers' => empty($cache_servers) ? [] : explode(',', $cache_servers),
+				'cache_uid' => empty($cache_uid) ? '' : $cache_uid,
+				'cache_password' => empty($cache_password) ? '' : $cache_password,
+			];
+
+			// Use the current Cache object if its been enabled
+			if ($engine_name === $current)
 			{
-				$options = [
-					'servers' => explode(',', $cache_memcached),
-				];
+				$obj = $cache->getCacheEngine();
+			}
+			else
+			{
+				$obj = new $class($options);
 			}
 
-			$obj = new $class($options);
 			if ($obj instanceof AbstractCacheMethod)
 			{
 				if ($supported_only && $obj->isAvailable())
