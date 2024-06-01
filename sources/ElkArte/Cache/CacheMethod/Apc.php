@@ -59,7 +59,7 @@ class Apc extends AbstractCacheMethod
 		$results['version'] = phpversion('apcu');
 
 		// Seems start_time is really up_time, at least going by its value ?
-		$elapsed = max($cache['start_time'], 1);
+		$elapsed = max($cache['start_time'], 1)/ 60;
 		$results['hit_rate'] = sprintf("%.2f", $cache['num_hits'] / $elapsed);
 		$results['miss_rate'] = sprintf("%.2f", $cache['num_misses'] / $elapsed);
 
