@@ -32,7 +32,7 @@ class Predis extends AbstractCacheMethod
 	 */
 	public function __construct($options)
 	{
-		require_once(EXTDIR . '/predis/autoload.php');
+	//	require_once(EXTDIR . '/predis/autoload.php');
 
 		if ($this->isAvailable())
 		{
