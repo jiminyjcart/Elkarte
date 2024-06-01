@@ -13,6 +13,8 @@
 
 namespace ElkArte\Cache\CacheMethod;
 
+use ElkArte\Helper\HttpReq;
+
 /**
  * Memcached
  */
@@ -165,7 +167,7 @@ class Memcached extends AbstractCacheMethod
 		// Only user the first server
 		reset($cache);
 		$server = current($cache);
-		$elapsed = max($server['uptime'], 1);
+		$elapsed = max($server['uptime'], 1) / 60;
 
 		$results['curr_items'] = comma_format($server['curr_items'] ?? 0, 0);
 		$results['get_hits'] = comma_format($server['get_hits'] ?? 0, 0);
@@ -217,7 +219,7 @@ class Memcached extends AbstractCacheMethod
 	 */
 	public function clean($type = '')
 	{
-		// Clear it out, really invalidate whats there
+		// Clear it out, really invalidate what is there
 		$this->obj->flush();
 	}
 
@@ -243,12 +245,17 @@ class Memcached extends AbstractCacheMethod
 	 */
 	public function settings(&$config_vars)
 	{
-		global $txt;
+		global $txt, $cache_servers, $cache_servers_memcached;
 
 		$var = [
-			'cache_memcached', $txt['cache_memcached'], 'file', 'text', 30, 'cache_memcached',
-			'force_div_id' => 'memcached_cache_memcached',
+			'cache_servers_memcached', $txt['cache_memcached'], 'file', 'text', 30, 'cache_memcached', 'force_div_id' => 'memcached_cache_memcached',
 		];
+
+		// Use generic global cache_servers value to load the initial form value
+		if (HttpReq::instance()->getQuery('save') === null)
+		{
+			$cache_servers_memcached = $cache_servers;
+		}
 
 		$serversList = $this->getServers();
 		$serversList = empty($serversList) ? [$txt['admin_search_results_none']] : $serversList;
