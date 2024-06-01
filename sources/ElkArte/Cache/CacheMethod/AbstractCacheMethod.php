@@ -33,7 +33,7 @@ abstract class AbstractCacheMethod implements CacheMethodInterface
 	/** @var string This is prefixed to all cache entries so that different applications won't interfere with each other. */
 	protected $prefix = 'elkarte';
 
-	/** @var \ElkArte\Helper\FileFunctions instance of file functions for use in cache methods */
+	/** @var FileFunctions instance of file functions for use in cache methods */
 	protected $fileFunc;
 
 	/**

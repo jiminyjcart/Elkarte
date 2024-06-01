@@ -16,6 +16,7 @@
 
 namespace ElkArte\Cache;
 
+use ElkArte\Cache\CacheMethod\AbstractCacheMethod;
 use ElkArte\Debug;
 use ElkArte\Helper\FileFunctions;
 use ElkArte\Helper\Util;
@@ -46,7 +47,7 @@ class Cache
 	/** @var string[] Cached keys */
 	protected $_cached_keys = [];
 
-	/** @var object|bool The caching object */
+	/** @var AbstractCacheMethod|null The caching engine object */
 	protected $_cache_obj;
 
 	/**
@@ -65,7 +66,7 @@ class Cache
 		{
 			$accelerator = 'filebased';
 		}
-		$this->_accelerator = $accelerator;
+		$this->_accelerator = ucfirst($accelerator);
 
 		$this->setLevel($level);
 		if ($level > 0)
@@ -100,7 +101,7 @@ class Cache
 	 */
 	protected function _init()
 	{
-		$cache_class = '\\ElkArte\\Cache\\CacheMethod\\' . ucfirst($this->_accelerator);
+		$cache_class = '\\ElkArte\\Cache\\CacheMethod\\' . $this->_accelerator;
 
 		if (class_exists($cache_class))
 		{
@@ -109,8 +110,7 @@ class Cache
 		}
 		else
 		{
-			$this->_cache_obj = false;
-
+			$this->_cache_obj = null;
 			$this->enabled = false;
 		}
 
@@ -143,22 +143,40 @@ class Cache
 	}
 
 	/**
+	 * Return the current cache_obj
+	 *
+	 * @return AbstractCacheMethod|null
+	 */
+	public function getCacheEngine()
+	{
+		return $this->_cache_obj;
+	}
+
+	/**
+	 * Return the cache accelerator in use
+	 *
+	 * @return string
+	 */
+	public function getAccelerator()
+	{
+		return $this->_accelerator;
+	}
+
+	/**
 	 * Find and return the instance of the Cache class if it exists,
-	 * or create it if it doesn't exist
+	 * otherwise start a new instance
 	 */
 	public static function instance()
 	{
 		if (self::$_instance === null)
 		{
-			global $cache_accelerator, $cache_enable, $cache_memcached;
+			global $cache_accelerator, $cache_enable, $cache_uid, $cache_password, $cache_servers;
 
-			$options = [];
-			if (strpos($cache_accelerator ?? '', 'memcache') === 0)
-			{
-				$options = [
-					'servers' => explode(',', $cache_memcached),
-				];
-			}
+			$options = [
+				'servers' => empty($cache_servers) ? [] : explode(',', $cache_servers),
+				'cache_uid' => empty($cache_uid) ? '' : $cache_uid,
+				'cache_password' => empty($cache_password) ? '' : $cache_password,
+			];
 
 			self::$_instance = new Cache($cache_enable, $cache_accelerator, $options);
 		}
@@ -243,12 +261,11 @@ class Cache
 	 * - It may "miss" so shouldn't be depended on
 	 * - Uses the cache engine chosen in the ACP and saved in settings.php
 	 * - It supports:
-	 *   - memcache: http://www.php.net/memcache
-	 *   - memcached: http://www.php.net/memcached
-	 *   - APC: http://www.php.net/apc
-	 *   - APCu: http://us3.php.net/manual/en/book.apcu.php
-	 *   - Zend: http://files.zend.com/help/Zend-Platform/output_cache_functions.htm
-	 *   - Zend: http://files.zend.com/help/Zend-Platform/zend_cache_functions.htm
+	 *   - Memcache: https://www.php.net/memcache
+	 *   - MemcacheD: https://www.php.net/memcached
+	 *   - APCu: https://us3.php.net/manual/en/book.apcu.php
+	 *   - Zend: https://help.zend.com/zend/current/content/data_cache_component.htm
+	 *   - Redis: https://redis.io/learn/develop/php
 	 *
 	 * @param string $key
 	 * @param string|int|array|null $value
