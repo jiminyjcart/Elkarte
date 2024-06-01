@@ -13,14 +13,14 @@
 namespace ElkArte\Cache\CacheMethod;
 
 /**
- * Redis
+ * Predis
  */
-class Redis extends AbstractCacheMethod
+class Predis extends AbstractCacheMethod
 {
 	/** {@inheritdoc} */
-	protected $title = 'Redis';
+	protected $title = 'Predis';
 
-	/** @var \Redis Redis instance representing the connection to the Redis servers. */
+	/** @var \Predis Predis instance representing the connection to the Redis servers. */
 	protected $obj;
 
 	/** @var server */
@@ -93,6 +93,46 @@ class Redis extends AbstractCacheMethod
 	protected function getServers()
 	{
 		return $this->server;
+	}
+
+	/**
+	 * Retrieves statistics about the cache.
+	 *
+	 * @return array An associative array containing the cache statistics.
+	 *    The array has the following keys:
+	 *      - curr_items: The number of items currently stored in the cache.
+	 *      - get_hits: The number of successful cache hits.
+	 *      - get_misses: The number of cache misses.
+	 *      - curr_connections: The number of current open connections to the cache server.
+	 *      - version: The version of the cache server.
+	 *      - hit_rate: The cache hit rate as a decimal value with two decimal places.
+	 *      - miss_rate: The cache miss rate as a decimal value with two decimal places.
+	 *
+	 * If the statistics cannot be obtained, an empty array is returned.
+	 */
+	public function getStats()
+	{
+		$results = [];
+
+		$cache = $this->obj->info();
+
+		if ($cache === false)
+		{
+			return $results;
+		}
+
+		$elapsed = max($cache['Server']['uptime_in_seconds'], 1) / 60;
+		$cache['Stats']['tracking_total_keys'] = count($this->obj->keys('*'));
+
+		$results['curr_items'] = comma_format($cache['Stats']['tracking_total_keys'] ?? 0, 0);
+		$results['get_hits'] = comma_format($cache['Stats']['keyspace_hits'] ?? 0, 0);
+		$results['get_misses'] = comma_format($cache['Stats']['keyspace_misses'] ?? 0, 0);
+		$results['curr_connections'] = $cache['Server']['connected_clients'] ?? 0;
+		$results['version'] = $cache['Server']['redis_version'] ?? '0.0.0';
+		$results['hit_rate'] = sprintf("%.2f", $cache['keyspace_hits'] / $elapsed);
+		$results['miss_rate'] = sprintf("%.2f", $cache['keyspace_misses'] / $elapsed);
+
+		return $results;
 	}
 
 	/**
@@ -182,13 +222,12 @@ class Redis extends AbstractCacheMethod
 	{
 		global $txt;
 
-		$var = array(
-			'cache_redis', $txt['cache_redis'], 'file', 'text', 30, 'cache_redis',
-			'force_div_id' => 'redis_cache_redis',
-		);
+		$var = [
+			'cache_servers_redis', $txt['cache_redis'], 'file', 'text', 30, 'cache_redis', 'force_div_id' => 'redis_cache_redis',
+		];
 
 		$serversmList = $this->getServers();
-		$serversmList = empty($serversmList) ? array($txt['admin_search_results_none']) : $serversmList;
+		$serversmList = empty($serversmList) ? [$txt['admin_search_results_none']] : $serversmList;
 		$var['postinput'] = $txt['cache_redis_servers'] . implode('</li><li>', $serversmList) . '</li></ul>';
 
 		$config_vars[] = $var;
