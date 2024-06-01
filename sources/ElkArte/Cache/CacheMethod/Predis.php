@@ -10,6 +10,7 @@
  * @version 2.0 dev
  *
  */
+
 namespace ElkArte\Cache\CacheMethod;
 
 /**
@@ -32,7 +33,6 @@ class Predis extends AbstractCacheMethod
 	public function __construct($options)
 	{
 		require_once(EXTDIR . '/predis/autoload.php');
-
 
 		if ($this->isAvailable())
 		{
@@ -58,29 +58,29 @@ class Predis extends AbstractCacheMethod
 	 */
 	protected function addServers()
 	{
-		if(!empty($this->_options['servers']))
+		if (!empty($this->_options['servers']))
 		{
-			foreach ($this->_options['servers'] as $server)
+			$server = reset($this->_options['servers']);
+			$server = explode(':', trim($server));
+			$server[0] = !empty($server[0]) ? $server[0] : 'localhost';
+			$server[1] = !empty($server[1]) ? $server[1] : 6379;
+
+			$params = [
+				'scheme' => 'tcp',
+				'host' => $server[0],
+				'port' => $server[1],
+			];
+
+			try
 			{
-				$server		= explode(':', trim($server));
-				$server[0]	= !empty($server[0]) ? $server[0] : 'localhost';
-				$server[1]	= !empty($server[1]) ? $server[1] : 6379;
-
-				$params = [
-					'scheme' => 'tcp',
-					'host'   => $server[0],
-					'port'   => $server[1],
-				];
-
-				try {
-					$this->obj = new \Predis\Client($params);
-					$this->obj->connect();
-					$this->server[] = "tcp://{$server[0]}:{$server[1]}";
-				}
-				catch(\Predis\Connection\ConnectionException $e) {
-					// Clear the object, should we log an error here?
-					$this->obj = null;
-				}
+				$this->obj = new \Predis\Client($params);
+				$this->obj->connect();
+				$this->server[] = "tcp://{$server[0]}:{$server[1]}";
+			}
+			catch (\Predis\Connection\ConnectionException $e)
+			{
+				// Clear the object, should we log an error here?
+				$this->obj = null;
 			}
 		}
 	}
@@ -150,7 +150,7 @@ class Predis extends AbstractCacheMethod
 	 */
 	public function get($key, $ttl = 120)
 	{
-		if(!is_object($this->obj))
+		if (!is_object($this->obj))
 		{
 			return '';
 		}
@@ -166,7 +166,7 @@ class Predis extends AbstractCacheMethod
 	 */
 	public function put($key, $value, $ttl = 120)
 	{
-		if(!is_object($this->obj))
+		if (!is_object($this->obj))
 		{
 			return '';
 		}
@@ -184,7 +184,7 @@ class Predis extends AbstractCacheMethod
 	 */
 	public function clean($type = '')
 	{
-		if(!is_object($this->obj))
+		if (!is_object($this->obj))
 		{
 			return '';
 		}
@@ -198,7 +198,7 @@ class Predis extends AbstractCacheMethod
 	 */
 	public function details()
 	{
-		if(!is_object($this->obj))
+		if (!is_object($this->obj))
 		{
 			return '';
 		}

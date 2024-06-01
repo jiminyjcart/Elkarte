@@ -161,7 +161,8 @@ class Redis extends AbstractCacheMethod
 			{
 				$retVal = false;
 			}
-			finally {
+			finally
+			{
 				restore_error_handler();
 			}
 		}
