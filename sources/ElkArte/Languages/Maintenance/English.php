@@ -145,8 +145,8 @@ $txt['maintain_cache_get_hits'] = 'The number of successful cache item retrieval
 $txt['maintain_cache_get_misses'] = 'The number of cache item retrievals that did not find a matching item.';
 $txt['maintain_cache_curr_connections'] = 'The number of currently open connections to the caching daemon.';
 $txt['maintain_cache_version'] = 'The version number of the caching server.';
-$txt['maintain_cache_hit_rate'] = 'Hit Rate in requests/second';
-$txt['maintain_cache_miss_rate'] = 'Miss Rate in requests/second';
+$txt['maintain_cache_hit_rate'] = 'Hit Rate in requests/minute';
+$txt['maintain_cache_miss_rate'] = 'Miss Rate in requests/minute';
 
 $txt['maintain_backup'] = 'Backup Database';
 $txt['maintain_backup_info'] = 'Download a backup copy of your forums database in case of emergency.';
