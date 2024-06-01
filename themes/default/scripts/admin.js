@@ -965,31 +965,66 @@ function showCache ()
  */
 function toggleCache ()
 {
-	let memcache = document.getElementById('cache_memcached').parentNode,
-		cachedir = document.getElementById('cachedir').parentNode;
+	let cacheServers = document.getElementById('cache_servers'),
+		cacheDir = document.getElementById('cachedir'),
+		cacheUid = document.getElementById('cache_uid'),
+		cachePassword = document.getElementById('cache_password'),
+		cacheConfirm = document.getElementById('cache_password_confirm');
 
-	// Show the memcache server box only if memcache has been selected
-	if (cache_type.value.substring(0, 8) === 'memcache')
+	cacheServers = cacheServers ? cacheServers.parentNode : null;
+	cacheDir = cacheDir ? cacheDir.parentNode : null;
+	cacheUid = cacheUid ? cacheUid.parentNode : null;
+	cachePassword = cachePassword ? cachePassword.parentNode : null;
+	cacheConfirm = cacheConfirm ? cacheConfirm.parentNode : null;
+
+	// Show the server box only if memcache/memcached/redis has been selected
+	if (cache_type.value.substring(0, 8) === 'memcache' || cache_type.value === 'redis')
 	{
-		memcache.slideDown();
-		memcache.previousElementSibling.slideDown(100);
-	}
-	else
-	{
-		memcache.slideUp();
-		memcache.previousElementSibling.slideUp(100);
+		showHideCacheOption(cacheServers, (cache_type.value.substring(0, 8) === 'memcache' || cache_type.value === 'redis' || cache_type.value === 'predis'));
 	}
 
-	// don't show the directory if its not filebased
+	// Don't show the directory if its not filebased
 	if (cache_type.value === 'filebased')
 	{
-		cachedir.slideDown();
-		cachedir.previousElementSibling.slideDown(100);
+		showHideCacheOption(cacheDir, cache_type.value === 'filebased');
 	}
-	else
+
+	// Currently only redis (optionally) uses the uid/password
+	if (cacheUid)
 	{
-		cachedir.slideUp(100);
-		cachedir.previousElementSibling.slideUp(100);
+		showHideCacheOption(cacheUid, (cache_type.value === "redis" || cache_type.value === "predis"));
+	}
+	if (cachePassword)
+	{
+		showHideCacheOption(cachePassword,  (cache_type.value === "redis" || cache_type.value === "predis"));
+	}
+	if (cacheConfirm)
+	{
+		showHideCacheOption(cacheConfirm,  (cache_type.value === "redis" || cache_type.value === "predis"));
+	}
+}
+
+/**
+ * Toggles the visibility of a cache option element and its previous sibling element.
+ *
+ * @param {Element} elem - The cache option element to toggle.
+ * @param {boolean} show - Determines whether to show or hide the cache option element.
+ *
+ * @return {undefined}
+ */
+function showHideCacheOption(elem, show)
+{
+	if (elem)
+	{
+		if (show)
+		{
+			elem.slideDown(100);
+			elem.previousElementSibling.slideDown(150);
+			return;
+		}
+
+		elem.slideUp(100);
+		elem.previousElementSibling.slideUp(150);
 	}
 }
 
