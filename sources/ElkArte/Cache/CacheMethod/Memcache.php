@@ -24,7 +24,7 @@ class Memcache extends AbstractCacheMethod
 	/** @var \Memcache Creates a Memcache instance representing the connection to the memcache servers. */
 	protected $obj;
 
-	/** @var bool If the daemon has valid servers in it pool */
+	/** @var bool If the daemon has valid servers in its pool */
 	protected $_is_running;
 
 	/**
@@ -128,8 +128,8 @@ class Memcache extends AbstractCacheMethod
 	 *   - 'get_misses': The number of cache lookups that did not find a matching item.
 	 *   - 'curr_connections': The number of currently open connections to the cache server.
 	 *   - 'version': The version of the cache server.
-	 *   - 'hit_rate': The rate of successful cache lookups per second.
-	 *   - 'miss_rate': The rate of cache lookups that did not find a matching item per second.
+	 *   - 'hit_rate': The rate of successful cache lookups per minute.
+	 *   - 'miss_rate': The rate of cache lookups that did not find a matching item per minute.
 	 *
 	 *  If the statistics cannot be obtained, an empty array is returned.
      */
@@ -146,7 +146,7 @@ class Memcache extends AbstractCacheMethod
 		// Only user the first server
 		reset($cache);
 		$server = current($cache);
-		$elapsed = max($server['uptime'], 1);
+		$elapsed = max($server['uptime'], 1) / 60;
 
 		$results['curr_items'] = comma_format($server['curr_items'] ?? 0, 0);
 		$results['get_hits'] = comma_format($server['get_hits'] ?? 0, 0);
@@ -242,16 +242,12 @@ class Memcache extends AbstractCacheMethod
 		global $txt;
 
 		$var = [
-			'cache_memcached', $txt['cache_memcache'], 'file', 'text', 30, 'cache_memcached',
-			'force_div_id' => 'memcache_cache_memcache',
+			'cache_servers', $txt['cache_memcache'], 'file', 'text', 30, 'cache_memcached', 'force_div_id' => 'memcache_cache_memcache',
 		];
 
-		$serversmList = $this->getServers();
-
-		if (!empty($serversmList))
-		{
-			$var['postinput'] = $txt['cache_memcached_servers'] . implode('</li><li>', $serversmList) . '</li></ul>';
-		}
+		$serversList = $this->getServers();
+		$serversList = empty($serversList) ? [$txt['admin_search_results_none']] : $serversList;
+		$var['postinput'] = $txt['cache_memcached_servers'] . implode('</li><li>', $serversList) . '</li></ul>';
 
 		$config_vars[] = $var;
 	}

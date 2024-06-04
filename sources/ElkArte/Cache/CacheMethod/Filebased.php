@@ -75,11 +75,13 @@ class Filebased extends AbstractCacheMethod
 
 			// Write out the cache file, check that the cache write was successful; all the data must be written
 			// If it fails due to low diskspace, or other, remove the cache file
-			if (@file_put_contents(CACHEDIR . '/' . $fName, $cache_data, LOCK_EX) !== strlen($cache_data))
+			if (file_put_contents(CACHEDIR . '/' . $fName, $cache_data, LOCK_EX) !== strlen($cache_data))
 			{
 				$this->fileFunc->delete(CACHEDIR . '/' . $fName);
 			}
 		}
+
+		$this->opcacheReset($fName);
 	}
 
 	/**
@@ -113,6 +115,30 @@ class Filebased extends AbstractCacheMethod
 		$this->is_miss = true;
 
 		return $return;
+	}
+
+	/**
+	 * Resets the opcache for a specific file.
+	 *
+	 * If opcache is switched on, and we can use it, immediately invalidates that opcode cache
+	 * after a file is written so that future includes are not using a stale opcode cached file.
+	 *
+	 * @param string $fName The name of the cached file.
+	 */
+	private function opcacheReset($fName)
+	{
+		if (extension_loaded('Zend OPcache') && ini_get('opcache.enable'))
+		{
+			$opcache = ini_get('opcache.restrict_api');
+			if ($opcache === false || $opcache === '')
+			{
+				opcache_invalidate(CACHEDIR . '/' . $fName, true);
+			}
+			elseif (stripos(BOARDDIR, $opcache) !== 0)
+			{
+				opcache_invalidate(CACHEDIR . '/' . $fName, true);
+			}
+		}
 	}
 
 	/**

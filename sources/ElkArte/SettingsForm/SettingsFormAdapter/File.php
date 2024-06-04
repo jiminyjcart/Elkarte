@@ -50,8 +50,7 @@ class File extends Db
 	 *    1 label - the text to show on the settings page
 	 *    2 saveto - file or db, where to save the variable name - value pair
 	 *    3 type - type of data to display int, float, text, check, select, password
-	 *    4 size - false or field size, if type is select, this needs to be an array of
-	 *                select options
+	 *    4 size - false or field size, if type is select, this needs to be an array of select options
 	 *    5 help - '' or helptxt variable name
 	 *  )
 	 * - The following named keys are also permitted
@@ -59,6 +58,8 @@ class File extends Db
 	 *    'postinput' =>
 	 *    'preinput' =>
 	 *    'subtext' =>
+	 *    'force_div_id' =>
+	 *    'skip_verify_pass' =>
 	 */
 	public function prepare()
 	{
@@ -184,6 +185,7 @@ class File extends Db
 		$config_passwords = [
 			'db_passwd',
 			'ssi_db_passwd',
+			'cache_password',
 		];
 
 		// All the strings to write.
@@ -201,8 +203,9 @@ class File extends Db
 			'db_prefix',
 			'ssi_db_user',
 			'cache_accelerator',
-			'cache_memcached',
+			'cache_servers',
 			'url_format',
+			'cache_uid',
 		];
 
 		// These need HTML encoded. Be sure they all exist in $config_strs!
@@ -224,56 +227,17 @@ class File extends Db
 			'maintenance',
 		];
 
-		// Now sort everything into a big array, and figure out arrays and etc.
-		foreach ($config_passwords as $configVar)
-		{
-			if (!isset($this->configValues[$configVar][1]))
-			{
-				continue;
-			}
-
-			if ($this->configValues[$configVar][0] !== $this->configValues[$configVar][1])
-			{
-				continue;
-			}
-
-			$this->new_settings[$configVar] = "'" . addcslashes($this->configValues[$configVar][0], '\'\\') . "'";
-		}
+		// Now sort everything into a big array, and figure out arrays etc.
+		$this->cleanPasswords($config_passwords);
 
 		// Escape and update Setting strings
-		foreach ($config_strs as $configVar)
-		{
-			if (isset($this->configValues[$configVar]))
-			{
-				if (in_array($configVar, $safe_strings))
-				{
-					$this->new_settings[$configVar] = "'" . addcslashes(Util::htmlspecialchars(strtr($this->configValues[$configVar], ["\n" => '<br />', "\r" => '']), ENT_QUOTES), '\'\\') . "'";
-				}
-				else
-				{
-					$this->new_settings[$configVar] = "'" . addcslashes($this->configValues[$configVar], '\'\\') . "'";
-				}
-			}
-		}
+		$this->cleanStrings($config_strs, $safe_strings);
 
 		// Ints are saved as integers
-		foreach ($config_ints as $configVar)
-		{
-			if (isset($this->configValues[$configVar]))
-			{
-				$this->new_settings[$configVar] = (int) $this->configValues[$configVar];
-			}
-		}
+		$this->cleanInts($config_ints);
 
 		// Convert checkbox selections to 0 / 1
-		foreach ($config_bools as $key)
-		{
-			// Check boxes need to be part of this settings form
-			if ($this->_array_value_exists__recursive($key, $this->getConfigVars()))
-			{
-				$this->new_settings[$key] = (int) !empty($this->configValues[$key]);
-			}
-		}
+		$this->cleanBools($config_bools);
 	}
 
 	/**
@@ -309,6 +273,102 @@ class File extends Db
 	}
 
 	/**
+	 * Clean passwords and add them to the new settings array
+	 *
+	 * @param array $config_passwords The array of config passwords to clean
+	 */
+	public function cleanPasswords(array $config_passwords)
+	{
+		foreach ($config_passwords as $configVar)
+		{
+			// Handle skip_verify_pass.  Only password[0] will exist from the form
+			$key = $this->_array_key_exists__recursive($this->configVars, $configVar, 0);
+			if ($key !== false
+				&& !empty($this->configVars[$key]['skip_verify_pass'])
+				&& $this->configValues[$configVar][0] !== '*#fakepass#*')
+			{
+				$this->new_settings[$configVar] = "'" . addcslashes($this->configValues[$configVar][0], '\'\\') . "'";
+				continue;
+			}
+
+			// Validate the _confirm password box exists
+			if (!isset($this->configValues[$configVar][1]))
+			{
+				continue;
+			}
+
+			// And that it has the same password
+			if ($this->configValues[$configVar][0] !== $this->configValues[$configVar][1])
+			{
+				continue;
+			}
+
+			$this->new_settings[$configVar] = "'" . addcslashes($this->configValues[$configVar][0], '\'\\') . "'";
+		}
+	}
+
+	/**
+	 * Clean strings in the configuration values by escaping characters and applying safe transformations
+	 * and add them to the new settings array
+	 *
+	 * @param array $config_strs The configuration strings to clean
+	 * @param array $safe_strings The safe strings that should receive additional transformations
+	 */
+	public function cleanStrings(array $config_strs, array $safe_strings)
+	{
+		foreach ($config_strs as $configVar)
+		{
+			if (isset($this->configValues[$configVar]))
+			{
+				if (in_array($configVar, $safe_strings, true))
+				{
+					$this->new_settings[$configVar] = "'" . addcslashes(Util::htmlspecialchars(strtr($this->configValues[$configVar], ["\n" => '<br />', "\r" => '']), ENT_QUOTES), '\'\\') . "'";
+				}
+				else
+				{
+					$this->new_settings[$configVar] = "'" . addcslashes($this->configValues[$configVar], '\'\\') . "'";
+				}
+			}
+		}
+	}
+
+	/**
+	 * Clean/cast integer values in the configuration array and add them to the new settings array
+	 *
+	 * @param array $config_ints The array of configuration variables to clean
+	 *
+	 * @return void
+	 */
+	public function cleanInts(array $config_ints): void
+	{
+		foreach ($config_ints as $configVar)
+		{
+			if (isset($this->configValues[$configVar]))
+			{
+				$this->new_settings[$configVar] = (int) $this->configValues[$configVar];
+			}
+		}
+	}
+
+	/**
+	 * Clean boolean values in the provided config array to be 0 or 1 and add them to the new settings array
+	 *
+	 * @param array $config_bools The array of boolean keys to clean.
+	 * @return void
+	 */
+	public function cleanBools(array $config_bools): void
+	{
+		foreach ($config_bools as $key)
+		{
+			// Check boxes need to be part of this settings form
+			if ($this->_array_value_exists__recursive($key, $this->getConfigVars()))
+			{
+				$this->new_settings[$key] = (int) !empty($this->configValues[$key]);
+			}
+		}
+	}
+
+	/**
 	 * Recursively checks if a value exists in an array
 	 *
 	 * @param string $needle
@@ -326,6 +386,34 @@ class File extends Db
 			}
 		}
 
+		return false;
+	}
+
+	/**
+	 * Recursively search for a value in a multidimensional array and return the key
+	 *
+	 * @param array $haystack The array to search in
+	 * @param mixed $needle The value to search for
+	 * @param mixed $index The index to compare against (optional)
+	 * @return string|int|false The key of the found value, false if array search completed without finding value
+	 */
+	private function _array_key_exists__recursive($haystack, $needle, $index = null)
+	{
+		$aIt = new \RecursiveArrayIterator($haystack);
+		$it = new \RecursiveIteratorIterator($aIt);
+
+		while ($it->valid())
+		{
+			if (((isset($index) && $it->key() === $index) || (!isset($index)))
+				&& $it->current() === $needle)
+			{
+				return $aIt->key();
+			}
+
+			$it->next();
+		}
+
+		// If the loop completed without finding the value, return false
 		return false;
 	}
 
@@ -350,7 +438,7 @@ class File extends Db
 			$this->settingsArray[$k] = strtr($dummy, ["\r" => '']) . "\n";
 		}
 
-		// go line by line and see whats changing
+		// go line by line and see what's changing
 		for ($i = 0, $n = count($this->settingsArray); $i < $n; $i++)
 		{
 			// Don't trim or bother with it if it's not a variable.

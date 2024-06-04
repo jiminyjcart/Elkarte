@@ -20,6 +20,7 @@ namespace ElkArte\AdminController;
 
 use ElkArte\AbstractController;
 use ElkArte\Action;
+use ElkArte\Cache\CacheMethod\AbstractCacheMethod;
 use ElkArte\Exceptions\Exception;
 use ElkArte\SettingsForm\SettingsForm;
 use ElkArte\Languages\Txt;
@@ -404,11 +405,18 @@ class ManageServer extends AbstractController
 		{
 			call_integration_hook('integrate_save_cache_settings');
 
+			// Move accelerator servers to the cache_servers value
+			$var = 'cache_servers_' . $this->_req->post->cache_accelerator;
+			if (isset($this->_req->post->$var))
+			{
+				$this->_req->post->cache_servers = $this->_req->post->$var;
+			}
+
 			$settingsForm->setConfigValues((array) $this->_req->post);
 			$settingsForm->save();
 
 			// we need to save the $cache_enable to $modSettings as well
-			updateSettings(array('cache_enable' => (int) $this->_req->post->cache_enable));
+			updateSettings(['cache_enable' => (int) $this->_req->post->cache_enable]);
 
 			// exit so we reload our new settings on the page
 			redirectexit('action=admin;area=serversettings;sa=cache;' . $context['session_var'] . '=' . $context['session_id']);
@@ -423,8 +431,6 @@ class ManageServer extends AbstractController
 			let cache_type = document.getElementById(\'cache_accelerator\');
 
 			cache_type.addEventListener("change", showCache);
-			
-			createEventListener(cache_type);
 			cache_type.addEventListener("change", toggleCache);
 			
 			let event = new Event("change");
@@ -451,12 +457,13 @@ class ManageServer extends AbstractController
 	{
 		global $txt, $cache_accelerator, $context;
 
-		// Detect all available optimizers
+		// Detect all available cache engines
 		require_once(SUBSDIR . '/Cache.subs.php');
 		$detected = loadCacheEngines(false);
 		$detected_names = [];
 		$detected_supported = [];
 
+		/** @var $value AbstractCacheMethod */
 		foreach ($detected as $key => $value)
 		{
 			$detected_names[] = $value->title();
@@ -484,12 +491,13 @@ class ManageServer extends AbstractController
 			['cache_accelerator', $txt['cache_accelerator'], 'file', 'select', $detected_supported],
 		];
 
-		// If the cache engine has specific settings, add them in
-		foreach ($detected as $value)
+		// If the cache engine has any specific settings, add them in
+		foreach ($detected as $engine)
 		{
-			if ($value->isAvailable())
+			/** @var $engine AbstractCacheMethod */
+			if ($engine->isAvailable())
 			{
-				$value->settings($config_vars);
+				$engine->settings($config_vars);
 			}
 		}
 

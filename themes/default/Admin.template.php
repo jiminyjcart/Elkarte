@@ -569,7 +569,7 @@ function template_show_settings()
 			else
 			{
 				echo '
-					<dt', is_array($config_var) && !empty($config_var['force_div_id']) ? ' id="' . $config_var['force_div_id'] . '"' : '', '>';
+					<dt', !empty($config_var['force_div_id']) ? ' id="' . $config_var['force_div_id'] . '"' : '', '>';
 
 				// Some quick helpers...
 				$preinput = empty($config_var['preinput']) ? '' : $config_var['preinput'];
@@ -592,11 +592,11 @@ function template_show_settings()
 				}
 
 				echo '
-					</a>
-					<label for="', $config_var['name'], '"', ($config_var['disabled'] ? ' class="disabled"' : $invalid), '>', $config_var['label'], '</label>', $subtext, '
+						</a>
+						<label for="', $config_var['name'], '"', ($config_var['disabled'] ? ' class="disabled"' : $invalid), '>', $config_var['label'], '</label>', $subtext, '
 					</dt>
 					<dd', (empty($config_var['force_div_id']) ? '' : ' id="' . $config_var['force_div_id'] . '_dd"'), '>',
-				$preinput;
+						$preinput;
 
 				// Show a checkbox.
 				if ($config_var['type'] === 'check')
@@ -604,17 +604,25 @@ function template_show_settings()
 					echo '
 						<input type="checkbox"', $javascript, $disabled, ' name="', $config_var['name'], '" id="', $config_var['name'], '"', ($config_var['value'] ? ' checked="checked"' : ''), ' value="1" />';
 				}
-				// Escape (via htmlspecialchars.) the text box.
+				// Password and confirm password fields
 				elseif ($config_var['type'] === 'password')
 				{
 					echo '
-						<input type="password"', $disabled, $javascript, ' name="', $config_var['name'], '[0]" id="', $config_var['name'], '"', $size, ' value="*#fakepass#*" onfocus="this.value = \'\'; this.form.', $config_var['name'], '_confirm.disabled = false;" class="input_password" />
+						<input type="password"', $disabled, $javascript, ' name="', $config_var['name'], '[0]" id="', $config_var['name'], '"', $size, ' value="*#fakepass#*" onfocus="this.value = \'\'; this.form.', $config_var['name'], '_confirm.disabled = false;" class="input_password" />';
+
+					if (empty($config_var['skip_verify_pass']))
+					{
+						echo '
 					</dd>
-					<dt>
-						<a id="setting_', $config_var['name'], '_confirm"></a><span', ($config_var['disabled'] ? ' class="disabled"' : $invalid), '><label for="', $config_var['name'], '_confirm"><em>', $txt['admin_confirm_password'], '</em></label></span>
+					<dt ', (empty($config_var['force_div_id']) ? '' : ' id="' . $config_var['force_div_id'] . '_confirm_dt"'), '>
+						<a id="setting_', $config_var['name'], '_confirm"></a>
+						<span', ($config_var['disabled'] ? ' class="disabled"' : $invalid), '>
+							<label for="', $config_var['name'], '_confirm"><em>', $txt['admin_confirm_password'], '</em></label>
+						</span>
 					</dt>
 					<dd ', (empty($config_var['force_div_id']) ? '' : ' id="' . $config_var['force_div_id'] . '_confirm_dd"'), ' >
 						<input type="password" disabled id="', $config_var['name'], '_confirm" name="', $config_var['name'], '[1]"', $size, ' class="input_password" />';
+					}
 				}
 				// Show a selection box.
 				elseif ($config_var['type'] === 'select')
@@ -730,7 +738,9 @@ function template_show_settings()
 						<i class="icon i-alert"></i>' : '';
 
 				echo isset($config_var['postinput']) && $config_var['postinput'] !== '' ? '
-							' . $config_var['postinput'] : '', '
+						' . $config_var['postinput'] : '';
+
+				echo '
 					</dd>';
 			}
 		}
